@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "221986677902",
+    "project_id": "namek-1654484839255",
+    "storage_bucket": "namek-1654484839255.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:221986677902:android:3da4428b192ed1119115df",
+        "android_client_info": {
+          "package_name": "com.namek"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "221986677902-ubnet4ulbthrfhqbac11fupfec2j13ka.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.namek",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "221986677902-8h7jce332n69vbagcfcnaea521g60d77.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJnR5Hw8-4wq7w4F_G0Z-7IAM6zN-FcMw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "221986677902-8h7jce332n69vbagcfcnaea521g60d77.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

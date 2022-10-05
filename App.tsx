@@ -1,20 +1,32 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from "react"
+import "react-native-get-random-values"
+import "@ethersproject/shims"
+import "react-native-gesture-handler";
+import 'react-native-url-polyfill/auto'
+import '@ethersproject/shims';
+import {NavigationContainer} from '@react-navigation/native';
+import {NativeBaseProvider} from 'native-base';
+import 'react-native-gesture-handler';
+import 'react-native-get-random-values';
+import 'react-native-url-polyfill/auto';
+import {QueryClient, QueryClientProvider} from 'react-query';
+import {RecoilRoot} from 'recoil';
+import GetAppState from './components/GetAppState';
+import AppRoutes from './navigation';
 
 export default function App() {
+  const queryClient = new QueryClient();
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <QueryClientProvider client={queryClient}>
+      <NavigationContainer>
+        <NativeBaseProvider>
+          <RecoilRoot>
+            <GetAppState />
+            <AppRoutes />
+          </RecoilRoot>
+        </NativeBaseProvider>
+      </NavigationContainer>
+    </QueryClientProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

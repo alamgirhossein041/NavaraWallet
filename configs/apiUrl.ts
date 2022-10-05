@@ -1,0 +1,1 @@
+export const apiUrl = "https://dnet.5labs.io";
