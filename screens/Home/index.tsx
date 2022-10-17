@@ -1,40 +1,40 @@
-import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { result } from 'lodash';
-import React, { useEffect } from 'react';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import React, {useEffect} from 'react';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import BackButton from '../../components/BackButton';
-import { bgGray } from '../../configs/theme';
-import { tw } from '../../utils/tailwind';
+import {bgGray} from '../../configs/theme';
+import {tw} from '../../utils/tailwind';
 import AddToken from '../AddToken';
-import GetYourDomain from '../GetDomain/GetYourDomain';
-import MintDomain from '../GetDomain/MintDomain';
-import MintingDomain from '../GetDomain/MintingDomain';
-import ImportWalletStack from '../ImportWallet';
-import ImportByPhrase from '../ImportWallet/ImportByPhrase';
-import ChooseNetwork from '../NewWallet/ChooseNetworks';
-import NewYourWallet from '../NewWallet/NewYourWallet';
-import PassPhraseNew from '../NewWallet/PassPhraseNew';
-import WalletName from '../NewWallet/WalletName';
+import GetYourDomain from '../Domain/CreateDomain';
 import Notification from '../Notification/Notification';
-import { useDarkMode } from '../../hooks/useDarkMode';
-import NextStepWalletID from '../NotUse/NextStepWalletID';
-import WalletID from '../NotUse/WalletID';
+import {useDarkMode} from '../../hooks/useModeDarkMode';
+import WalletID from '../OnBoard/CreateWallet';
 import ReceiveToken from '../ReceiveToken';
 import ReceiveSpecificToken from '../ReceiveToken/ReceiveSpecificToken';
 import SendingToken from '../SendToken/SendingToken';
 import ViewListWallet from '../SendToken/ViewListWallet';
-import SwapScreen from '../Swap/Uniswap';
-import {
-  default as DetailChain,
-  default as DetßailTransaction,
-} from './DetailChains';
+import SwapScreen from '../Swap/Paraswap';
+import {default as DetailChain} from './DetailChains';
 import WalletDashboard from './WalletDashboard';
-import { useTextDarkMode } from '../../hooks/useTextDarkMode';
-import { useGridDarkMode } from '../../hooks/useGridDarkMode';
+import {useTextDarkMode} from '../../hooks/useModeDarkMode';
+import {useGridDarkMode} from '../../hooks/useModeDarkMode';
 import ManageChains from './ManageChains';
+import ConfirmTransaction from '../SendToken/ConfirmTransaction';
+import ResultTransaction from '../SendToken/ResultTransaction';
+import SwapToken from '../Swap';
+import HistoryWallets from './HistoryWallets';
+import News from './News';
+import DetailNews from './DetailNews';
+import DetailPrice from './DetailPrice';
+import {Rewards} from '../Domain/Rewards';
+import DetailWallet from '../ManageWallets/DetailWallet';
+import BackupWallet from '../Backup/BackupWallet';
+import PrivacySeedPhrase from '../ManageWallets/privacySeedPhrase';
+import SelectFile from '../Backup/SelectFile';
+import RestoreWallet from '../Backup/RestoreWallet';
 
-const Home = ({ navigation, route }) => {
+const Home = ({navigation, route}) => {
   const Stack = createNativeStackNavigator();
   const insets = useSafeAreaInsets();
   const rootScreenName = 'WalletDashboard'; // change the name of the screen which show the tab bar
@@ -54,10 +54,7 @@ const Home = ({ navigation, route }) => {
     // reset the tabBarStyle to default
     return () =>
       navigation.setOptions({
-        tabBarStyle: {
-          height: 60 + insets.bottom,
-          position: 'absolute',
-        },
+        tabBarStyle: {},
       });
   }, [insets.bottom, navigation, route]);
   //background Darkmode
@@ -72,7 +69,7 @@ const Home = ({ navigation, route }) => {
       screenOptions={{
         headerShadowVisible: false,
         headerTitleAlign: 'center',
-        headerStyle: { backgroundColor: bgGray },
+        headerStyle: {backgroundColor: 'white'},
         headerLeft: () => <BackButton />,
       }}>
       <Stack.Screen
@@ -81,8 +78,6 @@ const Home = ({ navigation, route }) => {
           headerShown: false,
           headerTitleAlign: 'center',
           title: 'Wallet Dashboard',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
         }}
         component={WalletDashboard}
       />
@@ -92,27 +87,16 @@ const Home = ({ navigation, route }) => {
         name="ReceiveToken"
         component={ReceiveToken}
         options={{
-          title: 'Receive Token',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
+          title: 'Receive',
         }}
       />
-      <Stack.Screen
-        name="DetailChain"
-        component={DetailChain}
-        options={{
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
-        }}
-      />
+      <Stack.Screen name="DetailChain" component={DetailChain} options={{}} />
       {/* <Stack.Screen name="DetailTransaction" component={DetailTransaction} /> */}
       <Stack.Screen
         name="ReceiveSpecificToken"
         component={ReceiveSpecificToken}
         options={{
           title: '',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
         }}
       />
       {/* screen Receive Token */}
@@ -123,8 +107,6 @@ const Home = ({ navigation, route }) => {
         component={ViewListWallet}
         options={{
           title: 'Send Token',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
         }}
       />
       <Stack.Screen
@@ -132,8 +114,13 @@ const Home = ({ navigation, route }) => {
         component={SendingToken}
         options={{
           title: 'Send Token',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
+        }}
+      />
+      <Stack.Screen
+        name="ResultTransaction"
+        component={ResultTransaction}
+        options={{
+          headerShown: false,
         }}
       />
       {/* screen Send Token */}
@@ -143,124 +130,59 @@ const Home = ({ navigation, route }) => {
         component={AddToken}
         options={{
           title: 'Add Token',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
         }}
+      />
+
+      <Stack.Screen
+        name="ConfirmTransaction"
+        component={ConfirmTransaction}
+        options={{}}
       />
 
       <Stack.Screen
         name="GetYourDomain"
         component={GetYourDomain}
         options={{
-          title: 'Get Your Domain',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
+          title: 'Name Service',
         }}
       />
       <Stack.Screen
-        name="MintDomain"
-        component={MintDomain}
+        name="Rewards"
+        component={Rewards}
         options={{
-          title: 'Mint Domain',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
+          title: 'Rewards',
         }}
       />
-      <Stack.Screen
-        name="MintingDomain"
-        component={MintingDomain}
-        options={{
-          title: 'Minting Domain',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
-        }}
-      />
-
       <Stack.Screen
         name="WalletID"
         component={WalletID}
         options={{
           title: 'Wallet ID',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
         }}
       />
       <Stack.Screen
-        name="NextStepWalletID"
-        component={NextStepWalletID}
+        name="DetailWallet"
+        component={DetailWallet}
         options={{
-          title: 'Next Step WalletID',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`
-        }}
-      />
-
-      <Stack.Screen
-        name="NewWallet"
-        component={NewYourWallet}
-        options={{
-          title: 'New Wallet',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`
+          title: '',
         }}
       />
       <Stack.Screen
-        name="WalletName"
-        component={WalletName}
-        options={{
-          title: 'Wallet Name',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`
-        }}
-      />
-      <Stack.Screen
-        name="ChooseNetwork"
-        component={ChooseNetwork}
-        options={{
-          title: 'Choose Network',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`
-        }}
-      />
-      <Stack.Screen
-        name="ImportByPhrase"
-        component={ImportByPhrase}
-        options={{
-          title: 'ImportByPhrase',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`
-        }}
-      />
-      <Stack.Screen
-        name="ImportWalletStack"
-        component={ImportWalletStack}
-        options={{
-          title: 'Import Wallet',
-          headerShown: true,
-          headerTitleAlign: 'center',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`
-        }}
-      />
-      {/* Screen Swap */}
-      <Stack.Screen
-        name="SwapScreen"
-        component={SwapScreen}
+        name="SwapToken"
+        component={SwapToken}
         options={{
           title: 'Swap Token',
           headerShown: true,
           headerTitleAlign: 'center',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`
         }}
       />
       <Stack.Screen
-        name="PassPhraseNew"
-        component={PassPhraseNew}
+        name="SwapScreen"
+        component={SwapScreen}
         options={{
-          title: 'Pass Phrase',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`
+          title: 'Swap',
+          headerShown: true,
+          headerTitleAlign: 'center',
         }}
       />
       <Stack.Screen
@@ -268,8 +190,6 @@ const Home = ({ navigation, route }) => {
         component={Notification}
         options={{
           title: 'Notification',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`
         }}
       />
       <Stack.Screen
@@ -277,8 +197,61 @@ const Home = ({ navigation, route }) => {
         component={ManageChains}
         options={{
           title: 'Manage Chains',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`
+        }}
+      />
+      <Stack.Screen
+        name="HistoryWallets"
+        component={HistoryWallets}
+        options={{
+          title: 'History Wallets',
+        }}
+      />
+      <Stack.Screen
+        name="DetailNews"
+        component={DetailNews}
+        options={{
+          title: 'Detail New',
+        }}
+      />
+      <Stack.Screen
+        name="DetailPrice"
+        component={DetailPrice}
+        options={{
+          title: 'Detail Price',
+        }}
+      />
+      <Stack.Screen
+        name="News"
+        component={News}
+        options={{
+          title: 'News',
+        }}
+      />
+      <Stack.Screen
+        name="BackupWallet"
+        component={BackupWallet}
+        options={{
+          title: 'Create Your Backup File',
+        }}
+      />
+
+      <Stack.Screen
+        name="PrivacySeedPhrase"
+        component={PrivacySeedPhrase}
+        options={{}}
+      />
+      <Stack.Screen
+        name="SelectFile"
+        component={SelectFile}
+        options={{
+          title: 'Select File',
+        }}
+      />
+      <Stack.Screen
+        name="RestoreWallet"
+        component={RestoreWallet}
+        options={{
+          title: 'Restore Wallet',
         }}
       />
     </Stack.Navigator>

@@ -1,9 +1,7 @@
-import 'react-native-get-random-values';
-import '@ethersproject/shims';
 import {ethers} from 'ethers';
-import {entropyToMnemonic} from '@ethersproject/hdnode';
+import { entropyToMnemonic } from 'ethers/utils/hdnode';
 
-const { utils, BigNumber,Wallet } = ethers;
+const { utils } = ethers;
 
 /**
  * Mnemonic generate 
@@ -13,3 +11,7 @@ const { utils, BigNumber,Wallet } = ethers;
 export function generateMnemonics() {
     return entropyToMnemonic(utils.randomBytes(16));
 }   
+
+export function normalizeSeedPhrase(seedPhrase) {
+    return seedPhrase.trim().split(/\s+/).map(part => part.toLowerCase()).join(' ')
+} 

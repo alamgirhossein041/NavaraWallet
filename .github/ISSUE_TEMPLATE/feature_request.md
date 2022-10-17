@@ -1,6 +1,6 @@
 ---
 name: 💫 Feature request
-about: Suggest an idea for NameK
+about: Suggest an idea for Navara
 title: ''
 labels: ''
 assignees: ''

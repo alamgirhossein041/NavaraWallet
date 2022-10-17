@@ -1,8 +1,8 @@
 import React from "react";
 import { View } from "react-native";
-import { useDarkMode } from "../../hooks/useDarkMode";
-import { useGridDarkMode } from "../../hooks/useGridDarkMode";
-import { useTextDarkMode } from "../../hooks/useTextDarkMode";
+import { useDarkMode } from "../../hooks/useModeDarkMode";
+import { useGridDarkMode } from "../../hooks/useModeDarkMode";
+import { useTextDarkMode } from "../../hooks/useModeDarkMode";
 import { tw } from "../../utils/tailwind";
 import TokenCard from "./TokenCard";
 

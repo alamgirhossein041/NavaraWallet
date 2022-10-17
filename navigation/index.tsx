@@ -1,23 +1,19 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStackNavigator } from '@react-navigation/stack';
+import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
-import { StatusBar, Text, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import IconSettings from '../assets/icons/icon-settings.svg';
-import IconWallet from '../assets/icons/icon-wallet.svg';
-import { primaryColor, secondaryGray } from '../configs/theme';
-import { useDarkMode } from '../hooks/useDarkMode';
-import { useLocalStorage } from '../hooks/useLocalStorage';
+import {SafeAreaView, StatusBar, View} from 'react-native';
+import {primaryColor, secondaryGray} from '../configs/theme';
 import Home from '../screens/Home';
-import ImportAlreadyWallet from '../screens/ImportAlreadyWallet/index';
-import NotUse from '../screens/NotUse';
-import OnBoard from '../screens/OnBoard';
+import NotUse from '../screens/OnBoard';
 import Settings from '../screens/Settings';
 import Splash from '../screens/Splash';
-import { COLOR_SCHEME } from '../utils/storage';
-import { tw } from '../utils/tailwind';
+import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
+import Browser from '../screens/Browser';
+import {tw} from '../utils/tailwind';
+import CustomTabBar from './CustomTabBar';
+import OnBoard from '../screens/OnBoard';
 const RootStack = createStackNavigator();
-const Tab = createBottomTabNavigator();
+const Tab = createMaterialTopTabNavigator();
+
 interface ITab {
   name: string;
   label: string;
@@ -25,49 +21,42 @@ interface ITab {
 }
 
 const tabs: ITab[] = [
-  // {
-  //   name: "Market",
-  //   label: "Market",
-  //   component: Home, //Market fake UI to Home
-  // },
   {
-    name: 'Wallet',
-    label: 'Wallet',
+    name: 'Home',
+    label: 'Home',
     component: Home,
   },
+  // {
+  //   name: 'Browser',
+  //   label: 'Browser',
+  //   component: () => <View />,
+  // },
   {
-    name: 'Settings',
-    label: 'Settings',
-    component: Settings,
+    name: 'Test',
+    label: 'Test',
+    component: Home, //Market fake UI to Home
   },
   // {
-  //   name: "Notification",
-  //   label: "Notification",
-  //   component: Notification,
+  //   name: 'Browser',
+  //   label: 'Browser',
+  //   component: Browser,
   // },
+  // {
+  //   name: "More",
+  //   label: "More",
+  //   component: More, //Market fake UI to Home
+  // },
+  {
+    name: 'Profile',
+    label: 'Profile',
+    component: Settings,
+  },
 ];
 
-const getIcon = (name: string, size: number, color: string) => {
-  switch (name) {
-    // case "Market":
-    //   return <IconMarket width={size} height={size} fill={color} />;
-    case 'Wallet':
-      return <IconWallet width={size} height={size} fill={color} />;
-    case 'Settings':
-      return <IconSettings width={size} height={size} fill={color} />;
-    // case "Notification":
-    // return <IconNotification width={size} height={size} fill={color} />;
-    default:
-      return <></>;
-  }
-};
-
 const TabsNavigation = () => {
-  //get the insets of the safe area
-  const insets = useSafeAreaInsets();
-
   return (
     <Tab.Navigator
+      tabBar={props => <CustomTabBar {...props} />}
       initialRouteName="Wallet"
       screenOptions={{
         tabBarHideOnKeyboard: true,
@@ -75,68 +64,42 @@ const TabsNavigation = () => {
         tabBarInactiveTintColor: secondaryGray,
         headerShown: false,
         tabBarShowLabel: false,
-        tabBarStyle: {
-          height: 60 + insets.bottom,
-          position: 'absolute',
-        },
+        swipeEnabled: false,
       }}>
       {tabs.map((tab: ITab) => (
-        <Tab.Screen
-          key={tab.name}
-          name={tab.name}
-          component={tab.component}
-          options={{
-            tabBarIcon: ({ color, size }) => ButtonNavBar(tab, size - 2, color),
-          }}
-        />
+        <Tab.Screen key={tab.name} name={tab.name} component={tab.component} />
       ))}
     </Tab.Navigator>
   );
 };
-
-//custom button for tabbar
-const ButtonNavBar = (tab: ITab, size: number, color: string) => {
-  const modeColor = useDarkMode()
-  return (
-    <View
-      style={tw`w-full h-full flex items-center justify-center ${modeColor}`}>
-      <View>{getIcon(tab.name, size, color)}</View>
-      <Text style={tw` text-[${color}]`}>{tab.label}</Text>
-    </View>
-  );
-};
-
 const AppRoutes = () => {
-  const [colorSchemeRecoil, setColorSchemeRecoil] = useLocalStorage(COLOR_SCHEME);
   return (
-    <View style={tw`flex-1 `}>
-      {/* Dark mode: barStyle="light-content" */}
+    <View style={tw`flex-1`}>
       <StatusBar barStyle="dark-content" backgroundColor="white" />
       <RootStack.Navigator>
         <RootStack.Screen
           name="Splash"
-          options={{ headerShown: false }}
+          options={{headerShown: false}}
           component={Splash}
         />
         <RootStack.Screen
-          name="ImportAlreadyWallet"
-          options={{ headerShown: false }}
-          component={ImportAlreadyWallet}
-        />
-
-        <RootStack.Screen
           name="OnBoard"
-          options={{ headerShown: false }}
+          options={{headerShown: false}}
           component={OnBoard}
         />
         <RootStack.Screen
+          name="Browser"
+          options={{headerShown: false}}
+          component={Browser}
+        />
+        <RootStack.Screen
           name="NotUse"
-          options={{ headerShown: false }}
+          options={{headerShown: false}}
           component={NotUse}
         />
         <RootStack.Screen
           name="TabsNavigation"
-          options={{ headerShown: false }}
+          options={{headerShown: false}}
           component={TabsNavigation}
         />
       </RootStack.Navigator>

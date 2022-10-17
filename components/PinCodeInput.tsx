@@ -1,68 +1,208 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { SafeAreaView, Text, View } from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {Controller, useForm} from 'react-hook-form';
 import {
-    CodeField,
-    Cursor,
-    useBlurOnFulfill,
-    useClearByFocusCell,
-} from 'react-native-confirmation-code-field';
-import { BiometricTypeEnum } from '../enum';
-import { localStorage, STORAGE_TYPE_BIOMETRIC } from '../utils/storage';
-import { tw } from '../utils/tailwind';
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  Text,
+  Vibration,
+  View,
+} from 'react-native';
+import {BiometryTypes} from 'react-native-biometrics';
+import {useRecoilValue} from 'recoil';
+import FaceId from '../assets/icons/face-id.svg';
+import FingerPrint from '../assets/icons/finger-print.svg';
+import {Regex} from '../configs/defaultValue';
+import {primaryColor} from '../configs/theme';
+import {appLockState} from '../data/globalState/appLock';
+import {
+  useDarkMode,
+  useGridDarkMode,
+  useTextDarkMode,
+} from '../hooks/useModeDarkMode';
+import {checkStateScanFingerNative} from '../screens/Settings/AppLock/FingerPrintScan';
+import checkPinCode from '../utils/checkPinCode';
+import {tw} from '../utils/tailwind';
+import Button from './Button';
+import PressableAnimated from './PressableAnimated';
+import TextField from './TextField';
 
+const ONE_SECOND_IN_MS = 100;
 
+const PATTERN = [
+  1 * ONE_SECOND_IN_MS,
+  2 * ONE_SECOND_IN_MS,
+  1 * ONE_SECOND_IN_MS,
+];
+
+enum PinCodeEnum {
+  NEW = 'new',
+  REQUIRED = 'required',
+}
 interface IPinCodeInputProps {
-    onChange(value: string | number): void,
-    err?: string | boolean,
-    hide?: boolean
-
+  type: 'new' | 'required';
+  hide?: boolean;
+  label?: string;
+  onSuccess?: (value?: string) => void;
+  biometric?: boolean;
+  error?: string;
 }
 
-const PinCodeInput = ({ onChange, err, hide = false }: IPinCodeInputProps) => {
-    const [value, setValue] = useState<string>("");
-    const ref = useBlurOnFulfill({ value, cellCount: 6 });
-    const [props, getCellOnLayoutHandler] = useClearByFocusCell({
-        value, setValue
-    });
+const PinCodeInput = ({
+  type,
+  hide = false,
+  onSuccess,
+  label = 'Verify your access',
+  biometric = true,
+  error = '',
+}: IPinCodeInputProps) => {
+  //text darkmode
+  const textColor = useTextDarkMode();
+  //grid, shadow darkmode
+  const gridColor = useGridDarkMode();
+  const modeColor = useDarkMode();
+  const appLock = useRecoilValue(appLockState);
+  const [err, setErr] = useState(error);
+  const focusRef = useRef(null);
+  const {control, getValues, setValue} = useForm({
+    defaultValues: {
+      password: '',
+      rePassword: '',
+    },
+  });
 
-    const focusRef = useRef(null);
+  const handleEndEditing = async () => {
+    const {password, rePassword} = getValues();
+    if (!password.match(Regex.password) && type === PinCodeEnum.NEW) {
+      setErr(
+        'Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number and one special character',
+      );
+      return;
+    }
 
+    if (password === rePassword || type === PinCodeEnum.REQUIRED) {
+      if (type === PinCodeEnum.REQUIRED) {
+        if (await checkPinCode(password)) {
+          onSuccess(password);
+          resetValue();
+        } else {
+          setErr('Incorrect Password');
+          Vibration.vibrate(PATTERN);
+        }
+      } else if (type === PinCodeEnum.NEW) {
+        onSuccess(password);
+        resetValue();
+      }
+    } else {
+      setErr('Password not match');
+    }
+  };
 
-    useEffect(() => {
-        onChange(value);
-    }, [value])
+  const resetValue = () => {
+    setValue('password', '');
+    setValue('rePassword', '');
+  };
+  const checkBioMetric = async () => {
+    const scanRsult = await checkStateScanFingerNative();
+    if (scanRsult) {
+      onSuccess();
+      Keyboard.dismiss();
+    }
+  };
 
-    return (
-        <SafeAreaView ref={focusRef} style={tw`flex flex-row justify-around items-center`}>
-            <CodeField
-                ref={ref}
-                {...props}
-                value={value}
-                onChangeText={setValue}
-                cellCount={6}
-                rootStyle={tw`-mx-2 mb-5`}
-                keyboardType="number-pad"
-                textContentType="oneTimeCode"
-                renderCell={({ index, symbol, isFocused }) => {
-                    let textChild = null;
-                    if (symbol) {
-                        textChild = hide ? '•' : symbol;
-                    } else if (isFocused) {
-                        textChild = <Cursor />;
-                    }
-                    return (
-                        <View
-                            key={index}
-                            onLayout={getCellOnLayoutHandler(index)}
-                            style={tw`border rounded-lg justify-center items-center mx-2 w-10 h-10 ${isFocused ? "border-[#11CABE]" : 'border-gray-200'}  ${err ? "border-red-400" : ""}`}
-                        >
-                            <Text style={tw`font-bold text-xl dark:text-white`}>{textChild || (isFocused ? <Cursor /> : null)}</Text>
-                        </View>
-                    )
-                }}
+  useEffect(() => {
+    if (error) {
+      setErr(error);
+    }
+  }, [error]);
+
+  useEffect(() => {
+    (async () => {
+      if (
+        appLock.typeBioMetric &&
+        appLock.typeBioMetric !== 'none' &&
+        biometric
+      ) {
+        checkBioMetric();
+      }
+    })();
+  }, [appLock]);
+
+  return (
+    <KeyboardAvoidingView
+      ref={focusRef}
+      behavior={Platform.OS === 'ios' ? 'padding' : null}
+      style={tw`flex flex-col items-center justify-around flex-1 w-full`}>
+      <View style={tw`flex-col p-3`}>
+        <Text style={tw`mb-5 text-2xl font-bold text-center ${textColor}`}>
+          {label}
+        </Text>
+        <Controller
+          control={control}
+          rules={{
+            required: true,
+          }}
+          render={({field: {onChange, value}}) => (
+            <TextField
+              label="Enter Password"
+              type="password"
+              value={value.replace(/\s/g, '')}
+              onChangeText={onChange}
+              autoCompleteType="off"
+              autoCapitalize="none"
+              err={err.length > 0}
+              onTouchStart={() => {
+                setErr('');
+              }}
             />
-        </SafeAreaView>
-    );
+          )}
+          name="password"
+        />
+        {type === PinCodeEnum.NEW && (
+          <Controller
+            control={control}
+            rules={{
+              required: true,
+            }}
+            render={({field: {onChange, value}}) => (
+              <TextField
+                label="Re-enter Password"
+                type="password"
+                err={err.length > 0}
+                value={value.replace(/\s/g, '')}
+                onChangeText={onChange}
+                autoCompleteType="off"
+                autoCapitalize="none"
+                onTouchStart={() => {
+                  setErr('');
+                }}
+              />
+            )}
+            name="rePassword"
+          />
+        )}
+        {!!err && <Text style={tw`text-center text-red-500`}>{err}</Text>}
+      </View>
+      {biometric && appLock.typeBioMetric === BiometryTypes.Biometrics && (
+        <PressableAnimated onPress={checkBioMetric}>
+          <FingerPrint fill={primaryColor} height={45} width={45} />
+        </PressableAnimated>
+      )}
+      {biometric && appLock.typeBioMetric === BiometryTypes.FaceID && (
+        <PressableAnimated onPress={checkBioMetric}>
+          <FaceId fill={primaryColor} height={45} width={45} />
+        </PressableAnimated>
+      )}
+
+      <View />
+
+      <View style={tw`absolute w-full px-3 bottom-5`}>
+        <Button fullWidth onPress={handleEndEditing}>
+          Continue
+        </Button>
+      </View>
+    </KeyboardAvoidingView>
+  );
 };
 
 export default PinCodeInput;

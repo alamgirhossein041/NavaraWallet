@@ -1,41 +1,41 @@
 {
   "project_info": {
-    "project_number": "221986677902",
-    "project_id": "namek-1654484839255",
-    "storage_bucket": "namek-1654484839255.appspot.com"
+    "project_number": "210953684920",
+    "project_id": "navara-network",
+    "storage_bucket": "navara-network.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:221986677902:android:3da4428b192ed1119115df",
+        "mobilesdk_app_id": "1:210953684920:android:ecaa69448710171eac714d",
         "android_client_info": {
-          "package_name": "com.namek"
+          "package_name": "network.navara"
         }
       },
       "oauth_client": [
         {
-          "client_id": "221986677902-ubnet4ulbthrfhqbac11fupfec2j13ka.apps.googleusercontent.com",
+          "client_id": "210953684920-qeom8m93e85cq6q6p9r38tm9p83fqopa.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.namek",
-            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+            "package_name": "network.navara",
+            "certificate_hash": "4f5a7f59faad0a3391d2609b7fedf62da336b602"
           }
         },
         {
-          "client_id": "221986677902-8h7jce332n69vbagcfcnaea521g60d77.apps.googleusercontent.com",
+          "client_id": "210953684920-idqecm0v1u70mtvrgdrjoae27uca3hg8.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBJnR5Hw8-4wq7w4F_G0Z-7IAM6zN-FcMw"
+          "current_key": "AIzaSyDaEeKiRW1di4xzPX4WptyZS6QftW1mBwA"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "221986677902-8h7jce332n69vbagcfcnaea521g60d77.apps.googleusercontent.com",
+              "client_id": "210953684920-idqecm0v1u70mtvrgdrjoae27uca3hg8.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

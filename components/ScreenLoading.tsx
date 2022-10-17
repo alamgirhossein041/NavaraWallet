@@ -18,7 +18,7 @@ const ScreenLoading = ({ show }: { show: boolean }) => {
           !show && "hidden"
         }`}
       >
-        <Logo />
+        <Logo width={100} height={100}/>
         <Spinner color={primaryColor} size={"lg"} />
       </View>
     </Modal>

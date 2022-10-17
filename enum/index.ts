@@ -23,6 +23,18 @@ export enum TabFilterEnum {
 }
 
 export enum GoogleClientIdEnum {
-  IOS = '221986677902-e1f9p5uu9p264ps5ucucmgjh6h6dmvfi.apps.googleusercontent.com',
-  WEB = '221986677902-v9iphnjhr6hsulo9pl04ov2e7q2gg8op.apps.googleusercontent.com',
+  IOS = '210953684920-0krjsjs7emopu816dmmv2ljtmtioifmv.apps.googleusercontent.com',
+  WEB = '210953684920-idqecm0v1u70mtvrgdrjoae27uca3hg8.apps.googleusercontent.com',
+}
+
+export enum SupportedSwapChainsEnum {
+  ETHEREUM = 'ETHEREUM',
+  POLYGON = 'POLYGON',
+  BINANCE_SMART_CHAIN = 'BINANCE_SMART_CHAIN',
+  AVALANCHE = 'AVALANCHE',
+}
+
+export enum ParaswapEnum {
+  PARTNER_ADDRESS = '0xD5ee7482cd8Da604bCF11b654d706A733C7867D0',
+  PARTNER_FEE_BPS = 10,
 }

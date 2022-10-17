@@ -1,15 +1,15 @@
-import React,{ useState } from "react";
-import { LayoutAnimation, ScrollView, Switch, Text, View } from "react-native";
-import { tw } from "../../utils/tailwind";
-import Button from "../../components/Button";
-import MenuItem from "../../components/MenuItem";
-import { primaryColor, primaryGray } from "../../configs/theme";
-import { useRecoilState } from "recoil";
-import { enabledNetworkState } from "../../data/globalState/networkData";
-import networks from "./NetworkData";
-import SearchBar from "../../components/SearchBar";
+import React, {useState} from 'react';
+import {LayoutAnimation, ScrollView, Switch, Text, View} from 'react-native';
+import {tw} from '../../utils/tailwind';
+import Button from '../../components/Button';
+import MenuItem from '../../components/MenuItem';
+import {primaryColor, primaryGray} from '../../configs/theme';
+import {useRecoilState} from 'recoil';
+import {enabledNetworkState} from '../../data/globalState/networkData';
+import networks from './NetworkData';
+import SearchBar from '../../components/SearchBar';
 
-const AddNetwork = ({ navigation }) => {
+const AddNetwork = ({navigation}) => {
   const [storedEnabledNetwork, setStoredEnabledNetwork] =
     useRecoilState(enabledNetworkState);
   const [enabledNetwork, setEnabledNetwork] =
@@ -23,7 +23,7 @@ const AddNetwork = ({ navigation }) => {
         return 1;
       }
       return 0;
-    })
+    }),
   );
 
   const onValueChange = (value: boolean, index: number) => {
@@ -32,7 +32,7 @@ const AddNetwork = ({ navigation }) => {
         setEnabledNetwork([...enabledNetwork, networkList[index].id]);
     } else {
       setEnabledNetwork(
-        enabledNetwork.filter((net) => net !== networkList[index].id)
+        enabledNetwork.filter(net => net !== networkList[index].id),
       );
     }
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -48,9 +48,9 @@ const AddNetwork = ({ navigation }) => {
       <SearchBar
         style="mt-4"
         placeholder="Search for a network"
-        searchList={networks}
-        searchProperty={["name"]}
-        setSearchList={setNetworkList}
+        list={networks}
+        filterProperty={['name']}
+        onListFiltered={(list: any[]) => setNetworkList(list)}
       />
       <ScrollView style={tw`w-full`}>
         <View style={tw`w-full flex flex-col items-center`}>
@@ -60,14 +60,14 @@ const AddNetwork = ({ navigation }) => {
                 {enabledNetwork.indexOf(network.id) !== -1 && (
                   <MenuItem
                     icon={network.icon}
-                    iconPadding={""}
+                    iconPadding={''}
                     name={network.name}
                     disabled
                     value={
                       <Switch
-                        trackColor={{ false: primaryGray, true: primaryColor }}
+                        trackColor={{false: primaryGray, true: primaryColor}}
                         thumbColor="white"
-                        onValueChange={(value) => onValueChange(value, index)}
+                        onValueChange={value => onValueChange(value, index)}
                         value={enabledNetwork.indexOf(network.id) !== -1}
                       />
                     }
@@ -81,14 +81,14 @@ const AddNetwork = ({ navigation }) => {
                 {enabledNetwork.indexOf(network.id) === -1 && (
                   <MenuItem
                     icon={network.icon}
-                    iconPadding={""}
+                    iconPadding={''}
                     name={network.name}
                     disabled
                     value={
                       <Switch
-                        trackColor={{ false: primaryGray, true: primaryColor }}
+                        trackColor={{false: primaryGray, true: primaryColor}}
                         thumbColor="white"
-                        onValueChange={(value) => onValueChange(value, index)}
+                        onValueChange={value => onValueChange(value, index)}
                         value={enabledNetwork.indexOf(network.id) !== -1}
                       />
                     }
@@ -106,8 +106,7 @@ const AddNetwork = ({ navigation }) => {
           onPress={() => {
             setStoredEnabledNetwork(enabledNetwork);
             navigation.goBack();
-          }}
-        >
+          }}>
           Confirm
         </Button>
       </View>

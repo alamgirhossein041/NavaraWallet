@@ -6,7 +6,7 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import {useDarkMode} from '../hooks/useDarkMode';
+import {useDarkMode} from '../hooks/useModeDarkMode';
 import {useLocalStorage} from '../hooks/useLocalStorage';
 import {COLOR_SCHEME} from '../utils/storage';
 import {tw} from '../utils/tailwind';

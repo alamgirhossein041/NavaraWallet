@@ -1,8 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { Text, View, TouchableOpacity, Image, ScrollView } from "react-native";
-import { ChevronDownIcon } from "react-native-heroicons/solid";
-import { tw } from "../utils/tailwind";
-import { primaryColor, primaryGray, secondaryGray } from "../configs/theme";
+import {Actionsheet, CheckCircleIcon, useDisclose} from 'native-base';
+import React, {useEffect, useState} from 'react';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {ChevronDownIcon} from 'react-native-heroicons/outline';
+import {primaryColor} from '../configs/theme';
+import {useDarkMode} from '../hooks/useModeDarkMode';
+import {useGridDarkMode} from '../hooks/useModeDarkMode';
+import {useTextDarkMode} from '../hooks/useModeDarkMode';
+import {tw} from '../utils/tailwind';
+import SearchBar from './SearchBar';
+import TokenIcon from './TokenIcon';
 
 export interface IOption {
   label: string;
@@ -19,22 +25,18 @@ interface SelectOptionProps {
   onSetValue(value: string | number | object): void;
   filter?: boolean;
 }
-import { Actionsheet, CheckCircleIcon, useDisclose } from "native-base";
-import InputText from "./InputText";
-import TokenIcon from "./TokenIcon";
-import SearchBar from "./SearchBar";
 
 const SelectOption = ({
   options,
   value,
   icon,
   style,
-  iconSize = "h-7 w-7",
-  stringStyle = "text-sm",
+  iconSize = 'h-7 w-7',
+  stringStyle = 'text-sm',
   onSetValue,
   filter = false,
 }: SelectOptionProps) => {
-  const { isOpen, onOpen, onClose } = useDisclose();
+  const {isOpen, onOpen, onClose} = useDisclose();
   const handleSelectOption = (option: IOption) => {
     onSetValue(option.value);
     onClose();
@@ -44,60 +46,58 @@ const SelectOption = ({
   useEffect(() => {
     setFilteredList(options);
   }, [options]);
-
+  const textColor = useTextDarkMode();
+  //grid, shadow darkmode
+  const gridColor = useGridDarkMode();
+  const modeColor = useDarkMode();
   return (
-    <TouchableOpacity activeOpacity={0.6}
+    <TouchableOpacity
+      activeOpacity={0.6}
       onPress={onOpen}
-      style={tw`p-2 bg-white shadow my-1 rounded-3xl max-w-96 ${style}`}
-    >
+      style={tw`px-2 flex-row items-center justify-between bg-blue-500/50 h-10  rounded-3xl max-w-96 ${style}`}>
       <View style={tw`flex-row items-center justify-between`}>
-        <View style={tw`flex-row items-center`}>
-          <View
-            style={tw`rounded-full ${iconSize} bg-[${primaryColor}] mr-2 items-center justify-center`}
-          >
-            {icon}
-          </View>
-          <View>
-            <Text
-              style={tw`${stringStyle} text-black`}
-              numberOfLines={1}
-              ellipsizeMode="tail"
-            >
-              {value}
-            </Text>
-          </View>
+        <View
+          style={tw`rounded-full ${iconSize} bg-white mr-2 items-center justify-center`}>
+          {icon}
         </View>
-
-        <ChevronDownIcon height={15} width={15} fill="gray" />
+        <View>
+          <Text
+            style={tw`${stringStyle} text-white`}
+            numberOfLines={1}
+            ellipsizeMode="tail">
+            {value}
+          </Text>
+        </View>
+        <ChevronDownIcon height={15} width={15} fill="white" />
       </View>
       <Actionsheet isOpen={isOpen} onClose={onClose}>
-        <Actionsheet.Content>
+        <Actionsheet.Content style={tw`${gridColor}`}>
           <ScrollView style={tw`w-full`}>
             {filter && (
               <SearchBar
-                style="mt-4"
                 placeholder="Search "
-                searchList={options}
-                searchProperty={["label"]}
-                setSearchList={setFilteredList}
+                list={options}
+                filterProperty={['label']}
+                onListFiltered={(list: IOption[]) => setFilteredList(list)}
               />
             )}
             {filteredList.map((item, index) => {
               const isSelected = item.value === value;
               return (
-                <TouchableOpacity activeOpacity={0.6}
+                <TouchableOpacity
+                  activeOpacity={0.6}
                   onPress={() => handleSelectOption(item)}
                   key={index}
-                  style={tw`w-full p-3 items-center flex-row justify-between ${isSelected ? "bg-gray-100" : ""
-                    } mb-1 rounded-lg`}
-                >
+                  style={tw`w-full p-3 items-center flex-row justify-between ${
+                    isSelected ? 'bg-${modeColor}' : ''
+                  } mb-1 rounded-lg`}>
                   {item.iconUri && <TokenIcon uri={item.iconUri} />}
                   <Text
-                    style={tw` font-medium text-base  ${isSelected
-                      ? `font-bold text-[${primaryColor}]`
-                      : "text-black"
-                      }`}
-                  >
+                    style={tw` font-medium text-base  ${
+                      isSelected
+                        ? `font-bold text-[${primaryColor}]`
+                        : `${textColor}`
+                    }`}>
                     {item.value}
                   </Text>
                   {isSelected && <CheckCircleIcon color={primaryColor} />}

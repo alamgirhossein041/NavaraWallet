@@ -3,7 +3,6 @@ import {ScrollView, Text, View} from 'react-native';
 import {tw} from '../../utils/tailwind';
 import Button from '../../components/Button';
 import MenuItem from '../../components/MenuItem';
-import InputText from '../../components/InputText';
 import {useRecoilState} from 'recoil';
 import {selectedTokenState} from '../../data/globalState/tokenData';
 import tokens from './TokenData';
@@ -13,9 +12,9 @@ import NetworkGroup from './NetworkGroup';
 import HeaderScreen from '../../components/HeaderScreen';
 import {bgGray} from '../../configs/theme';
 import SearchBar from '../../components/SearchBar';
-import {useDarkMode} from '../../hooks/useDarkMode';
-import {useTextDarkMode} from '../../hooks/useTextDarkMode';
-import {useGridDarkMode} from '../../hooks/useGridDarkMode';
+import {useDarkMode} from '../../hooks/useModeDarkMode';
+import {useTextDarkMode} from '../../hooks/useModeDarkMode';
+import {useGridDarkMode} from '../../hooks/useModeDarkMode';
 
 const AddToken = ({navigation}) => {
   const [storedSelectedToken, setStoredSelectedToken] =
@@ -79,9 +78,9 @@ const AddToken = ({navigation}) => {
         <SearchBar
           style="my-1"
           placeholder="Search for a token or contract"
-          searchList={tokens}
-          searchProperty={['name']}
-          setSearchList={setTokenList}
+          list={tokens}
+          filterProperty={['name']}
+          onListFiltered={(list: any[]) => setTokenList(list)}
           onChangeText={text => setSearchText(text)}
         />
       </View>

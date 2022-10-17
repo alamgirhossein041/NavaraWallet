@@ -27,6 +27,7 @@ export default {
         name: "Fantom Opera",
         providerMethod: RpcProviderMethod.JsonRpcProvider,
         chainId: 250,
+        scanner: 'https://api.ftmscan.com/api',
         rpc: "https://rpc.ftm.tools/"
     },
     [NETWORKS.AURORA]: {
@@ -41,18 +42,6 @@ export default {
         chainId: 0xa86a,
         rpc: "https://api.avax.network/ext/bc/C/rpc"
     },
-    [NETWORKS.HARMONY]: {
-        name: "Harmony Mainnet",
-        providerMethod: RpcProviderMethod.JsonRpcProvider,
-        chainId: 1666600000,
-        rpc: "https://api.harmony.one"
-    },
-    // [NETWORKS.CELO]: {
-    //     name: "Celo (Mainnet)",
-    //     providerMethod: RpcProviderMethod.JsonRpcProvider,
-    //     chainId: 42220,
-    //     rpc: "https://forno.celo.org"
-    // },
     [NETWORKS.HUOBI_CHAIN]: {
         name: "HuobiChain- Mainnet",
         providerMethod: RpcProviderMethod.JsonRpcProvider,
@@ -65,4 +54,16 @@ export default {
         chainId: 25,
         rpc: "https://evm.cronos.org"
     },
+    [NETWORKS.OPTIMISM]: {
+        name: "Optimism Testnet",
+        providerMethod: RpcProviderMethod.JsonRpcProvider,
+        chainId: 10,
+        rpc: "https://mainnet.optimism.io",
+      },
+      [NETWORKS.ARBITRUM]: {
+        name: "Arbitrum Testnet",
+        providerMethod: RpcProviderMethod.JsonRpcProvider,
+        chainId: 42161,
+        rpc: "https://arb1.arbitrum.io/rpc",
+      },
 }

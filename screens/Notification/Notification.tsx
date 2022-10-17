@@ -4,7 +4,7 @@ import { tw } from "../../utils/tailwind";
 import IconMobile from "../../assets/icons/icon-mobile-noti.svg";
 import WalletIcon from "../../assets/icons/icon-solid-wallet.svg";
 import { bgUnreadNotification, primaryColor } from "../../configs/theme";
-import { useDarkMode } from "../../hooks/useDarkMode";
+import { useDarkMode } from "../../hooks/useModeDarkMode";
 const Notification = () => {
   const BG_COLOR = "#F8FAFC";
   const arrayNoti = [

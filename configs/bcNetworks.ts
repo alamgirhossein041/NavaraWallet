@@ -25,11 +25,34 @@ import Celo from '../assets/icons/celo-celo-logo.svg'
 import Alavanche from '../assets/icons/avalanche-avax-logo.svg'
 import Near from '../assets/icons/icon-near.svg'
 import Aurora from '../assets/icons/icon-aurora.svg'
-import Houbi from  '../assets/icons/icon-houbi.svg'
+import Houbi from '../assets/icons/icon-houbi.svg'
+import Arbitrum from '../assets/icons/icon-arbitrum.svg'
+import Optimism from '../assets/icons/icon-optimism.svg'
 
 // import Polygon from '../assets/icons/polygon-matic-logo.svg'
 
 export const CHAIN_ICONS = {
+    [NETWORKS.ETHEREUM]: Ethereum,
+    [NETWORKS.POLYGON]: Polygon,
+    [NETWORKS.BINANCE_SMART_CHAIN]: Binance,
+    [NETWORKS.ARBITRUM]: Arbitrum,
+    [NETWORKS.OPTIMISM]: Optimism,
+    [NETWORKS.FANTOM]: Fantom,
+    // [NETWORKS.AURORA]: "",
+    [NETWORKS.AVALANCHE]: Alavanche,
+    [NETWORKS.HARMONY]: Hamony,
+    [NETWORKS.AURORA]: Aurora,
+    // [NETWORKS.CELO]: Celo,
+    [NETWORKS.HUOBI_CHAIN]: Houbi,
+    [NETWORKS.CRONOS]: Cromos,
+    
+
+    [NETWORKS.SOLANA]: Solana,
+    "BITCOIN": Bitcoin,
+    [NETWORKS.NEAR]: Near
+}
+
+export const NATIVE_TOKEN_ICON = {
     [NETWORKS.ETHEREUM]: Ethereum,
     [NETWORKS.POLYGON]: Polygon,
     [NETWORKS.BINANCE_SMART_CHAIN]: Binance,
@@ -41,6 +64,9 @@ export const CHAIN_ICONS = {
     // [NETWORKS.CELO]: Celo,
     [NETWORKS.HUOBI_CHAIN]: Houbi,
     [NETWORKS.CRONOS]: Cromos,
+    [NETWORKS.ARBITRUM]: Ethereum,
+    [NETWORKS.OPTIMISM]: Ethereum,
+
     [NETWORKS.SOLANA]: Solana,
     "BITCOIN": Bitcoin,
     [NETWORKS.NEAR]: Near
@@ -59,6 +85,8 @@ export const TOKEN_SYMBOLS = {
     [NETWORKS.HUOBI_CHAIN]: "HT",
     [NETWORKS.CRONOS]: "CRO",
     [NETWORKS.SOLANA]: "SOL",
+    [NETWORKS.ARBITRUM]: "ETH",
+    [NETWORKS.OPTIMISM]: "ETH",
     "BITCOIN": "BTC",
     [NETWORKS.NEAR]: "NEAR"
 }
@@ -73,7 +101,9 @@ export const EVM_CHAINS: string[] = [
     NETWORKS.HARMONY,
     // NETWORKS.CELO,
     NETWORKS.HUOBI_CHAIN,
-    NETWORKS.CRONOS
+    NETWORKS.CRONOS,
+    NETWORKS.ARBITRUM,
+    NETWORKS.OPTIMISM
 ]
 
 export const NETWORK_COINGEKO_IDS = {
@@ -87,18 +117,31 @@ export const NETWORK_COINGEKO_IDS = {
     // [NETWORKS.CELO]: 'celo',
     [NETWORKS.HUOBI_CHAIN]: 'huobi-token',
     [NETWORKS.CRONOS]: 'crypto-com-chain',
+    [NETWORKS.ARBITRUM]: 'ethereum',
+    [NETWORKS.OPTIMISM]: 'ethereum',
 
     [NETWORKS.NEAR]: 'near',
     // POLKADOT = 'POLKADOT',
     // TERRA = 'TERRA',
     [NETWORKS.SOLANA]: 'solana',
-    BITCOIN: 'bitcoin'
+    // BITCOIN: 'bitcoin'
 }
 
 export const NETWORK_ENVIRONMENT = WALLET_ENVIRONMENT === ENVIRONMENT.DEVELOPMENT ?
     NETWORK_ENVIRONMENT_ENUM.TESTNET : NETWORK_ENVIRONMENT_ENUM.MAINNET;
 
 export const NETWORK_CONFIG = NETWORK_ENVIRONMENT === NETWORK_ENVIRONMENT_ENUM.MAINNET ? mainnetConfig : testnetConfig;
+
+const mapConfigByChainId = (configObject) => {
+    const configByChainId = {}
+    Object.keys(configObject).forEach(key => {
+        const config = configObject[key]
+        configByChainId[config.chainId.toString()] = {...config, network: key}
+    })
+    return configByChainId
+}
+
+export const NETWORK_CONFIG_BY_CHAIN_ID = {...mapConfigByChainId(mainnetConfig), ...mapConfigByChainId(testnetConfig)}
 
 export const SOLANA_CLUSTER_API_URL = NETWORK_ENVIRONMENT === NETWORK_ENVIRONMENT_ENUM.MAINNET ? clusterApiUrl('mainnet-beta') : clusterApiUrl('testnet')
 
@@ -117,6 +160,6 @@ export const NEAR_CONFIG = NETWORK_ENVIRONMENT === NETWORK_ENVIRONMENT_ENUM.MAIN
         networkId: "testnet",
         nodeUrl: "https://rpc.testnet.near.org",
         walletUrl: "https://wallet.testnet.near.org",
-        helperUrl: "https://helper.testnet.near.org",
+        helperUrl: "https://testnet-api.kitwallet.app",
         explorerUrl: "https://explorer.testnet.near.org",
     }

@@ -1,80 +1,100 @@
+/*
+ *
+ * @author ThaiND
+ * Created at Tue Jun 14 2022
+ * @description
+ * @param
+ * @returns
+ * @example
+ */
 import {Spinner, View} from 'native-base';
 import React from 'react';
-import {Animated, Text, TouchableHighlight} from 'react-native';
-import {primaryColor} from '../configs/theme';
+import {Text, TouchableHighlight} from 'react-native';
+import {BanIcon} from 'react-native-heroicons/outline';
+import {primaryColor, underLayPrimaryColor} from '../configs/theme';
 import {tw} from '../utils/tailwind';
+import PressableAnimated from './PressableAnimated';
 
 type ButtonProps = {
+  fullWidth?: boolean;
   onPress?: () => void;
-  padding?: string;
   children?: string | JSX.Element;
   disabled?: boolean;
   loading?: boolean;
-  buttonStyle?: string;
-  stringStyle?: string;
+  iconRight?: JSX.Element;
+  variant?: 'primary' | 'secondary' | 'outlined' | 'danger' | 'text';
 };
 
 const Button = ({
+  fullWidth = false,
   onPress,
-  padding = 'p-4',
   children,
   disabled = false,
   loading = false,
-  buttonStyle,
-  stringStyle,
+  iconRight = <></>,
+  variant = 'primary',
 }: ButtonProps) => {
-  const bgButtonColor = !disabled ? primaryColor : '#c9c9c9';
-  const animation = new Animated.Value(0);
-  const inputRange = [0, 1];
-  const outputRange = [1, 0.95];
-  const scale = animation.interpolate({inputRange, outputRange});
-
-  const onPressIn = () => {
-    Animated.spring(animation, {
-      toValue: 1,
-      useNativeDriver: true,
-    }).start();
-  };
-  const onPressOut = () => {
-    Animated.spring(animation, {
-      toValue: 0,
-      useNativeDriver: true,
-    }).start();
+  const style = {
+    primary: {
+      value: tw`bg-blue-500`,
+      underlayColor: underLayPrimaryColor,
+      textStyle: tw`text-white`,
+    },
+    secondary: {
+      value: tw`bg-gray-200`,
+      underlayColor: '#f5f5f5',
+      textStyle: tw`text-gray-700`,
+    },
+    danger: {
+      value: tw`bg-red-400`,
+      underlayColor: '#e36868',
+      textStyle: tw`text-white`,
+    },
+    outlined: {
+      value: tw`bg-white border-2 border-blue-500`,
+      underlayColor: 'white',
+      textStyle: tw`text-blue-500`,
+    },
+    text: {
+      value: tw``,
+      underlayColor: 'white',
+      textStyle: tw`text-blue-500`,
+    },
+    disabled: {
+      value: tw`bg-gray-300 focus:outline-none`,
+      underlayColor: 'white',
+      textStyle: tw`text-white`,
+    },
   };
   return (
-    <Animated.View
+    <PressableAnimated
+      underlayColor={style[variant].underlayColor}
+      component={TouchableHighlight}
+      activeOpacity={0.6}
       style={[
-        tw`w-full flex items-center justify-center`,
-        {transform: [{scale}]},
-      ]}>
-      <TouchableHighlight
-        activeOpacity={0.6}
-        onPressIn={onPressIn}
-        onPressOut={onPressOut}
-        underlayColor={primaryColor}
-        onShowUnderlay={() => console.log(1)}
-        style={tw`w-full flex flex-row items-center justify-center rounded-full 
-        bg-[${bgButtonColor}]/${
-          disabled || loading ? '70' : '100'
-        } ${padding}  ${buttonStyle}`}
-        onPress={() => setTimeout(() => onPress(), 150)}
-        disabled={disabled || loading}>
-        <View>
-          {loading && (
-            <View style={tw`mr-1`}>
-              <Spinner color="white" />
-            </View>
-          )}
-          {typeof children === 'string' ? (
-            <Text style={tw`text-white text-lg text-center ${stringStyle}`}>
-              {children}
-            </Text>
-          ) : (
-            children
-          )}
+        tw`flex flex-row items-center justify-center w-64 p-4 mt-2 rounded-2xl`,
+        disabled || loading ? style.disabled.value : style[variant].value,
+        tw`${fullWidth ? 'w-full' : 'w-auto'}`,
+      ]}
+      onPress={onPress}
+      disabled={disabled || loading}>
+      {loading && (
+        <View style={tw`mr-1`}>
+          <Spinner color="white" />
         </View>
-      </TouchableHighlight>
-    </Animated.View>
+      )}
+      {/* {disabled &&  <View style={tw`mr-1`}>
+          <BanIcon color="red" />
+        </View>} */}
+      <Text
+        style={[
+          tw`text-lg font-bold`,
+          disabled ? style.disabled.value : style[variant].textStyle,
+        ]}>
+        {children}
+      </Text>
+      <View style={tw`ml-2`}>{iconRight}</View>
+    </PressableAnimated>
   );
 };
 

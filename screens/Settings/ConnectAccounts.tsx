@@ -12,7 +12,7 @@ import MenuItem from '../../components/MenuItem';
 import {primaryColor} from '../../configs/theme';
 import Button from '../../components/Button';
 import HeaderScreen from '../../components/HeaderScreen';
-import {useDarkMode} from '../../hooks/useDarkMode';
+import {useDarkMode} from '../../hooks/useModeDarkMode';
 
 const ConnectedAccounts = ({navigation}) => {
   const accounts = [

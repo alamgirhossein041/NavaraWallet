@@ -68,9 +68,10 @@ buck-out/
 # CocoaPods
 /ios/Pods/
 
-# Expo
-.expo/
-web-build/
-dist/
+# App release
+/android/app/release
 
 # @end expo-cli
+ios/fastlane/.env
+# patch-package
+patches/bip39+2.6.0.patch

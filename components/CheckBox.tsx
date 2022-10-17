@@ -1,9 +1,9 @@
-import { View } from "native-base";
-import { Text, TouchableOpacity, TouchableWithoutFeedback } from "react-native";
-import { tw } from "../utils/tailwind";
-import { primaryColor } from "../configs/theme";
-import { CheckIcon } from "react-native-heroicons/solid";
-import React from "react"
+import {View} from 'native-base';
+import {Text, TouchableOpacity, TouchableWithoutFeedback} from 'react-native';
+import {tw} from '../utils/tailwind';
+import {primaryColor} from '../configs/theme';
+import {CheckIcon} from 'react-native-heroicons/solid';
+import React from 'react';
 type CheckBoxProps = {
   check: boolean;
   onPress?: () => void;
@@ -24,27 +24,26 @@ const CheckBox = ({
   return (
     <TouchableWithoutFeedback onPress={() => onPress()}>
       <View style={tw`w-full flex-row justify-center items-start mt-5`}>
-        <TouchableOpacity activeOpacity={0.6}
+        <TouchableOpacity
+          activeOpacity={0.6}
           style={tw`flex justify-center items-center border-2 rounded mr-2 border-[${primaryColor}] relative w-[${checkBoxSize}] h-[${checkBoxSize}] ${checkBoxStyle}`}
-          onPress={() => onPress()}
-        >
-          <View
-            style={tw`absolute -bottom-1.5 -left-1 
-            w-[${checkBoxSize + 3}] 
-            h-[${checkBoxSize + 3}]`}
-          >
-            {check && (
+          onPress={() => onPress()}>
+          {check && (
+            <View
+              style={tw`absolute -bottom-1.5 -left-1 
+             w-[${checkBoxSize + 3}] 
+             h-[${checkBoxSize + 3}]`}>
               <CheckIcon
                 width="100%"
                 height="100%"
-                stroke="white"
+                stroke={primaryColor}
                 fill={primaryColor}
               />
-            )}
-          </View>
+            </View>
+          )}
         </TouchableOpacity>
         <View style={tw`w-11/12`}>
-          <Text style={tw`text-sm text-[${primaryColor}] ${labelStyle}`}>
+          <Text style={tw`text-sm  ${labelStyle}`}>
             {label}
           </Text>
         </View>

@@ -1,31 +1,19 @@
-import React, { useEffect } from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Menu from './Menu';
+import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import React, {useEffect} from 'react';
+import BackButton from '../../components/BackButton';
+
 import ManageNetworks from '../ManageNetworks';
 import ManageWallets from '../ManageWallets';
-import ConnectedAccounts from './ConnectAccounts';
-import AddToken from '../AddToken';
-import ReceiveToken from '../ReceiveToken';
-import ReceiveSpecificToken from '../ReceiveToken';
 import ShareAddress from '../ReceiveToken/ShareAddress';
 import AppLock from './AppLock/AppLock';
 import EnableAppLock from './AppLock/EnableAppLock';
-import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import BackButton from '../../components/BackButton';
-import SelectBackupWallet from '../Backup/SelectBackupWallet';
-import BackupWallet from '../Backup/BackupWallet';
-import { tw } from '../../utils/tailwind';
-import { useDarkMode } from '../../hooks/useDarkMode';
-import { useLocalStorage } from '../../hooks/useLocalStorage';
-import { COLOR_SCHEME } from '../../utils/storage';
-import { useTextDarkMode } from '../../hooks/useTextDarkMode';
-import { useGridDarkMode } from '../../hooks/useGridDarkMode';
+import ConnectedAccounts from './ConnectAccounts';
+import DeveloperOptions from './DeveloperOptions/DeveloperOptions';
+import Menu from './Menu';
 
-const Settings = ({ navigation, route }) => {
+const Settings = ({navigation, route}) => {
   const Stack = createNativeStackNavigator();
-
-  const insets = useSafeAreaInsets();
   const rootScreenName = 'Menu'; // change the name of the screen which show the tab bar
   useEffect(() => {
     const focused = getFocusedRouteNameFromRoute(route); // get the name of the focused screen
@@ -43,24 +31,16 @@ const Settings = ({ navigation, route }) => {
     // reset the tabBarStyle to default
     return () =>
       navigation.setOptions({
-        tabBarStyle: {
-          height: 60 + insets.bottom,
-          position: 'absolute',
-        },
+        tabBarStyle: {},
       });
   }, [navigation, route]);
-  const modeColor = useDarkMode();
-  //text darkmode
-  const textColor = useTextDarkMode();
-  //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
-  const [colorSchemeRecoil, setColorSchemeRecoil] =
-    useLocalStorage(COLOR_SCHEME);
+
   return (
     <Stack.Navigator
       screenOptions={{
         headerTitleAlign: 'center',
         headerShadowVisible: false,
+        headerStyle: {backgroundColor: 'white'},
         headerLeft: () => <BackButton />,
       }}>
       <Stack.Screen
@@ -68,9 +48,6 @@ const Settings = ({ navigation, route }) => {
         options={{
           title: 'Settings',
           headerShown: true,
-          headerTitleAlign: 'center',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
           headerLeft: () => <></>,
         }}
         component={Menu}
@@ -81,9 +58,6 @@ const Settings = ({ navigation, route }) => {
         options={{
           title: 'Manage Networks',
           headerShown: true,
-          headerTitleAlign: 'center',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
         }}
       />
       <Stack.Screen
@@ -91,10 +65,6 @@ const Settings = ({ navigation, route }) => {
         component={ManageWallets}
         options={{
           headerShown: false,
-          headerTitleAlign: 'center',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
-          
         }}
       />
       <Stack.Screen
@@ -103,64 +73,22 @@ const Settings = ({ navigation, route }) => {
         options={{
           title: 'Connected Accounts',
           headerShown: true,
-          headerTitleAlign: 'center',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
-        }}
-      />
-      <Stack.Screen
-        name="AddToken"
-        component={AddToken}
-        options={{
-          title: 'Add Token',
-          headerShown: true,
-          headerTitleAlign: 'center',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
-        }}
-      />
-      <Stack.Screen
-        name="ReceiveToken"
-        component={ReceiveToken}
-        options={{
-          title: 'Receive Token',
-          headerShown: true,
-          headerTitleAlign: 'center',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
-        }}
-      />
-      <Stack.Screen
-        name="ReceiveSpecificToken"
-        component={ReceiveSpecificToken}
-        options={{
-          title: 'Receive SpecificToken',
-          headerShown: true,
-          headerTitleAlign: 'center',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
         }}
       />
       <Stack.Screen
         name="AppLock"
         component={AppLock}
         options={{
-          title: 'AppLock',
+          title: 'App lock',
           headerShown: true,
-          headerTitleAlign: 'center',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
         }}
       />
       <Stack.Screen
         name="EnableAppLock"
         component={EnableAppLock}
         options={{
-          title: 'Enable AppLock',
+          title: 'Enable App lock',
           headerShown: true,
-          headerTitleAlign: 'center',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
         }}
       />
       <Stack.Screen
@@ -169,31 +97,14 @@ const Settings = ({ navigation, route }) => {
         options={{
           title: 'Share Address',
           headerShown: true,
-          headerTitleAlign: 'center',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
         }}
       />
       <Stack.Screen
-        name="SelectBackupWallet"
-        component={SelectBackupWallet}
+        name="DeveloperOptions"
+        component={DeveloperOptions}
         options={{
-          title: 'Enable Cloud Backup',
+          title: 'Developer Options',
           headerShown: true,
-          headerTitleAlign: 'center',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
-        }}
-      />
-      <Stack.Screen
-        name="BackupWallet"
-        component={BackupWallet}
-        options={{
-          title: 'Enable Cloud Backup',
-          headerShown: true,
-          headerTitleAlign: 'center',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
         }}
       />
     </Stack.Navigator>

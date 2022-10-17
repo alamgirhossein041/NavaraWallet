@@ -1,6 +1,6 @@
 ---
 name: 🐛 Bug Report
-about: Report a reproducible bug or regression in NameK
+about: Report a reproducible bug or regression in Navara
 title: ''
 labels: ''
 assignees: ''

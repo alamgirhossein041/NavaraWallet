@@ -1,28 +1,34 @@
-import React, { FunctionComponent } from "react";
-import { View, Text, ScrollView } from "react-native";
-import { useRecoilValue } from "recoil";
-import { selectGray } from "../../configs/theme";
-import { historyStateQuery } from "../../data/globalState/history";
-import { IHistory } from "../../data/types";
-import shortenAddress from "../../utils/shortenAddress";
-import { tw } from "../../utils/tailwind";
+import dayjs from 'dayjs';
+import {Actionsheet, ScrollView, useDisclose} from 'native-base';
+import React, {useState} from 'react';
+import {Text, View} from 'react-native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {ShieldCheckIcon} from 'react-native-heroicons/solid';
+import {useInfiniteQuery} from 'react-query';
+import IconCheckOK from '../../assets/icons/icon-checkmark.svg';
+import IconHighRisk from '../../assets/icons/icon-high-risk.svg';
+import IconNoData from '../../assets/icons/icon-no-data-amico.svg';
+import ScreenLoading from '../../components/ScreenLoading';
+import {CHAIN_ICONS} from '../../configs/bcNetworks';
+import {fetchHistory} from '../../data/api/fetchHistory';
+import {IHistory} from '../../data/types';
 import {
-  ArrowCircleDownIcon,
-  ArrowCircleUpIcon,
-} from "react-native-heroicons/outline";
-import dayjs from "dayjs";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { useNavigation } from "@react-navigation/native";
-import { FlatList } from "native-base";
-import { useInfiniteQuery } from "react-query";
-import axios from "axios";
-import { fetchHistory } from "../../data/api/fetchHistory";
-import { log } from "util";
-var relativeTime = require("dayjs/plugin/relativeTime");
+  useDarkMode,
+  useGridDarkMode,
+  useTextDarkMode,
+} from '../../hooks/useModeDarkMode';
+import {shortenAddressForHistory} from '../../utils/stringsFunction';
+import {tw} from '../../utils/tailwind';
+var relativeTime = require('dayjs/plugin/relativeTime');
 const day: any = dayjs;
 day.extend(relativeTime);
-const HistoryWallets = () => {
-  const address = "0x96d8c4f7839f1da51bfe4d8262d0ab2c842ed02a";
+const HistoryWallets = props => {
+  const {route} = props;
+
+  const symbol = route.params.token.symbol;
+  const address = route.params.token.address;
+  const network = route.params.token.network;
+  const [loading, setLoading] = useState(true);
   const {
     status,
     data,
@@ -35,86 +41,233 @@ const HistoryWallets = () => {
     hasNextPage,
     hasPreviousPage,
   } = useInfiniteQuery(
-    "projects",
-    async ({ pageParam = 1 }) => {
-      const response: any = await axios.all(
-        fetchHistory({
-          address,
-          page: pageParam,
-          offset: "50",
-          sort: "desc",
-        })
-      );
+    address,
+    async ({pageParam = 1}) => {
+      const response: any = await fetchHistory(network, {
+        address,
+      });
 
       const data: IHistory[] = Array.prototype.concat.apply(
         [],
-        response.map((res) => res.data.result)
+        response.map(res => res),
       );
+      setLoading(false);
       return data;
     },
     {
       getNextPageParam: (lastPage: any, pages) => lastPage.nextCursor,
-    }
+    },
   );
-
-  const loadMore = () => {
-    if (hasNextPage) {
-      fetchNextPage();
+  // start groupByArray
+  const groups = data?.pages[0].reduce((groups, item) => {
+    const date = day(+item.timeStamp * 1000).format('MMMM D, YYYY ');
+    if (!groups[date]) {
+      groups[date] = [];
     }
-  };
+    groups[date].push(item);
+    return groups;
+  }, {});
 
+  const groupArrays =
+    data &&
+    Object.keys(groups).map(date => {
+      return groups[date];
+    });
+  // end groupByArray
   return data && data.pages[0].length > 0 ? (
-    <FlatList
-      data={data.pages[0] as any}
-      style={tw`px-3 mb-5 mt-2`}
-      keyExtractor={(_item, index) => index.toString()}
-      renderItem={(dataItem: IHistory | any) => {
-        return <ItemHistory {...dataItem.item} address={address} />;
-      }}
-      onEndReached={loadMore}
-    ></FlatList>
+    <View>
+      <View style={tw`bg-white`}>
+        <Text style={tw` text-center font-bold`}>{symbol}</Text>
+      </View>
+      <ScrollView style={tw`bg-white h-full`}>
+        <View style={tw`mx-3`}>
+          {groupArrays.map(itemGroup => {
+            const dateTime = day(+itemGroup[0].timeStamp * 1000).format(
+              'DD-MM-YYYY',
+            );
+            return (
+              data &&
+              data.pages[0].length > 0 && (
+                <View style={tw`mb-10`}>
+                  <Text style={tw`m-2 font-bold`}>{dateTime}</Text>
+
+                  {/* map history to history item  */}
+                  {itemGroup &&
+                    itemGroup?.map(historyItem => (
+                      // console.log(historyItem)
+                      <HistoryItem
+                        historyItem={historyItem}
+                        symbol={symbol}
+                        address={address}
+                        network={network}
+                      />
+                    ))}
+                </View>
+              )
+            );
+          })}
+        </View>
+      </ScrollView>
+    </View>
   ) : (
-    <View></View>
+    <View>{loading ? <ScreenLoading show={loading} /> : <IconNoData />}</View>
   );
 };
+const HistoryItem = props => {
+  const {isOpen, onOpen, onClose} = useDisclose();
 
-interface IItemHistory extends IHistory {
-  address: string;
-}
+  const modeColor = useDarkMode();
+  //text darkmode
+  const textColor = useTextDarkMode();
+  //grid, shadow darkmode
+  const gridColor = useGridDarkMode();
 
-const ItemHistory = (props: IItemHistory) => {
-  const navigation = useNavigation();
-  const isFrom = props.from === props.address;
-  const label = props.from === props.address ? "To" : "From";
-  const addressFrom = isFrom
-    ? shortenAddress(props.to)
-    : shortenAddress(props.from);
-  const dateTime = day(+props.timeStamp * 1000).fromNow();
+  const {historyItem, symbol, address, network} = props;
+
+  const checkFailedOrSuccess = historyItem.from === historyItem.to;
+
+  const shortAddressWhenTooLong =
+    historyItem?.from.length > 20
+      ? shortenAddressForHistory(historyItem.from)
+      : historyItem.from;
+
+  const toAddress = shortenAddressForHistory(historyItem.to);
+
+  const dateTransition = day(+historyItem.timeStamp * 1000).format(
+    'h:mm A - MMMM D, YYYY ',
+  );
+
+  const hourTransition = day(+historyItem.timeStamp * 1000).format(' h:mm A');
+
+  const takeFirstString = historyItem.from.charAt(0);
+
+  const Icon = CHAIN_ICONS[network];
+
+  const labelSend = address.toLowerCase() === historyItem.from;
+
+  const labelReceive = address.toLowerCase() === historyItem.to;
 
   return (
-    <TouchableOpacity activeOpacity={0.6}
-      onPress={() => navigation.navigate("DetailTransaction" as never)}
-      style={tw`bg-[${selectGray}] rounded-full p-3 flex-row justify-between mb-2  `}
-    >
-      <View>
-        <View style={tw`flex-row items-center`}>
-          <View style={tw`mr-2`}>
-            {isFrom ? (
-              <ArrowCircleDownIcon height={30} color={"red"} width={30} />
-            ) : (
-              <ArrowCircleUpIcon height={30} color={"green"} width={30} />
-            )}
-          </View>
-          <View>
-            <Text style={tw`font-bold`}>
-              {label} {addressFrom}
-            </Text>
-            <Text style={tw`text-gray-500`}>{dateTime}</Text>
+    <View>
+      <TouchableOpacity activeOpacity={0.6} onPress={onOpen} style={tw` `}>
+        <View
+          style={tw`rounded-full p-3 flex-row justify-between mb-2  border border-gray-200  `}>
+          <View style={tw`flex-row  items-center`}>
+            <View style={tw`w-1/5`}>
+              {historyItem?.from.length > 20 ? (
+                <View
+                  style={tw`w-10 h-10 rounded-full bg-gray-200 flex justify-center items-center`}>
+                  <Text style={tw`text-2xl font-bold uppercase`}>
+                    <Icon />
+                  </Text>
+                </View>
+              ) : (
+                <View
+                  style={tw`w-10 h-10 rounded-full bg-gray-200 flex justify-center items-center`}>
+                  <Text style={tw`text-2xl font-bold uppercase`}>
+                    {takeFirstString}
+                  </Text>
+                </View>
+              )}
+            </View>
+            <View style={tw`w-3/5`}>
+              <View style={tw`py-1`}>
+                <Text style={tw`text-black font-bold text-[12px]`}>
+                  {shortAddressWhenTooLong}
+                </Text>
+                {/* {!checkAlreadyGetDomain &&  <Text style={tw`text-black  text-[10px]`}>({toAddress})</Text>} */}
+              </View>
+              {!checkFailedOrSuccess ? (
+                <Text style={tw`text-gray-500 `}>
+                  {!checkFailedOrSuccess ? <IconCheckOK /> : <IconHighRisk />}
+                  {labelSend && ' Send '} {labelReceive && ' Receive '}
+                </Text>
+              ) : (
+                <Text style={tw`text-gray-500 `}>
+                  {!checkFailedOrSuccess ? <IconCheckOK /> : <IconHighRisk />}{' '}
+                  Failed
+                </Text>
+              )}
+            </View>
+            <View style={tw`w-1/5 text-right`}>
+              <Text style={tw`text-black py-1`}></Text>
+              <View style={tw`flex flex-row`}>
+                <Text style={tw`text-gray-500 text-[10px]`}>
+                  {hourTransition}
+                </Text>
+                <Text style={tw`m-1`}>
+                  <Icon height={10} width={10} />
+                </Text>
+              </View>
+            </View>
           </View>
         </View>
-        <View style={tw`flex-row`}></View>
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+      <Actionsheet isOpen={isOpen} onClose={onClose}>
+        <Actionsheet.Content style={tw`${gridColor}`}>
+          <ScrollView style={tw`flex flex-col w-screen px-4`}>
+            <View style={tw`mb-4`}>
+              {!checkFailedOrSuccess ? (
+                <Text
+                  style={tw` font-bold ${textColor} text-center capitalize`}>
+                  {labelSend && ' Send '} {labelReceive && ' Receive '}
+                  {network}
+                </Text>
+              ) : (
+                <Text
+                  style={tw` font-bold ${textColor} text-center capitalize`}>
+                  Failed
+                </Text>
+              )}
+
+              <View style={tw`flex flex-row my-2`}>
+                <Text style={tw`font-bold mt-2 ${textColor}`}>From</Text>
+                {/* FromAddress */}
+                <Text style={tw`font-medium ml-auto mt-2 ${textColor}`}>
+                  {shortAddressWhenTooLong}
+                </Text>
+              </View>
+              <View style={tw`flex flex-row my-2`}>
+                <Text style={tw`font-bold mt-2 ${textColor}`}>To</Text>
+                <Text style={tw`font-medium ml-auto mt-2 ${textColor}`}>
+                  {toAddress}
+                </Text>
+              </View>
+              <View style={tw`flex flex-row my-2`}>
+                <Text style={tw`font-bold mt-2 ${textColor}`}>Date</Text>
+                <Text style={tw`font-medium ml-auto mt-2 ${textColor}`}>
+                  {dateTransition}
+                </Text>
+              </View>
+              <View style={tw`flex flex-row my-2`}>
+                <Text style={tw`font-bold mt-2 ${textColor}`}>Status</Text>
+                <Text style={tw`font-medium ml-auto mt-2 ${textColor}`}>
+                  {checkFailedOrSuccess ? (
+                    <View
+                      style={tw`bg-red-100  text-xs font-semibold mr-2 px-2.5 py-0.5 rounded `}>
+                      <Text style={tw`text-red-800 `}>Failed</Text>
+                    </View>
+                  ) : (
+                    <View
+                      style={tw`bg-green-100  text-xs font-semibold mr-2 px-2.5 py-0.5 rounded `}>
+                      <Text style={tw`text-green-800 `}>Success</Text>
+                    </View>
+                  )}
+                </Text>
+              </View>
+              <View style={tw`flex flex-row my-2`}>
+                <Text style={tw`font-bold mt-2 ${textColor}`}>Security</Text>
+                <Text style={tw`mt-2 ml-auto font-medium text-green-400`}>
+                  <ShieldCheckIcon width={15} height={15} color="green" /> Safe
+                </Text>
+              </View>
+            </View>
+            <View></View>
+          </ScrollView>
+        </Actionsheet.Content>
+      </Actionsheet>
+    </View>
   );
 };
+
 export default HistoryWallets;

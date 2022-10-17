@@ -4,7 +4,7 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.namek",
+  "applicationId": "network.navara",
   "variantName": "release",
   "elements": [
     {
@@ -16,9 +16,9 @@
         }
       ],
       "attributes": [],
-      "versionCode": 1555776523,
-      "versionName": "",
-      "outputFile": "namek-arm64-v8a-release-0.0.1.23030613.apk"
+      "versionCode": 2003,
+      "versionName": "0.0.2.15530818",
+      "outputFile": "navara-arm64-v8a-release-0.0.2.15530818.apk"
     }
   ],
   "elementType": "File"

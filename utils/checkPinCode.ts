@@ -1,9 +1,10 @@
-import { IAppLockState, IPinCode } from "../data/types";
-import { localStorage, STORAGE_APP_LOCK } from "./storage"
+import * as Keychain from 'react-native-keychain';
 
 const checkPinCode = async (inputPinCode: string): Promise<boolean> => {
-     const dataPincode: IAppLockState = await localStorage.get(STORAGE_APP_LOCK) as IAppLockState;
-     return dataPincode.pinCode && dataPincode.pinCode === inputPinCode
-}
+  const credentials = await Keychain.getGenericPassword();
+  return (
+    credentials && credentials.password && credentials.password === inputPinCode
+  );
+};
 
-export default checkPinCode
+export default checkPinCode;

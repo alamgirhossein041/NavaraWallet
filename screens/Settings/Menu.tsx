@@ -1,104 +1,116 @@
-import React, { useEffect, useState } from 'react';
-import {
-  Appearance,
-  Platform,
-  ScrollView,
-  Switch,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import { tw } from '../../utils/tailwind';
-import WalletIcon from '../../assets/icons/icon-wallet.svg';
-import ExclamationIcon from '../../assets/icons/icon-exclamation.svg';
-import { primaryColor, primaryGray } from '../../configs/theme';
+import React from 'react';
+import {ScrollView, Switch, Text, View} from 'react-native';
+import {tw} from '../../utils/tailwind';
+import {primaryColor, primaryGray} from '../../configs/theme';
 import MenuItem from '../../components/MenuItem';
 import {
-  CashIcon,
   CreditCardIcon,
-  GlobeAltIcon,
   KeyIcon,
-  LocationMarkerIcon,
   LockClosedIcon,
-  MoonIcon,
-  ShareIcon,
-  SunIcon,
-  TableIcon,
-  UserAddIcon,
-  UserIcon,
 } from 'react-native-heroicons/solid';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { shareLinkInvite } from '../../utils/generatelinkInvite';
-import { PlatFormEnum } from '../../enum';
-import { COLOR_SCHEME, LIST_WALLETS } from '../../utils/storage';
-import { useLocalStorage } from '../../hooks/useLocalStorage';
-import { useDeviceContext, useAppColorScheme } from 'twrnc';
-import { useDarkMode } from '../../hooks/useDarkMode';
-import { useTextDarkMode } from '../../hooks/useTextDarkMode';
-import { useGridDarkMode } from '../../hooks/useGridDarkMode';
-import { useRecoilState } from 'recoil';
-import { listWalletsState } from '../../data/globalState/listWallets';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {useDeviceContext} from 'twrnc';
 
-const Menu = ({ navigation }) => {
-  const [isEnabled, setIsEnabled] = useState(false);
+import {useTextDarkMode} from '../../hooks/useModeDarkMode';
+import {useRecoilState} from 'recoil';
+import {listWalletsState} from '../../data/globalState/listWallets';
+import {appLockState} from '../../data/globalState/appLock';
+import {useColorMode} from 'native-base';
+const Menu = ({navigation}) => {
   const insets = useSafeAreaInsets();
   const [listWallets] = useRecoilState(listWalletsState);
-  useDeviceContext(tw, { withDeviceColorScheme: false });
-  const [colorSchemeLocalStorage, setColorSchemeLocalStorage] =
-    useLocalStorage(COLOR_SCHEME);
-  const [colorScheme, toggleColorScheme, setColorScheme] =
-    useAppColorScheme(tw);
+  useDeviceContext(tw, {withDeviceColorScheme: false});
+  const [appLock, setAppLock] = useRecoilState(appLockState);
+  const shortenAddress = (address: string) => {
+    if (address.length > 10) {
+      return address.substring(0, 5) + '...';
+    } else {
+      return address;
+    }
+  };
 
-
-
-
+  const {toggleColorMode, colorMode} = useColorMode();
 
   const menu = [
     {
       group: 'Wallets',
       items: [
         {
-          icon: <CreditCardIcon width="100%" height="100%" fill={primaryColor} />,
+          icon: (
+            <CreditCardIcon width="100%" height="100%" fill={primaryColor} />
+          ),
           name: 'Manage wallets',
           onPress: () => {
             navigation.push('ManageWallets');
           },
-          value:
-            listWallets &&
-            listWallets.filter(wallet => wallet.isSelected)[0].value,
-          next: true,
-        },
-        {
-          icon: <UserIcon width="100%" height="100%" fill={primaryColor} />,
-          name: 'Credentials',
-          onPress: () => {
-            navigation.push('ConnectAccounts');
-          },
           value: (
-            <Text style={tw`text-xs text-red-400`}>
-              01 account(s) connected
-            </Text>
-          ),
-          next: true,
-        },
-        {
-          icon: <TableIcon width="100%" height="100%" fill={primaryColor} />,
-          name: 'Backup passphrase',
-          onPress: () => {
-            navigation.navigate('SelectBackupWallet');
-          },
-          value: (
-            <View style={tw` w-4 h-4`}>
-              <ExclamationIcon width="100%" height="100%" fill="#FF6675" />
+            <View style={tw`flex flex-row items-center`}>
+              <View
+                style={tw`bg-[${primaryColor}] mx-1 rounded-full px-3 py-1`}>
+                <Text style={tw`font-bold text-white`}>
+                  {listWallets.length}
+                </Text>
+              </View>
             </View>
           ),
           next: true,
         },
+        // {
+        //   icon: <UserIcon width="100%" height="100%" fill={primaryColor} />,
+        //   name: 'Credentials',
+        //   onPress: () => {
+        //     navigation.push('ConnectAccounts');
+        //   },
+        //   value: (
+        //     <Text style={tw`text-xs text-red-400`}>
+        //       01 account(s) connected
+        //     </Text>
+        //   ),
+        //   next: true,
+        // },
+        // {
+        //   icon: <TableIcon width="100%" height="100%" fill={primaryColor} />,
+        //   name: 'Backup passphrase',
+        //   onPress: () => {
+        //     navigation.navigate('SelectBackupWallet');
+        //   },
+        //   value: (
+        //     <View style={tw`w-4 h-4 `}>
+        //       <ExclamationIcon width="100%" height="100%" fill="#FF6675" />
+        //     </View>
+        //   ),
+        //   next: true,
+        // },
       ],
     },
     {
       group: 'App Security',
       items: [
+        // {
+        //   icon: colorMode === 'light' ? (
+        //     <SunIcon width="100%" height="100%" fill="orange" />
+        //   ) : (
+        //     <MoonIcon width="100%" height="100%" fill="gray" />
+        //   ),
+        //   name: colorMode === 'light' ? 'Light Mode' : 'Dark Mode',
+        //   onPress: () => {
+        //     toggleColorMode();
+        //   },
+        //   value: <></>,
+        //   next: false,
+        // },
+        //DEVELOPMENT OPTIONS
+        // {
+        //   icon: (
+        //     <UserCircleIcon width="100%" height="100%" fill={primaryColor} />
+        //   ),
+        //   name: 'Developer Options',
+        //   onPress: () => {
+        //     navigation.navigate('DeveloperOptions');
+        //   },
+        //   value: '',
+        //   next: true,
+        // },
         {
           icon: (
             <LockClosedIcon width="100%" height="100%" fill={primaryColor} />
@@ -113,86 +125,87 @@ const Menu = ({ navigation }) => {
         {
           icon: <KeyIcon width="100%" height="100%" fill={primaryColor} />,
           name: 'Transaction signing',
-          onPress: () => { },
+          onPress: () => {},
           value: (
             <Switch
-              trackColor={{ false: primaryGray, true: primaryColor }}
+              trackColor={{false: primaryGray, true: primaryColor}}
               thumbColor="white"
-              onValueChange={value => setIsEnabled(value)}
-              value={isEnabled}
+              onValueChange={value =>
+                setAppLock({...appLock, transactionSigning: value})
+              }
+              value={appLock.transactionSigning}
             />
           ),
           next: false,
         },
       ],
     },
-    {
-      group: 'General',
-      items: [
-        {
-          icon: <GlobeAltIcon width="100%" height="100%" fill={primaryColor} />,
-          name: 'Language',
-          onPress: () => { },
-          value: 'English',
-          next: true,
-        },
-        {
-          icon: <CashIcon width="100%" height="100%" fill={primaryColor} />,
-          name: 'Currency',
-          onPress: () => { },
-          value: 'USD',
-          next: true,
-        },
-        {
-          icon: (
-            <LocationMarkerIcon
-              width="100%"
-              height="100%"
-              fill={primaryColor}
-            />
-          ),
-          name: 'Address book',
-          onPress: () => { },
-          value: '',
-          next: true,
-        },
 
-      ],
-    },
-    {
-      group: 'Activities',
-      items: [
-        {
-          icon: <UserAddIcon width="100%" height="100%" fill={primaryColor} />,
-          name: 'Invite friends',
-          onPress: () => shareLinkInvite(),
-          value: <></>,
-          next: true,
-        },
-        Platform.OS === PlatFormEnum.IOS && {
-          icon: <ShareIcon width="100%" height="100%" fill={primaryColor} />,
-          name: 'Airdrop',
-          onPress: () => { },
-          value: <></>,
-          next: true,
-        },
-      ],
-    },
+    // {
+    //   group: 'General',
+    //   items: [
+    //     {
+    //       icon: <GlobeAltIcon width="100%" height="100%" fill={primaryColor} />,
+    //       name: 'Language',
+    //       onPress: () => {},
+    //       value: 'English',
+    //       next: true,
+    //     },
+    //     {
+    //       icon: <CashIcon width="100%" height="100%" fill={primaryColor} />,
+    //       name: 'Currency',
+    //       onPress: () => {},
+    //       value: 'USD',
+    //       next: true,
+    //     },
+    //     {
+    //       icon: (
+    //         <LocationMarkerIcon
+    //           width="100%"
+    //           height="100%"
+    //           fill={primaryColor}
+    //         />
+    //       ),
+    //       name: 'Address book',
+    //       onPress: () => {},
+    //       value: '',
+    //       next: true,
+    //     },
+    //   ],
+    // },
+    // {
+    //   group: 'Activities',
+    //   items: [
+    //     {
+    //       icon: <UserAddIcon width="100%" height="100%" fill={primaryColor} />,
+    //       name: 'Invite friends',
+    //       onPress: () => shareLinkInvite(),
+    //       value: <></>,
+    //       next: true,
+    //     },
+    //     // Platform.OS === PlatFormEnum.IOS && {
+    //     //   icon: <ShareIcon width="100%" height="100%" fill={primaryColor} />,
+    //     //   name: 'Airdrop',
+    //     //   onPress: () => {},
+    //     //   value: <></>,
+    //     //   next: true,
+    //     // },
+    //   ],
+    // },
   ];
-  const modeColor = useDarkMode();
+
   //text darkmode
-  const textColor = useTextDarkMode();
+
   //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
+  //grid, shadow darkmode
+
   return (
-    <View style={tw`h-full flex flex-col ${modeColor}`}>
+    <View style={tw`flex flex-col h-full bg-white`}>
       {/* <HeaderScreen title="Settings" /> */}
-      <ScrollView style={tw`mb-[${insets.bottom + 60}] px-4`}>
+      <ScrollView style={tw`mb-[${insets.bottom + 60}]`}>
         {menu.map((group, index) => (
-          <View key={index} style={tw`mb-5`}>
-            <Text style={tw`text-base font-semibold px-3 ${textColor}`}>
-              {group.group}
-            </Text>
+          <View key={index} style={tw`mb-3 border-b border-gray-100`}>
+            <Text style={tw`px-3 text-base font-semibold`}>{group.group}</Text>
             {group.items.map(
               (item, index) =>
                 item.name && (

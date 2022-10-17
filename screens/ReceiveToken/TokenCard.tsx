@@ -1,17 +1,15 @@
 import React from "react";
 import { Text, View } from "react-native";
 import { tw } from "../../utils/tailwind";
-import tokens from "./TokenData";
 import { primaryColor } from "../../configs/theme";
-import { LocationMarkerIcon } from "react-native-heroicons/solid";
 import QRCode from "react-qr-code";
-import { CHAIN_ICONS, EVM_CHAINS } from "../../configs/bcNetworks";
+import { CHAIN_ICONS } from "../../configs/bcNetworks";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Clipboard from '@react-native-clipboard/clipboard';
 import toastr from "../../utils/toastr";
-import { useDarkMode } from "../../hooks/useDarkMode";
-import { useTextDarkMode } from "../../hooks/useTextDarkMode";
-import { useGridDarkMode } from "../../hooks/useGridDarkMode";
+import { useDarkMode } from "../../hooks/useModeDarkMode";
+import { useTextDarkMode } from "../../hooks/useModeDarkMode";
+import { useGridDarkMode } from "../../hooks/useModeDarkMode";
 type TokenCardProps = {
   address: string;
   symbol: string;

@@ -16,13 +16,13 @@ const shareLinkInvite = async () => {
             if (result.activityType) {
                 // shared with activity type of result.activityType
             } else {
-               toastr.success("Success")
+                toastr.success("Success")
             }
         } else if (result.action === Share.dismissedAction) {
             // dismissed
         }
     } catch (error) {
-        toastr.error(error.message);
+        toastr.error("Error");
     }
 };
 

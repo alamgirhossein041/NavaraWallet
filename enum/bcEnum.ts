@@ -1,30 +1,34 @@
 export enum NETWORK_ENVIRONMENT_ENUM {
-    MAINNET,
-    TESTNET
-};
+  MAINNET,
+  TESTNET,
+}
 
 export enum RpcProviderMethod {
-    getDefaultProvider = 'getDefaultProvider',
-    JsonRpcProvider = 'JsonRpcProvider'
+  getDefaultProvider = 'getDefaultProvider',
+  JsonRpcProvider = 'JsonRpcProvider',
 }
 
 export enum NETWORKS {
-    ETHEREUM = 'ETHEREUM',
-    POLYGON = 'POLYGON',
-    BINANCE_SMART_CHAIN = 'BINANCE_SMART_CHAIN',
-    AVALANCHE = 'AVALANCHE',
-    FANTOM = 'FANTOM',
-    AURORA = 'AURORA',
-    HARMONY = 'HARMONY',
-    // CELO = 'CELO',
-    HUOBI_CHAIN = 'HUOBI_CHAIN',
-    CRONOS = 'CRONOS',
+  ETHEREUM = 'ETHEREUM',
+  POLYGON = 'POLYGON',
+  BINANCE_SMART_CHAIN = 'BINANCE_SMART_CHAIN',
+  AVALANCHE = 'AVALANCHE',
+  FANTOM = 'FANTOM',
+  AURORA = 'AURORA',
+  HARMONY = 'HARMONY',
+  HUOBI_CHAIN = 'HUOBI_CHAIN',
+  CRONOS = 'CRONOS',
+  OPTIMISM = 'OPTIMISM',
+  ARBITRUM = 'ARBITRUM',
 
-    NEAR = 'NEAR',
-    // POLKADOT = 'POLKADOT',
-    // TERRA = 'TERRA',
-    SOLANA = 'SOLANA',
-    // BITCOIN = 'BITCOIN'
-};
+  NEAR = 'NEAR',
+  SOLANA = 'SOLANA',
 
-export const defaultEnabledNetworks = [NETWORKS.ETHEREUM, NETWORKS.BINANCE_SMART_CHAIN, NETWORKS.SOLANA, NETWORKS.NEAR];
+  // BITCOIN = 'BITCOIN'
+}
+
+export const defaultEnabledNetworks = [
+  NETWORKS.ETHEREUM,
+  NETWORKS.SOLANA,
+  NETWORKS.NEAR,
+];
