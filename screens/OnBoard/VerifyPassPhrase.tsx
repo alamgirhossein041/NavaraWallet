@@ -6,18 +6,20 @@ import HeaderScreen from '../../components/HeaderScreen';
 import {bgGray} from '../../configs/theme';
 import {useDarkMode} from '../../hooks/useModeDarkMode';
 const VerifyPassPhrase = ({navigation}) => {
-  const modeColor = useDarkMode();
   return (
-    <ScrollView scrollEnabled={false} style={tw`${modeColor} `}>
-      <View style={tw`p-5 android:pt-2  ${modeColor} min-h-full py-[10%]`}>
+    <ScrollView scrollEnabled={false} style={tw` `}>
+      <View style={tw`p-5 android:pt-2   min-h-full py-[10%]`}>
         {/* <HeaderScreen title="Verify passphrase" showBack /> */}
-        {/* <Text style={tw`text-4xl text-black dark:text-white py-5`}>
+        {/*  <Text style={tw`dark:text-white  text-4xl dark:text-white  dark:text-white py-5`}>
           Verify passphrase
         </Text> */}
         <View style={tw`flex flex-row items-center justify-between py-3`}>
-          <Text style={tw`text-lg  py-3`}>Fill your passphrase</Text>
+          <Text style={tw`dark:text-white  text-lg  py-3`}>
+            Fill your passphrase
+          </Text>
         </View>
-        <View style={tw`py-5 my-5 mx-10 bg-white  rounded-2xl `}>
+        <View
+          style={tw`py-5 my-5 mx-10 bg-white dark:bg-[#18191A]   rounded-2xl `}>
           <TextInput
             multiline
             numberOfLines={3}

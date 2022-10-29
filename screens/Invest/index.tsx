@@ -3,15 +3,11 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React, {useEffect} from 'react';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import BackButton from '../../components/BackButton';
-import {useDarkMode} from '../../hooks/useModeDarkMode';
-import {useGridDarkMode} from '../../hooks/useModeDarkMode';
-import {useLocalStorage} from '../../hooks/useLocalStorage';
-import {useTextDarkMode} from '../../hooks/useModeDarkMode';
-import {COLOR_SCHEME} from '../../utils/storage';
 import {tw} from '../../utils/tailwind';
 import AddToken from '../AddToken';
 
-import ManageNetworks from '../ManageNetworks';
+import {TouchableOpacity} from 'react-native';
+import IconRing from '../../assets/icons/icon-ring.svg';
 import ManageWallets from '../ManageWallets';
 import {
   default as ReceiveSpecificToken,
@@ -19,8 +15,6 @@ import {
 } from '../ReceiveToken';
 import ShareAddress from '../ReceiveToken/ShareAddress';
 import SubInvest from './Invest';
-import IconRing from '../../assets/icons/icon-ring.svg';
-import {TouchableOpacity, View} from 'react-native';
 
 const Invest = ({navigation, route}) => {
   const Stack = createNativeStackNavigator();
@@ -46,13 +40,7 @@ const Invest = ({navigation, route}) => {
         tabBarStyle: {},
       });
   }, [navigation, route]);
-  //text darkmode
-  const textColor = useTextDarkMode();
 
-  //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
-  const [colorSchemeRecoil, setColorSchemeRecoil] =
-    useLocalStorage(COLOR_SCHEME);
   return (
     <Stack.Navigator
       screenOptions={{
@@ -67,8 +55,8 @@ const Invest = ({navigation, route}) => {
           title: 'Invest',
           headerShown: true,
           headerTitleAlign: 'center',
-          headerStyle: tw`ml-2 ${gridColor}`,
-          headerTitleStyle: tw`ml-2 ${textColor}`,
+          headerStyle: tw`ml-2 `,
+          headerTitleStyle: tw`ml-2 `,
           headerRight: () => (
             <TouchableOpacity>
               <IconRing />
@@ -82,8 +70,8 @@ const Invest = ({navigation, route}) => {
         options={{
           headerShown: false,
           headerTitleAlign: 'center',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
+          headerStyle: tw``,
+          headerTitleStyle: tw``,
         }}
       />
 
@@ -94,8 +82,8 @@ const Invest = ({navigation, route}) => {
           title: 'Add Token',
           headerShown: true,
           headerTitleAlign: 'center',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
+          headerStyle: tw``,
+          headerTitleStyle: tw``,
         }}
       />
       <Stack.Screen
@@ -105,8 +93,8 @@ const Invest = ({navigation, route}) => {
           title: 'Receive Token',
           headerShown: true,
           headerTitleAlign: 'center',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
+          headerStyle: tw``,
+          headerTitleStyle: tw``,
         }}
       />
       <Stack.Screen
@@ -116,8 +104,8 @@ const Invest = ({navigation, route}) => {
           title: 'Receive SpecificToken',
           headerShown: true,
           headerTitleAlign: 'center',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
+          headerStyle: tw``,
+          headerTitleStyle: tw``,
         }}
       />
 
@@ -128,8 +116,8 @@ const Invest = ({navigation, route}) => {
           title: 'Share Address',
           headerShown: true,
           headerTitleAlign: 'center',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
+          headerStyle: tw``,
+          headerTitleStyle: tw``,
         }}
       />
     </Stack.Navigator>

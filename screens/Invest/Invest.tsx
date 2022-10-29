@@ -39,7 +39,7 @@ const SubInvest = () => {
   const [price, setPrice] = React.useState<ChartData[]>([]);
   const [loadingPrices, setLoadingPrices] = React.useState(false);
   const [loadingBalance, setLoadingBalance] = React.useState(false);
-  console.log(price)
+  console.log(price);
   // const getPrice = useCallback(async () => {
   //   setLoadingPrices(true);
   //   const tokenId = await (
@@ -128,8 +128,10 @@ const SubInvest = () => {
               <Icon width={40} height={40} />
             </View>
             <View style={tw`flex w-1/2`}>
-              <Text style={tw`font-bold`}>{props.item.symbol}</Text>
-              <Text style={tw`capitalize text-regular`}>
+              <Text style={tw`dark:text-white  font-bold`}>
+                {props.item.symbol}
+              </Text>
+              <Text style={tw`dark:text-white  capitalize text-regular`}>
                 {props.item.network}
               </Text>
             </View>
@@ -143,7 +145,7 @@ const SubInvest = () => {
               />
             </View> */}
             <View style={tw`flex w-1/2 mt-1 mr-auto`}>
-              <Text style={tw`text-[14px] text-green-500 `}>
+              <Text style={tw`dark:text-white  text-[14px] text-green-500 `}>
                 +1,56%
                 {/* {`${+balance.toFixed(4)} ${chain.symbol}`} */}
               </Text>
@@ -168,31 +170,51 @@ const SubInvest = () => {
         />
         <View style={tw`flex flex-row w-full px-2 `}>
           <View style={tw`mr-auto`}>
-            <Text style={tw`font-thin text-[12px] text-[#8E9BAE]`}>
+            <Text
+              style={tw`dark:text-white  font-thin text-[12px] text-[#8E9BAE]`}>
               Market Cap
             </Text>
-            <Text style={tw`text-lg font-bold text-black`}>$2.5B</Text>
-            <Text style={tw`text-xs text-green-500`}>+6.15%</Text>
+            <Text
+              style={tw`dark:text-white  text-lg font-bold dark:text-white `}>
+              $2.5B
+            </Text>
+            <Text style={tw`dark:text-white  text-xs text-green-500`}>
+              +6.15%
+            </Text>
           </View>
           <View style={tw`mx-auto`}>
-            <Text style={tw`font-thin text-[12px] text-[#8E9BAE]`}>
+            <Text
+              style={tw`dark:text-white  font-thin text-[12px] text-[#8E9BAE]`}>
               24th Volumn
             </Text>
-            <Text style={tw`text-lg font-bold text-black`}>$219B</Text>
-            <Text style={tw`text-xs text-green-500`}>+1.15%</Text>
+            <Text
+              style={tw`dark:text-white  text-lg font-bold dark:text-white `}>
+              $219B
+            </Text>
+            <Text style={tw`dark:text-white  text-xs text-green-500`}>
+              +1.15%
+            </Text>
           </View>
           <View style={tw`ml-auto`}>
-            <Text style={tw`font-thin text-[12px] text-[#8E9BAE]`}>
+            <Text
+              style={tw`dark:text-white  font-thin text-[12px] text-[#8E9BAE]`}>
               BTC Dominance
             </Text>
-            <Text style={tw`text-lg font-bold text-black`}>$60%</Text>
-            <Text style={tw`text-xs text-green-500`}>+0.45%</Text>
+            <Text
+              style={tw`dark:text-white  text-lg font-bold dark:text-white `}>
+              $60%
+            </Text>
+            <Text style={tw`dark:text-white  text-xs text-green-500`}>
+              +0.45%
+            </Text>
           </View>
         </View>
 
         <View style={tw`flex flex-row w-full px-2 my-5`}>
-          <Text style={tw`text-lg font-bold`}>Favorites</Text>
-          <Text style={tw`ml-auto text-[${primaryColor}]`}>See All</Text>
+          <Text style={tw`dark:text-white  text-lg font-bold`}>Favorites</Text>
+          <Text style={tw`dark:text-white  ml-auto text-[${primaryColor}]`}>
+            See All
+          </Text>
         </View>
 
         <Carousel
@@ -213,7 +235,9 @@ const SubInvest = () => {
           );
         })} */}
         <View style={tw`flex flex-row w-full px-2 py-5`}>
-          <Text style={tw`text-lg font-bold`}>Live Prices</Text>
+          <Text style={tw`dark:text-white  text-lg font-bold`}>
+            Live Prices
+          </Text>
         </View>
         {/* {listChains.map((chain: ChainWallet, index) => {
           return (

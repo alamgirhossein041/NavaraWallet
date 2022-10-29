@@ -38,11 +38,12 @@ const AddNetwork = ({navigation}) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
   };
   return (
-    <View style={tw`h-full p-4 flex flex-col  justify-between bg-white`}>
+    <View
+      style={tw`h-full p-4 flex flex-col  justify-between bg-white dark:bg-[#18191A] `}>
       {/* <HeaderScreen
         title={`Choose network (${enabledNetwork.length}/${networks.length})`}
       /> */}
-      <Text style={tw`text-base mt-10`}>
+      <Text style={tw`dark:text-white  text-base mt-10`}>
         Choose network (${enabledNetwork.length}/${networks.length})
       </Text>
       <SearchBar

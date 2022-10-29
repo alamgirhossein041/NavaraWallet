@@ -62,9 +62,8 @@ export default function DetailChain({route, navigation}) {
     });
   }, [token]);
 
-  const modeColor = useDarkMode();
   return (
-    <ScrollView style={tw`${modeColor} h-full w-full `}>
+    <ScrollView style={tw` h-full w-full `}>
       <ShowBalanceChain chain={token} />
       <View style={tw`flex flex-row items-center justify-center mb-10`}>
         {buttonsAction.map((item, index) => (
@@ -84,20 +83,20 @@ export default function DetailChain({route, navigation}) {
 }
 const ButtonAction = ({icon, label, onPress}: ButtonProps) => {
   //background Darkmode
-  const modeColor = useDarkMode();
+
   //text darkmode
-  const textColor = useTextDarkMode();
+
   //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
+
   return (
     <View style={tw`items-center mx-2 text-center h-18 w-18 `}>
       <PressableAnimated
         activeOpacity={0.6}
-        style={tw` shadow ${gridColor} mx-3 mb-3 h-18 w-18 rounded-3xl items-center justify-center`}
+        style={tw` shadow  mx-3 mb-3 h-18 w-18 rounded-3xl items-center justify-center`}
         onPress={onPress}>
         {icon}
       </PressableAnimated>
-      <Text style={tw`${textColor}`}>{label}</Text>
+      <Text style={tw`dark:text-white  `}>{label}</Text>
     </View>
   );
 };

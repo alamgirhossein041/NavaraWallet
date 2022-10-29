@@ -54,20 +54,19 @@ export default function AddFavorite() {
     })();
   }, [browser, favoritesBrowserController, currentTab]);
 
-  const textColor = useTextDarkMode();
   return isFavorite === true ? (
     <TouchableOpacity
       onPress={handleRemoveFavorite}
       style={tw`flex-col items-center w-1/4`}>
       <StarIconAdded height={30} width={30} style={tw`m-1`} color={'gray'} />
-      <Text style={tw`${textColor}`}>Added</Text>
+      <Text style={tw`dark:text-white  `}>Added</Text>
     </TouchableOpacity>
   ) : (
     <TouchableOpacity
       onPress={handleAddFavorite}
       style={tw`flex-col items-center w-1/4`}>
       <StarIconDefault height={30} width={30} style={tw`m-1`} color={'gray'} />
-      <Text style={tw`${textColor}`}>Add Favorite</Text>
+      <Text style={tw`dark:text-white  `}>Add Favorite</Text>
     </TouchableOpacity>
   );
 }

@@ -1,12 +1,14 @@
-import axios from 'axios';
-import React, {useEffect, useState} from 'react';
-import ActionsheetSelectOption, {IOption} from './ActionsheetSelectOption';
+import React, {useState} from 'react';
+import {useQuery} from 'react-query';
 import TokenIcon from '../../components/TokenIcon';
-import {apiUrl} from '../../configs/apiUrl';
+import API from '../../data/api';
 import {IToken} from '../../data/types';
-import {useDarkMode} from '../../hooks/useModeDarkMode';
-import {useGridDarkMode} from '../../hooks/useModeDarkMode';
-import {useTextDarkMode} from '../../hooks/useModeDarkMode';
+import {
+  useDarkMode,
+  useGridDarkMode,
+  useTextDarkMode,
+} from '../../hooks/useModeDarkMode';
+import ModalSelectOption, {IOption} from './ModalSelectOption';
 
 type SelectNetworkProps = {
   value: string;
@@ -24,28 +26,34 @@ const SelectToken = ({
   chainId,
 }: SelectNetworkProps) => {
   const [searchValue, setSearchValue] = useState('');
-  const [listTokens, setListTokens] = useState<IToken[]>();
   const [options, setOptions] = useState<IOption[]>();
-  const modeColor = useDarkMode();
+
   //text darkmode
-  const textColor = useTextDarkMode();
+
   //grid, shadow darkmode
 
-  const gridColor = useGridDarkMode();
-  useEffect(() => {
-    (async () => {
-      const params = {
-        chainId: chainId,
-        limit: 20,
-        symbol: searchValue.length > 0 ? searchValue : 'normal',
-      };
+  const {
+    isLoading,
+    data: listTokens,
+    isError,
+  } = useQuery(
+    ['tokens', chainId, searchValue],
+    async (): Promise<IToken[]> => {
+      const params =
+        searchValue.length > 0
+          ? {
+              chainId: chainId,
+              symbol: searchValue.length > 0 && searchValue.toLowerCase(),
+            }
+          : {
+              chainId: chainId,
+            };
 
-      const response = await axios.get(`${apiUrl}/tokens`, {
+      const response = await API.get('/tokens', {
         params: params,
       });
 
-      const _listTokens = response.data;
-      setListTokens(_listTokens);
+      const _listTokens = response as any;
       const _options = _listTokens.map((token: IToken) => {
         return {
           label: token.symbol,
@@ -53,14 +61,16 @@ const SelectToken = ({
           iconUri: token.img,
         };
       });
-
       setOptions(_options);
-    })();
-  }, [chainId, searchValue]);
+      return _listTokens;
+    },
+  );
 
   return (
-    <ActionsheetSelectOption
+    <ModalSelectOption
       icon={<TokenIcon uri={iconUri} />}
+      loading={isLoading}
+      error={isError ? 'Cannot load' : undefined}
       iconSize="w-10 h-10"
       filterType="debounce"
       searchValue={searchValue}

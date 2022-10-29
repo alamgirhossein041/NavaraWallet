@@ -9,10 +9,14 @@ interface ICardWallet {
   index: any;
 }
 const backgroundCard = [
-  require('../../assets/backgroundCard/bg-default.png'),
-  require('../../assets/backgroundCard/bg-black.png'),
+  require('../../assets/backgroundCard/bg-13.png'),
+  require('../../assets/backgroundCard/bg-14.png'),
+  require('../../assets/backgroundCard/bg-15.png'),
+  require('../../assets/backgroundCard/bg-16.png'),
   require('../../assets/backgroundCard/bg-01.png'),
   require('../../assets/backgroundCard/bg-02.png'),
+  require('../../assets/backgroundCard/bg-17.png'),
+  require('../../assets/backgroundCard/bg-12.png'),
   require('../../assets/backgroundCard/bg-03.png'),
   require('../../assets/backgroundCard/bg-04.png'),
   require('../../assets/backgroundCard/bg-05.png'),
@@ -23,6 +27,10 @@ const backgroundCard = [
   require('../../assets/backgroundCard/bg-10.png'),
   require('../../assets/backgroundCard/bg-11.png'),
   require('../../assets/backgroundCard/bg-12.png'),
+  require('../../assets/backgroundCard/bg-12.png'),
+
+
+
 ];
 const CardWallet = memo((props: ICardWallet) => {
   const {wallet, index} = props;

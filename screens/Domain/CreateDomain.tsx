@@ -103,7 +103,7 @@ const CreateDomain = ({navigation}) => {
   };
 
   return (
-    <View style={tw`relative h-full bg-white`}>
+    <View style={tw`relative h-full bg-white dark:bg-[#18191A] `}>
       <View style={tw`px-4`}>
         <BgNameService height="250" width="100%" />
       </View>
@@ -115,16 +115,20 @@ const CreateDomain = ({navigation}) => {
           value={inputDomain.value}
           onChangeText={onChangeText}
           label="Enter your name service"
+          placeholderTextColor={'red'}
           err={inputDomain.error}
         />
         <View
-          style={tw`mx-auto my-10 items-center bg-[#F0F9FF] p-3 rounded-lg`}>
-          <View style={tw`flex flex-row`}>
+          style={tw`items-center p-3 mx-auto my-10 bg-gray-100 rounded-lg dark:bg-stone-700`}>
+          <View style={tw`flex flex-row items-center`}>
             <IconProfile width={15} height={15} fill={primaryColor} />
-            <Text style={tw`font-bold text-[14px] ml-1`}>Name Service</Text>
+            <Text
+              style={tw`dark:text-white text-gray-600 font-bold text-[14px] ml-1`}>
+              Name Service
+            </Text>
           </View>
 
-          <Text style={tw`text-center `}>
+          <Text style={tw`text-center text-gray-600 dark:text-white `}>
             Write down or copy these words in the right order and save them
             somewhere safe. Please dont screenshot or paste clipboard to other
             apps that you can’t trust. Many app haves ability to read your seed
@@ -133,7 +137,7 @@ const CreateDomain = ({navigation}) => {
         </View>
       </ScrollView>
       <View
-        style={tw`absolute flex flex-row items-center justify-center w-full px-4 bg-white bottom-5`}>
+        style={tw`absolute flex flex-row items-center justify-center w-full px-4 bg-white dark:bg-[#18191A]  bottom-5`}>
         <Button
           fullWidth
           loading={registerDomainRequest.isLoading}

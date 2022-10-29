@@ -57,14 +57,12 @@ const AddToken = ({navigation}) => {
     setStoredSelectedToken(selectedToken);
   }, [selectedToken]);
 
-  const modeColor = useDarkMode();
   //text darkmode
-  const textColor = useTextDarkMode();
+
   //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
 
   return (
-    <View style={tw`h-full flex flex-col ${modeColor}`}>
+    <View style={tw`h-full flex flex-col `}>
       {/* <HeaderScreen
         title="Add token"
         showBack
@@ -86,7 +84,7 @@ const AddToken = ({navigation}) => {
       </View>
 
       <View
-        style={tw`w-full flex-1 flex-col items-center justify-between p-4 bg-white rounded-t-3xl ${modeColor}`}>
+        style={tw`w-full flex-1 flex-col items-center justify-between p-4 bg-white dark:bg-[#18191A]  rounded-t-3xl `}>
         <ScrollView style={tw`w-full flex `}>
           <View style={tw`w-full flex flex-col items-center`}>
             <View style={tw`w-full`}>
@@ -98,7 +96,7 @@ const AddToken = ({navigation}) => {
                   ) : (
                     <>
                       {index === 0 && (
-                        <Text style={tw`text-base mb-4 ${textColor}`}>
+                        <Text style={tw`dark:text-white  text-base mb-4 `}>
                           Common tokens
                         </Text>
                       )}
@@ -109,10 +107,12 @@ const AddToken = ({navigation}) => {
                     iconPadding={''}
                     name={
                       <View style={tw`flex flex-row items-center`}>
-                        <Text style={tw`text-base dark:text-white`}>
+                        <Text
+                          style={tw`dark:text-white  text-base dark:text-white`}>
                           {token.name}
                         </Text>
-                        <Text style={tw`text-xs text-gray-500 dark:text-white`}>
+                        <Text
+                          style={tw`dark:text-white  text-xs text-gray-500 dark:text-white`}>
                           ({token.symbol})
                         </Text>
                       </View>

@@ -76,10 +76,12 @@ const HistoryWallets = props => {
   // end groupByArray
   return data && data.pages[0].length > 0 ? (
     <View>
-      <View style={tw`bg-white`}>
-        <Text style={tw` text-center font-bold`}>{symbol}</Text>
+      <View style={tw`bg-white dark:bg-[#18191A] `}>
+        <Text style={tw`dark:text-white   text-center font-bold`}>
+          {symbol}
+        </Text>
       </View>
-      <ScrollView style={tw`bg-white h-full`}>
+      <ScrollView style={tw`bg-white dark:bg-[#18191A]  h-full`}>
         <View style={tw`mx-3`}>
           {groupArrays.map(itemGroup => {
             const dateTime = day(+itemGroup[0].timeStamp * 1000).format(
@@ -89,7 +91,9 @@ const HistoryWallets = props => {
               data &&
               data.pages[0].length > 0 && (
                 <View style={tw`mb-10`}>
-                  <Text style={tw`m-2 font-bold`}>{dateTime}</Text>
+                  <Text style={tw`dark:text-white  m-2 font-bold`}>
+                    {dateTime}
+                  </Text>
 
                   {/* map history to history item  */}
                   {itemGroup &&
@@ -116,11 +120,9 @@ const HistoryWallets = props => {
 const HistoryItem = props => {
   const {isOpen, onOpen, onClose} = useDisclose();
 
-  const modeColor = useDarkMode();
   //text darkmode
-  const textColor = useTextDarkMode();
+
   //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
 
   const {historyItem, symbol, address, network} = props;
 
@@ -157,14 +159,16 @@ const HistoryItem = props => {
               {historyItem?.from.length > 20 ? (
                 <View
                   style={tw`w-10 h-10 rounded-full bg-gray-200 flex justify-center items-center`}>
-                  <Text style={tw`text-2xl font-bold uppercase`}>
+                  <Text
+                    style={tw`dark:text-white  text-2xl font-bold uppercase`}>
                     <Icon />
                   </Text>
                 </View>
               ) : (
                 <View
                   style={tw`w-10 h-10 rounded-full bg-gray-200 flex justify-center items-center`}>
-                  <Text style={tw`text-2xl font-bold uppercase`}>
+                  <Text
+                    style={tw`dark:text-white  text-2xl font-bold uppercase`}>
                     {takeFirstString}
                   </Text>
                 </View>
@@ -172,30 +176,31 @@ const HistoryItem = props => {
             </View>
             <View style={tw`w-3/5`}>
               <View style={tw`py-1`}>
-                <Text style={tw`text-black font-bold text-[12px]`}>
+                <Text
+                  style={tw`dark:text-white  dark:text-white  font-bold text-[12px]`}>
                   {shortAddressWhenTooLong}
                 </Text>
-                {/* {!checkAlreadyGetDomain &&  <Text style={tw`text-black  text-[10px]`}>({toAddress})</Text>} */}
+                {/* {!checkAlreadyGetDomain &&   <Text style={tw`dark:text-white  dark:text-white   text-[10px]`}>({toAddress})</Text>} */}
               </View>
               {!checkFailedOrSuccess ? (
-                <Text style={tw`text-gray-500 `}>
+                <Text style={tw`dark:text-white  text-gray-500 `}>
                   {!checkFailedOrSuccess ? <IconCheckOK /> : <IconHighRisk />}
                   {labelSend && ' Send '} {labelReceive && ' Receive '}
                 </Text>
               ) : (
-                <Text style={tw`text-gray-500 `}>
+                <Text style={tw`dark:text-white  text-gray-500 `}>
                   {!checkFailedOrSuccess ? <IconCheckOK /> : <IconHighRisk />}{' '}
                   Failed
                 </Text>
               )}
             </View>
             <View style={tw`w-1/5 text-right`}>
-              <Text style={tw`text-black py-1`}></Text>
+              <Text style={tw`dark:text-white  dark:text-white  py-1`}></Text>
               <View style={tw`flex flex-row`}>
-                <Text style={tw`text-gray-500 text-[10px]`}>
+                <Text style={tw`dark:text-white  text-gray-500 text-[10px]`}>
                   {hourTransition}
                 </Text>
-                <Text style={tw`m-1`}>
+                <Text style={tw`dark:text-white  m-1`}>
                   <Icon height={10} width={10} />
                 </Text>
               </View>
@@ -204,60 +209,65 @@ const HistoryItem = props => {
         </View>
       </TouchableOpacity>
       <Actionsheet isOpen={isOpen} onClose={onClose}>
-        <Actionsheet.Content style={tw`${gridColor}`}>
+        <Actionsheet.Content style={tw``}>
           <ScrollView style={tw`flex flex-col w-screen px-4`}>
             <View style={tw`mb-4`}>
               {!checkFailedOrSuccess ? (
-                <Text
-                  style={tw` font-bold ${textColor} text-center capitalize`}>
+                <Text style={tw` font-bold  text-center capitalize`}>
                   {labelSend && ' Send '} {labelReceive && ' Receive '}
                   {network}
                 </Text>
               ) : (
-                <Text
-                  style={tw` font-bold ${textColor} text-center capitalize`}>
+                <Text style={tw` font-bold  text-center capitalize`}>
                   Failed
                 </Text>
               )}
 
               <View style={tw`flex flex-row my-2`}>
-                <Text style={tw`font-bold mt-2 ${textColor}`}>From</Text>
+                <Text style={tw`dark:text-white  font-bold mt-2 `}>From</Text>
                 {/* FromAddress */}
-                <Text style={tw`font-medium ml-auto mt-2 ${textColor}`}>
+                <Text style={tw`dark:text-white  font-medium ml-auto mt-2 `}>
                   {shortAddressWhenTooLong}
                 </Text>
               </View>
               <View style={tw`flex flex-row my-2`}>
-                <Text style={tw`font-bold mt-2 ${textColor}`}>To</Text>
-                <Text style={tw`font-medium ml-auto mt-2 ${textColor}`}>
+                <Text style={tw`dark:text-white  font-bold mt-2 `}>To</Text>
+                <Text style={tw`dark:text-white  font-medium ml-auto mt-2 `}>
                   {toAddress}
                 </Text>
               </View>
               <View style={tw`flex flex-row my-2`}>
-                <Text style={tw`font-bold mt-2 ${textColor}`}>Date</Text>
-                <Text style={tw`font-medium ml-auto mt-2 ${textColor}`}>
+                <Text style={tw`dark:text-white  font-bold mt-2 `}>Date</Text>
+                <Text style={tw`dark:text-white  font-medium ml-auto mt-2 `}>
                   {dateTransition}
                 </Text>
               </View>
               <View style={tw`flex flex-row my-2`}>
-                <Text style={tw`font-bold mt-2 ${textColor}`}>Status</Text>
-                <Text style={tw`font-medium ml-auto mt-2 ${textColor}`}>
+                <Text style={tw`dark:text-white  font-bold mt-2 `}>Status</Text>
+                <Text style={tw`dark:text-white  font-medium ml-auto mt-2 `}>
                   {checkFailedOrSuccess ? (
                     <View
                       style={tw`bg-red-100  text-xs font-semibold mr-2 px-2.5 py-0.5 rounded `}>
-                      <Text style={tw`text-red-800 `}>Failed</Text>
+                      <Text style={tw`dark:text-white  text-red-800 `}>
+                        Failed
+                      </Text>
                     </View>
                   ) : (
                     <View
                       style={tw`bg-green-100  text-xs font-semibold mr-2 px-2.5 py-0.5 rounded `}>
-                      <Text style={tw`text-green-800 `}>Success</Text>
+                      <Text style={tw`dark:text-white  text-green-800 `}>
+                        Success
+                      </Text>
                     </View>
                   )}
                 </Text>
               </View>
               <View style={tw`flex flex-row my-2`}>
-                <Text style={tw`font-bold mt-2 ${textColor}`}>Security</Text>
-                <Text style={tw`mt-2 ml-auto font-medium text-green-400`}>
+                <Text style={tw`dark:text-white  font-bold mt-2 `}>
+                  Security
+                </Text>
+                <Text
+                  style={tw`dark:text-white  mt-2 ml-auto font-medium text-green-400`}>
                   <ShieldCheckIcon width={15} height={15} color="green" /> Safe
                 </Text>
               </View>

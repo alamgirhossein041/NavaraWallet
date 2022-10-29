@@ -3,11 +3,6 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React, {useEffect} from 'react';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import BackButton from '../../components/BackButton';
-import {useDarkMode} from '../../hooks/useModeDarkMode';
-import {useGridDarkMode} from '../../hooks/useModeDarkMode';
-import {useLocalStorage} from '../../hooks/useLocalStorage';
-import {useTextDarkMode} from '../../hooks/useModeDarkMode';
-import {COLOR_SCHEME} from '../../utils/storage';
 import {tw} from '../../utils/tailwind';
 import AddToken from '../AddToken';
 
@@ -18,11 +13,6 @@ import {
   default as ReceiveToken,
 } from '../ReceiveToken';
 import ShareAddress from '../ReceiveToken/ShareAddress';
-// import AppLock from './AppLock/AppLock';
-// import EnableAppLock from './AppLock/EnableAppLock';
-// import ConnectedAccounts from './ConnectAccounts';
-// import DeveloperOptions from './DeveloperOptions/DeveloperOptions';
-// import Menu from './Menu';
 
 const More = ({navigation, route}) => {
   const Stack = createNativeStackNavigator();
@@ -48,13 +38,7 @@ const More = ({navigation, route}) => {
         tabBarStyle: {},
       });
   }, [navigation, route]);
-  //text darkmode
-  const textColor = useTextDarkMode();
 
-  //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
-  const [colorSchemeRecoil, setColorSchemeRecoil] =
-    useLocalStorage(COLOR_SCHEME);
   return (
     <Stack.Navigator
       screenOptions={{
@@ -62,7 +46,6 @@ const More = ({navigation, route}) => {
         headerShadowVisible: false,
         headerLeft: () => <BackButton />,
       }}>
-     
       <Stack.Screen
         name="ManageNetworks"
         component={ManageNetworks}
@@ -70,8 +53,8 @@ const More = ({navigation, route}) => {
           title: 'Manage Networks',
           headerShown: true,
           headerTitleAlign: 'center',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
+          headerStyle: tw``,
+          headerTitleStyle: tw``,
         }}
       />
       <Stack.Screen
@@ -80,11 +63,11 @@ const More = ({navigation, route}) => {
         options={{
           headerShown: false,
           headerTitleAlign: 'center',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
+          headerStyle: tw``,
+          headerTitleStyle: tw``,
         }}
       />
-  
+
       <Stack.Screen
         name="AddToken"
         component={AddToken}
@@ -92,8 +75,8 @@ const More = ({navigation, route}) => {
           title: 'Add Token',
           headerShown: true,
           headerTitleAlign: 'center',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
+          headerStyle: tw``,
+          headerTitleStyle: tw``,
         }}
       />
       <Stack.Screen
@@ -103,8 +86,8 @@ const More = ({navigation, route}) => {
           title: 'Receive Token',
           headerShown: true,
           headerTitleAlign: 'center',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
+          headerStyle: tw``,
+          headerTitleStyle: tw``,
         }}
       />
       <Stack.Screen
@@ -114,11 +97,11 @@ const More = ({navigation, route}) => {
           title: 'Receive SpecificToken',
           headerShown: true,
           headerTitleAlign: 'center',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
+          headerStyle: tw``,
+          headerTitleStyle: tw``,
         }}
       />
-     
+
       <Stack.Screen
         name="ShareAddress"
         component={ShareAddress}
@@ -126,11 +109,10 @@ const More = ({navigation, route}) => {
           title: 'Share Address',
           headerShown: true,
           headerTitleAlign: 'center',
-          headerStyle: tw`${gridColor}`,
-          headerTitleStyle: tw`${textColor}`,
+          headerStyle: tw``,
+          headerTitleStyle: tw``,
         }}
       />
-     
     </Stack.Navigator>
   );
 };

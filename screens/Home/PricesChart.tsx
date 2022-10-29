@@ -110,20 +110,23 @@ const PricesChart = ({chain, next, caching = false}: IChainItem) => {
       style={tw`flex-row items-center mb-4`}>
       <View style={tw`w-1/2 flex-row items-start h-full`}>
         <View style={tw`relative flex-row items-end mr-3`}>
-          <View style={tw`bg-white rounded-full`}>
+          <View style={tw`bg-white dark:bg-[#18191A]  rounded-full`}>
             <Icon width={40} height={40} />
           </View>
           <View
-            style={tw`absolute -right-1 border-2 border-white ml-0.5 bg-white rounded-full`}>
+            style={tw`absolute -right-1 border-2 border-white ml-0.5 bg-white dark:bg-[#18191A]  rounded-full`}>
             <Icon width={18} height={18} />
           </View>
         </View>
         <View>
-          <Text style={tw`text-base font-semibold`}>
+          <Text
+            style={tw`dark:text-white text-gray-800  text-base font-semibold`}>
             {capitalizeFirstLetter(chain?.network.split('_')[0])}
           </Text>
           <View style={tw`flex-row items-center`}>
-            <Text style={tw`text-xs text-gray-600 mr-1`}>{chain?.symbol}</Text>
+            <Text style={tw`dark:text-white  text-xs text-gray-600 mr-1`}>
+              {chain?.symbol}
+            </Text>
             {StatusIcon('')}
           </View>
         </View>
@@ -151,9 +154,10 @@ const PricesChart = ({chain, next, caching = false}: IChainItem) => {
           )}
           <View>
             {inVisible ? (
-              <Text style={tw``}>•••••</Text>
+              <Text style={tw`dark:text-white  `}>•••••</Text>
             ) : (
-              <Text style={tw`text-xs text-gray-600 text-right`}>
+              <Text
+                style={tw`dark:text-white  text-xs text-gray-600 text-right`}>
                 {`${+chain.balance?.toFixed(4)} ${chain.symbol}`}
               </Text>
             )}

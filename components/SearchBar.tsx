@@ -51,11 +51,10 @@ const SearchBar = (props: ISearchBar) => {
     filterProperty,
   } = props;
   //background Darkmode
-  const modeColor = useDarkMode();
+
   //text darkmode
-  const textColor = useTextDarkMode();
+
   //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
 
   return (
     <TextField

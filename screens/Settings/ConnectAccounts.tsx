@@ -67,17 +67,18 @@ const ConnectedAccounts = ({navigation}) => {
       onPress: () => {},
     },
   ];
- 
-  const modeColor = useDarkMode();
+
   return (
-    <View style={tw`h-full flex flex-col  justify-between ${modeColor}`}>
+    <View style={tw`h-full flex flex-col  justify-between `}>
       {/* <HeaderScreen title="Connected accounts" showBack /> */}
       <ScrollView style={tw`w-full px-4`}>
         <View style={tw`w-full flex flex-col items-center`}>
           <View style={tw`w-full mt-6 `}>
             <View style={tw`my-8`}>
-              <Text style={tw`text-base text-red-400`}>Attention!</Text>
-              <Text style={tw`text-sm text-gray-400`}>
+              <Text style={tw`dark:text-white  text-base text-red-400`}>
+                Attention!
+              </Text>
+              <Text style={tw`dark:text-white  text-sm text-gray-400`}>
                 It requires at least 02 connected accounts for you to backup
                 passphrase and re-import your wallet. ...
               </Text>

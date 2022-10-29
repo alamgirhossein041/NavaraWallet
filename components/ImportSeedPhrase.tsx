@@ -70,10 +70,10 @@ const ImportSeedPhrase = ({navigation, route}) => {
   return (
     <View style={tw`relative flex flex-col h-full android:my-3 ios:my-3`}>
       <ScrollView scrollEnabled={false}>
-        <Text style={tw`text-2xl font-bold text-center`}>
+        <Text style={tw`dark:text-white  text-2xl font-bold text-center`}>
           Import your wallet
         </Text>
-        <Text style={tw`text-sm text-center font-regular`}>
+        <Text style={tw`dark:text-white  text-sm text-center font-regular`}>
           entering your 12 or 24 words seed phrase
         </Text>
         <View style={tw`flex flex-col `}>
@@ -106,18 +106,18 @@ const ImportSeedPhrase = ({navigation, route}) => {
         {Object.keys(errors).length !== 0 && (
           <>
             {errors.seedPhrase && errors.seedPhrase.type === 'required' && (
-              <Text style={tw`text-center text-red-500 `}>
+              <Text style={tw`dark:text-white  text-center text-red-500 `}>
                 Seed phrase is required
               </Text>
             )}
             {errors.seedPhrase && errors.seedPhrase.type === 'spaceWhite' && (
-              <Text style={tw`text-center text-red-500 `}>
+              <Text style={tw`dark:text-white  text-center text-red-500 `}>
                 Seed phrase no whitespace
               </Text>
             )}
             {errors.seedPhrase &&
               errors.seedPhrase.type === 'checkMnemonic' && (
-                <Text style={tw`text-center text-red-500 `}>
+                <Text style={tw`dark:text-white  text-center text-red-500 `}>
                   Invalid Seed phrase
                 </Text>
               )}
@@ -125,7 +125,10 @@ const ImportSeedPhrase = ({navigation, route}) => {
         )}
         <View style={tw`flex-row items-center justify-end my-1`}>
           <TouchableOpacity style={tw`mx-3`} onPress={fetchCopiedText}>
-            <Text style={tw`font-bold text-black uppercase`}>Paste</Text>
+            <Text
+              style={tw`dark:text-white  font-bold dark:text-white  uppercase`}>
+              Paste
+            </Text>
           </TouchableOpacity>
         </View>
         <View style={tw`flex flex-col `}>
@@ -133,7 +136,7 @@ const ImportSeedPhrase = ({navigation, route}) => {
             <ScanQR onValueScaned={handleResultQrScan} />
           </View>
 
-          <Text style={tw`text-center py-2`}>
+          <Text style={tw`dark:text-white  text-center py-2`}>
             or scan with QR code from other wallets
           </Text>
         </View>

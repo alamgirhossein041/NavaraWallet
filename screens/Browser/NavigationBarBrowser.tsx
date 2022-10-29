@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import {View, Text, TouchableOpacity, Animated} from 'react-native';
+import {View, Text, TouchableOpacity, Animated, Alert} from 'react-native';
 import React, {memo, useEffect, useRef} from 'react';
 import {tw} from '../../utils/tailwind';
 import {
@@ -21,9 +21,11 @@ interface INavigationBarBrowserProps {
   openManageTabs?: () => void;
   tabId: number;
   url: string;
+  tabData;
 }
 const NavigationBarBrowser = memo((props: INavigationBarBrowserProps) => {
-  const {goBack, goNext, openManageTabs, isShow, url} = props;
+  const {goBack, goNext, openManageTabs, isShow, url, gotoHomePage, tabData} =
+    props;
   const {createTabBrowser} = useTabBrowser();
   const browser = useRecoilValue(browserState);
   const handleShareUrl = async () => {
@@ -37,14 +39,26 @@ const NavigationBarBrowser = memo((props: INavigationBarBrowserProps) => {
   };
   const navbarItems = [
     {
-      icon: <ChevronLeftIcon fill="gray" width={35} height={35} />,
+      icon: (
+        <ChevronLeftIcon
+          fill={url === NEW_TAB ? '#e8e8e8' : 'gray'}
+          width={35}
+          height={35}
+        />
+      ),
       onPress: () => {
         goBack();
       },
     },
 
     {
-      icon: <ChevronRightIcon fill="gray" width={35} height={35} />,
+      icon: (
+        <ChevronRightIcon
+          fill={!tabData?.canGoForward ? '#e8e8e8' : 'gray'}
+          width={35}
+          height={35}
+        />
+      ),
       onPress: () => {
         goNext();
       },
@@ -60,12 +74,13 @@ const NavigationBarBrowser = memo((props: INavigationBarBrowserProps) => {
               borderColor: 'gray',
             },
           ]}>
-          <Text style={tw`text-gray-500`}>
+          <Text style={tw`text-gray-500 dark:text-white`}>
             {browser.length <= 99 ? browser.length : `${99}+`}
           </Text>
         </View>
       ),
       onPress: () => openManageTabs(),
+      onLongPress: () => gotoHomePage(),
     },
     {
       icon: <ShareIcon fill="gray" width={25} height={25} />,
@@ -97,7 +112,7 @@ const NavigationBarBrowser = memo((props: INavigationBarBrowserProps) => {
   return (
     <Animated.View
       style={[
-        tw`absolute bottom-0 left-0 right-0 flex-row items-center justify-between p-2 bg-white shadow ios:pb-7`,
+        tw`absolute bottom-0 left-0 right-0 flex-row items-center justify-between p-2 bg-white dark:bg-[#18191A]  shadow ios:pb-7`,
         {
           transform: [
             {

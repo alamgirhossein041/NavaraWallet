@@ -1,53 +1,52 @@
-import React from "react";
-import { Text, View } from "react-native";
-import { tw } from "../../utils/tailwind";
-import { primaryColor } from "../../configs/theme";
-import QRCode from "react-qr-code";
-import { CHAIN_ICONS } from "../../configs/bcNetworks";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import React from 'react';
+import {Text, View} from 'react-native';
+import {tw} from '../../utils/tailwind';
+import {primaryColor} from '../../configs/theme';
+import QRCode from 'react-qr-code';
+import {CHAIN_ICONS} from '../../configs/bcNetworks';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 import Clipboard from '@react-native-clipboard/clipboard';
-import toastr from "../../utils/toastr";
-import { useDarkMode } from "../../hooks/useModeDarkMode";
-import { useTextDarkMode } from "../../hooks/useModeDarkMode";
-import { useGridDarkMode } from "../../hooks/useModeDarkMode";
+import toastr from '../../utils/toastr';
+import {useDarkMode} from '../../hooks/useModeDarkMode';
+import {useTextDarkMode} from '../../hooks/useModeDarkMode';
+import {useGridDarkMode} from '../../hooks/useModeDarkMode';
 type TokenCardProps = {
   address: string;
   symbol: string;
   icon: JSX.Element;
-  network: string
+  network: string;
 };
 
-const TokenCard = ({ token, amount }) => {
-
-  const Icon = CHAIN_ICONS[token.network]
+const TokenCard = ({token, amount}) => {
+  const Icon = CHAIN_ICONS[token.network];
   //background Darkmode
-  const modeColor = useDarkMode();
+
   //text darkmode
-  const textColor = useTextDarkMode();
+
   //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
+
   return (
-    <View style={tw`w-full p-4  rounded-3xl ${modeColor}`}>
+    <View style={tw`w-full p-4  rounded-3xl `}>
       <View style={tw`w-full h-full flex-col items-center justify-center`}>
         <View style={tw`flex flex-row items-center`}>
-          <View style={tw` w-8 h-8 rounded-full ${modeColor} mr-1`}>
+          <View style={tw` w-8 h-8 rounded-full  mr-1`}>
             <Icon width={30} height={30} />
           </View>
           {amount && (
             <Text
-              style={tw`mr-1 text-base font-semibold text-[${primaryColor}] ${textColor}`}
-            >
+              style={tw`mr-1 text-base font-semibold text-[${primaryColor}] `}>
               {amount}
             </Text>
           )}
-          <Text style={tw`text-base ${textColor}`}>{token.network}</Text>
-          <Text style={tw`text-xs text-gray-500 ${textColor}`}>({token.symbol})</Text>
+          <Text style={tw`dark:text-white  text-base `}>{token.network}</Text>
+          <Text style={tw`dark:text-white  text-xs text-gray-500 `}>
+            ({token.symbol})
+          </Text>
         </View>
 
         <View
-          style={tw`w-full flex items-center justify-center p-4 ${gridColor} rounded-3xl mt-5`}
-        >
-          <View style={tw` flex items-center justify-center p-6 ${modeColor}  ${textColor}`}>
+          style={tw`w-full flex items-center justify-center p-4  rounded-3xl mt-5`}>
+          <View style={tw` flex items-center justify-center p-6   `}>
             {/* {EVM_CHAINS.includes(token.network) ?
               <QRCode value={token.address} size={200} />
               :
@@ -63,11 +62,15 @@ const TokenCard = ({ token, amount }) => {
           >
             <LocationMarkerIcon color="white" width="100%" height="100%" />
           </View> */}
-          <TouchableOpacity activeOpacity={0.6} onPress={async () => {
-            await Clipboard.setString(token.address);
-            toastr.info("Copied")
-          }}>
-            <Text style={tw`text-sm text-center ${textColor}`}>{token.address}</Text>
+          <TouchableOpacity
+            activeOpacity={0.6}
+            onPress={async () => {
+              await Clipboard.setString(token.address);
+              toastr.info('Copied');
+            }}>
+            <Text style={tw`dark:text-white  text-sm text-center `}>
+              {token.address}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

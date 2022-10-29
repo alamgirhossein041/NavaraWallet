@@ -7,12 +7,11 @@
  * @returns
  * @example
  */
-import {Spinner, View} from 'native-base';
+import { Spinner, View } from 'native-base';
 import React from 'react';
-import {Text, TouchableHighlight} from 'react-native';
-import {BanIcon} from 'react-native-heroicons/outline';
-import {primaryColor, underLayPrimaryColor} from '../configs/theme';
-import {tw} from '../utils/tailwind';
+import { Text, TouchableHighlight } from 'react-native';
+import { underLayPrimaryColor } from '../configs/theme';
+import { tw } from '../utils/tailwind';
 import PressableAnimated from './PressableAnimated';
 
 type ButtonProps = {
@@ -36,32 +35,32 @@ const Button = ({
 }: ButtonProps) => {
   const style = {
     primary: {
-      value: tw`bg-blue-500`,
+      value: tw`bg-blue-500 border-blue-500`,
       underlayColor: underLayPrimaryColor,
       textStyle: tw`text-white`,
     },
     secondary: {
-      value: tw`bg-gray-200`,
+      value: tw`bg-gray-200 border-blue-200`,
       underlayColor: '#f5f5f5',
       textStyle: tw`text-gray-700`,
     },
     danger: {
-      value: tw`bg-red-400`,
+      value: tw`bg-red-400 border-red-400`,
       underlayColor: '#e36868',
       textStyle: tw`text-white`,
     },
     outlined: {
-      value: tw`bg-white border-2 border-blue-500`,
+      value: tw`bg-white dark:bg-[#18191A]  border-2 border-blue-500`,
       underlayColor: 'white',
       textStyle: tw`text-blue-500`,
     },
     text: {
-      value: tw``,
-      underlayColor: 'white',
+      value: tw`bg-transparent border-transparent`,
+      underlayColor: '',
       textStyle: tw`text-blue-500`,
     },
     disabled: {
-      value: tw`bg-gray-300 focus:outline-none`,
+      value: tw`bg-gray-300 border-gray-300 dark:bg-gray-700 dark:border-gray-700 focus:outline-none`,
       underlayColor: 'white',
       textStyle: tw`text-white`,
     },
@@ -72,7 +71,7 @@ const Button = ({
       component={TouchableHighlight}
       activeOpacity={0.6}
       style={[
-        tw`flex flex-row items-center justify-center w-64 p-4 mt-2 rounded-2xl`,
+        tw`flex flex-row items-center justify-center w-64 p-4 mt-2 border-2 rounded-2xl`,
         disabled || loading ? style.disabled.value : style[variant].value,
         tw`${fullWidth ? 'w-full' : 'w-auto'}`,
       ]}

@@ -37,7 +37,7 @@ const ChangePassword = ({onSuccess}) => {
         {step === 0 && (
           <View style={tw`flex-col items-center justify-center`}>
             <PinCodeInput
-              label=" Enter Current PIN Code"
+              label=" Enter Current Password"
               type="required"
               biometric={false}
               hide
@@ -49,7 +49,7 @@ const ChangePassword = ({onSuccess}) => {
           <View style={tw`flex-col items-center justify-center`}>
             <PinCodeInput
               biometric={false}
-              label=" Enter New PIN Code"
+              label=" Enter New Password"
               type="new"
               onSuccess={value => setPinCode(value)}
             />

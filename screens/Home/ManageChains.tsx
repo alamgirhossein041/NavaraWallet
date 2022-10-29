@@ -18,11 +18,10 @@ const ManageChains = () => {
   const listNetworks = Object.keys(NETWORKS);
   const [listChainsFiltered, setListChainsFiltered] = useState(listNetworks);
   //background Darkmode
-  const modeColor = useDarkMode();
+
   //text darkmode
-  const textColor = useTextDarkMode();
+
   //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
 
   const handleEnableChain = (chain: string, value: boolean) => {
     if (value) {
@@ -33,7 +32,7 @@ const ManageChains = () => {
   };
 
   return (
-    <ScrollView style={tw`flex flex-col w-full p-3 ${modeColor}`}>
+    <ScrollView style={tw`flex flex-col w-full p-3 `}>
       <SearchBar
         placeholder="Search "
         list={listNetworks}
@@ -54,7 +53,7 @@ const ManageChains = () => {
               iconPadding={''}
               name={
                 <View style={tw`flex flex-col text-left`}>
-                  <Text style={tw`text-xs ${textColor}`}>
+                  <Text style={tw`dark:text-white  text-xs `}>
                     {chain.split('_')[0]} ({symbol})
                   </Text>
                 </View>

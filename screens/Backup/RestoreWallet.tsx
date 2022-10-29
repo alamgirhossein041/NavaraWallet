@@ -101,14 +101,13 @@ const RestoreWallet = ({navigation, route}) => {
     })();
   }, [readFileContent, storedAccessToken]);
 
-  const modeColor = useDarkMode();
   //text darkmode
-  const textColor = useTextDarkMode();
+
   return (
-    <View style={tw`h-full p-5 flex justify-center items-center ${modeColor}`}>
+    <View style={tw`h-full p-5 flex justify-center items-center `}>
       {decrypting ? (
         <View style={tw`flex-row items-center`}>
-          <Text style={tw`font-medium text-center`}>
+          <Text style={tw`dark:text-white  font-medium text-center`}>
             Trying decrypt file with App's Password
           </Text>
           <Spinner size={30} color={primaryColor} />
@@ -116,19 +115,22 @@ const RestoreWallet = ({navigation, route}) => {
       ) : (
         <ScrollView style={tw`flex `}>
           {encryptedSeedPhrase ? (
-            <Text style={tw`text-lg font-semibold text-center`}>
+            <Text
+              style={tw`dark:text-white  text-lg font-semibold text-center`}>
               Seed phrase is decrypted successfully. Press "Restore" to continue
             </Text>
           ) : (
             <>
               <TextField
                 value={password}
-                labelStyle={`${textColor}`}
+                labelStyle={``}
                 onChangeText={text => setPassword(text)}
                 type="password"
                 label="Password"
               />
-              <Text style={tw`${textColor}`}>Hint: {fileContent?.hint}</Text>
+              <Text style={tw`dark:text-white  `}>
+                Hint: {fileContent?.hint}
+              </Text>
             </>
           )}
         </ScrollView>

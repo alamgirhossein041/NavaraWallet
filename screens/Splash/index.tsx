@@ -1,32 +1,38 @@
-import { StatusBar, Text } from 'native-base';
-import React, { useCallback, useEffect } from 'react';
-import { SafeAreaView, View } from 'react-native';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import {StatusBar, Text} from 'native-base';
+import React, {useCallback, useEffect} from 'react';
+import {SafeAreaView, View} from 'react-native';
+import {useRecoilState, useRecoilValue, useSetRecoilState} from 'recoil';
 import Logo from '../../assets/logo/logo-white.svg';
-import { primaryColor } from '../../configs/theme';
+import {primaryColor} from '../../configs/theme';
 import useDatabase from '../../data/database/useDatabase';
-import { listWalletsState } from '../../data/globalState/listWallets';
-import { getFromKeychain, resetKeychain } from '../../utils/keychain';
-import { tw } from '../../utils/tailwind';
-const Splash = ({ navigation }) => {
-  const { walletController, connection, setupConnection } = useDatabase();
+import {listWalletsState} from '../../data/globalState/listWallets';
+import {walletEnvironmentState} from '../../data/globalState/userData';
+import {ENVIRONMENT} from '../../global.config';
+import {useLocalStorage} from '../../hooks/useLocalStorage';
+import {getFromKeychain, resetKeychain} from '../../utils/keychain';
+import {localStorage, NETWORKS_ENVIRONMENT} from '../../utils/storage';
+import {tw} from '../../utils/tailwind';
+
+const Splash = ({navigation}) => {
+  const {walletController, connection, setupConnection} = useDatabase();
   const setListWallets = useSetRecoilState(listWalletsState);
+  const setWalletEnvironment = useSetRecoilState(walletEnvironmentState);
 
   const redirect = route => {
     navigation.replace(route);
   };
 
   useEffect(() => {
-    console.log(connection);
-
     if (!!connection) {
       (async () => {
+        const environment = await localStorage.get(NETWORKS_ENVIRONMENT);
+        setWalletEnvironment(environment as ENVIRONMENT);
         const wallets = await walletController.getWallets();
         if (wallets && wallets.length > 0) {
           setListWallets(wallets);
           const password = await getFromKeychain();
           if (!password) {
-            navigation.navigate('OnBoard', { screen: 'EnableAppLockOnBoard' });
+            navigation.navigate('OnBoard', {screen: 'EnableAppLockOnBoard'});
           } else {
             redirect('TabsNavigation');
           }

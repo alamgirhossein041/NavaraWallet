@@ -41,7 +41,7 @@ const SelectWallets = () => {
 
   return (
     <View style={tw`relative mb-5 h-55`}>
-      <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
+      <SafeAreaView style={tw`flex-1 bg-white dark:bg-[#18191A] `}>
         <View style={tw`flex-row flex-1`}>
           <Carousel
             firstItem={walletSelected.index}
@@ -89,7 +89,8 @@ const ButtonActions = () => {
   let linkTo = useLinkTo();
   return (
     <View style={tw`absolute flex-row justify-center w-full -bottom-5`}>
-      <View style={tw`flex-row w-3/4 p-2 bg-white shadow z-100 rounded-2xl`}>
+      <View
+        style={tw`flex-row w-3/4 p-2 bg-white dark:bg-[#18191A]  shadow z-100 rounded-2xl`}>
         {buttons.map((button, index) => (
           <TouchableOpacity
             key={button.label}
@@ -99,7 +100,7 @@ const ButtonActions = () => {
             {/* <View style={tw`relative bg-blue-100 rounded-full w-7 h-7`}>
            
           </View> */}
-            <Text style={tw`font-bold text-black`}>{button.label}</Text>
+            <Text style={tw`font-bold dark:text-white `}>{button.label}</Text>
           </TouchableOpacity>
         ))}
       </View>

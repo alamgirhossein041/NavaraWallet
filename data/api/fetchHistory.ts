@@ -35,7 +35,7 @@ export enum scannerModule {
 
 const scannerUrlsMainnet = {
   [NETWORKS.ETHEREUM]: 'https://api.etherscan.io/api',
-  [NETWORKS.POLYGON]: 'https://api.polygonscan.com/api',
+  // [NETWORKS.POLYGON]: 'https://api.polygonscan.com/api',
   [NETWORKS.BINANCE_SMART_CHAIN]: 'https://api.bscscan.com/api',
   [NETWORKS.FANTOM]: 'https://api.ftmscan.com/api',
   [NETWORKS.AVALANCHE]: 'https://api.snowtrace.io/api',
@@ -47,7 +47,7 @@ const scannerUrlsMainnet = {
 
 const scannerUrlTestnet = {
   [NETWORKS.ETHEREUM]: 'https://api-ropsten.etherscan.io/api',
-  [NETWORKS.POLYGON]: 'https://api-testnet.polygonscan.com/api',
+  // [NETWORKS.POLYGON]: 'https://api-testnet.polygonscan.com/api',
   [NETWORKS.BINANCE_SMART_CHAIN]: 'https://api-testnet.bscscan.com/api',
   [NETWORKS.FANTOM]: 'https://api-testnet.ftmscan.com/api',
   [NETWORKS.AVALANCHE]: 'https://api-testnet.snowtrace.io/api',

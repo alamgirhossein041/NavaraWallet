@@ -17,14 +17,13 @@ export default function ShowIconChainSelected({chain}: {chain: IChain}) {
   const balance = balanceChains[chain.network] || 0;
   const Icon = CHAIN_ICONS[chain.network];
   //text darkmode
-  const textColor = useTextDarkMode();
+
   //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
+
   return (
     <View>
-      <View
-        style={tw`  rounded-full `}>
-        <Icon height={24} width={24} /> 
+      <View style={tw`  rounded-full `}>
+        <Icon height={24} width={24} />
       </View>
       {/* <TouchableOpacity onPress={() => setInVisible(!inVisible)}>
         {inVisible ? (
@@ -40,16 +39,16 @@ export default function ShowIconChainSelected({chain}: {chain: IChain}) {
       </TouchableOpacity>
       <View style={tw`flex-row justify-center w-full`}>
         <View
-          style={tw`w-full flex-row items-center justify-center mb-4 h-17 w-17 rounded-full bg-white shadow`}>
+          style={tw`w-full flex-row items-center justify-center mb-4 h-17 w-17 rounded-full bg-white dark:bg-[#18191A]  shadow`}>
           <Icon height={50} width={50} />
         </View>
       </View>
       {!inVisible ? (
-        <Text style={tw`text-center text-2xl mb-4 ${textColor} font-bold`}>
+         <Text style={tw`dark:text-white  text-center text-2xl mb-4  font-bold`}>
           {balance === 0 ? 0 : balance.toFixed(4)} {chain.symbol}
         </Text>
       ) : (
-        <Text style={tw`text-center text-2xl mb-4 ${textColor} font-bold`}>
+         <Text style={tw`dark:text-white  text-center text-2xl mb-4  font-bold`}>
           ••••• {chain.symbol}
         </Text>
       )} */}

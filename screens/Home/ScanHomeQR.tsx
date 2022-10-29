@@ -1,33 +1,38 @@
 import React, {useState, useEffect} from 'react';
 import IconScanInput from '../../assets/icons/icon-scanner.svg';
 import {RNCamera} from 'react-native-camera';
-import {Text, View, StyleSheet, Button, TouchableOpacity, Alert} from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  Button,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
 import {tw} from '../../utils/tailwind';
 import {Modal, useDisclose} from 'native-base';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import {primaryColor} from '../../configs/theme';
 import {XIcon} from 'react-native-heroicons/solid';
-import { useTextDarkMode } from '../../hooks/useModeDarkMode';
-import { useGridDarkMode } from '../../hooks/useModeDarkMode';
-import { useDarkMode } from '../../hooks/useModeDarkMode';
-import { useNavigation } from '@react-navigation/native';
+import {useTextDarkMode} from '../../hooks/useModeDarkMode';
+import {useGridDarkMode} from '../../hooks/useModeDarkMode';
+import {useDarkMode} from '../../hooks/useModeDarkMode';
+import {useNavigation} from '@react-navigation/native';
 const ScanHomeQR = ({onValueScaned}: any) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const {isOpen, onOpen, onClose} = useDisclose();
   const navigation = useNavigation();
 
-  const handleSend=()=>{
-    
-    
-    onOpen()
+  const handleSend = () => {
+    onOpen();
     // navigation.navigate("SendingToken")
-  }
+  };
 
   const handleBarCodeScanned = (data: string) => {
     setScanned(true);
     onClose();
-   
+
     // onValueScaned(data);
   };
   const onSuccess = (e: any) => {
@@ -36,14 +41,16 @@ const ScanHomeQR = ({onValueScaned}: any) => {
     handleBarCodeScanned(e.data);
   };
   //text darkmode
-  const textColor = useTextDarkMode();
+
   //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
-  const modeColor = useDarkMode();
+
   return (
     <View>
       <View style={tw`flex-1 `}></View>
-      <TouchableOpacity activeOpacity={0.6} onPress={handleSend} style={tw`${gridColor} rounded-lg`} >
+      <TouchableOpacity
+        activeOpacity={0.6}
+        onPress={handleSend}
+        style={tw` rounded-lg`}>
         <IconScanInput width={25} height={25} />
       </TouchableOpacity>
       <Modal

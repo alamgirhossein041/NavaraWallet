@@ -43,13 +43,18 @@ const ListFavorite = React.memo(({openLink}: any) => {
   return (
     <View style={tw`mt-2`}>
       <View style={tw`flex flex-row`}>
-        <Text style={tw`mb-1 text-lg font-bold`}>Favorite</Text>
+        <Text style={tw`dark:text-white  mb-1 text-lg font-bold`}>
+          Favorite
+        </Text>
         <TouchableOpacity
           style={tw`mt-1 ml-auto`}
           onPress={() => {
             navigation.navigate('FavoritesList' as never);
           }}>
-          <Text style={tw`text-[14px] text-[${primaryColor}] `}>See all</Text>
+          <Text
+            style={tw`dark:text-white  text-[14px] text-[${primaryColor}] `}>
+            See all
+          </Text>
         </TouchableOpacity>
       </View>
 

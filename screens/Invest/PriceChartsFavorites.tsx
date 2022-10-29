@@ -128,15 +128,17 @@ const PriceChartsFavorites = ({chain, next, caching = false}: IChainItem) => {
           ]}>
           <View style={tw`flex-row`}>
             <View style={tw` w-1/3 flex-row items-end mr-3`}>
-              <View style={tw`bg-white rounded-full`}>
+              <View style={tw`bg-white dark:bg-[#18191A]  rounded-full`}>
                 <Icon width={40} height={40} />
               </View>
             </View>
             <View style={tw`w-2/3 flex`}>
-              <Text style={tw`text-base font-semibold`}>
+              <Text style={tw`dark:text-white  text-base font-semibold`}>
                 {capitalizeFirstLetter(chain.network.split('_')[0])}
               </Text>
-              <Text style={tw`text-xs text-gray-600`}>{chain.symbol}</Text>
+              <Text style={tw`dark:text-white  text-xs text-gray-600`}>
+                {chain.symbol}
+              </Text>
             </View>
           </View>
 
@@ -155,7 +157,7 @@ const PriceChartsFavorites = ({chain, next, caching = false}: IChainItem) => {
               />
             </View>
             <View style={tw`w-1/2 flex mr-auto mt-1`}>
-              <Text style={tw`text-xs text-green-500 `}>
+              <Text style={tw`dark:text-white  text-xs text-green-500 `}>
                 +1,56%
                 {/* {`${+balance.toFixed(4)} ${chain.symbol}`} */}
               </Text>
@@ -177,7 +179,7 @@ const PriceChartsFavorites = ({chain, next, caching = false}: IChainItem) => {
                 <Skeleton rounded="lg" w={'8'} h={'3'} />
               ) : (
                 <View>
-                  <Text style={tw`text-xs text-gray-600 text-right`}>
+                   <Text style={tw`dark:text-white  text-xs text-gray-600 text-right`}>
                     {`${+balance.toFixed(4)} ${chain.symbol}`}
                   </Text>
                 </View>

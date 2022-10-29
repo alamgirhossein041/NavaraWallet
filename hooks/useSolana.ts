@@ -9,49 +9,38 @@ import {
   sendAndConfirmTransaction,
 } from '@solana/web3.js';
 import {WalletInterface, WalletProps} from '../data/types';
-import {SOLANA_CLUSTER_API_URL} from '../configs/bcNetworks';
+import {DEVIVERATION_PATH} from '../configs/bcNetworks';
 import {Buffer} from 'buffer';
 import bs58 from 'bs58';
-import {NETWORKS} from '../enum/bcEnum';
-import * as bip39 from 'bip39'
-import { normalizeSeedPhrase } from '../utils/mnemonic';
+import {NETWORKS, NETWORK_ENVIRONMENT_ENUM} from '../enum/bcEnum';
+import * as bip39 from 'bip39';
+import * as bip32 from 'bip32';
+import {normalizeSeedPhrase} from '../utils/mnemonic';
+import {getSolanaClusterApiUrl, useBcNetworks} from './useBcNetworks';
 
 // Create connection
-function createConnection() {
-  return new Connection(SOLANA_CLUSTER_API_URL);
+function createConnection(apiUrl: string) {
+  return new Connection(apiUrl);
 }
 
-const keypairFromSeed = (seed: string) => {
-  // nacl.sign.keyPair.fromSeed()
-  const hex = Uint8Array.from(Buffer.from(seed));
-  const keyPair = Keypair.fromSeed(hex.slice(0, 32));
-  return keyPair;
-};
-
-const mnemonicToSeed = (mnemonic: string) => {
-  const seed = bip39.mnemonicToEntropy(normalizeSeedPhrase(mnemonic));
-  return seed;
-};
-
-export function getSolanaKeypair(mnemonic: string) {
-  try {
-    const seed = mnemonicToSeed(mnemonic);
-    let keypair = keypairFromSeed(seed);
+export const createSolanaWallet = (seed: Buffer, accountIndex = 0) => {
+  const path = DEVIVERATION_PATH[NETWORKS.SOLANA](accountIndex);
+  const derivedSeed = bip32.fromSeed(seed).derivePath(path).privateKey;
+  const keypair = Keypair.fromSeed(derivedSeed);
   return {
-    ...keypair,
     address: keypair.publicKey.toBase58(),
     network: NETWORKS.SOLANA,
     publicKey: keypair.publicKey.toBase58(),
     privateKey: bs58.encode(keypair.secretKey),
   };
-  } catch (e) {
-    console.log(e, "error")
-  }
-  
-}
+};
 
-export const getSolanaBalance = async (address: string) => {
-  const connection = createConnection();
+export const getSolanaBalance = async (
+  address: string,
+  env: NETWORK_ENVIRONMENT_ENUM,
+) => {
+  const SOLANA_CLUSTER_API_URL = getSolanaClusterApiUrl(env);
+  const connection = createConnection(SOLANA_CLUSTER_API_URL);
   const pk = new PublicKey(address);
   const balance = await connection.getBalance(pk);
   return {
@@ -61,32 +50,29 @@ export const getSolanaBalance = async (address: string) => {
   };
 };
 
-const useSolana = ({privateKey}: WalletProps): WalletInterface => {
+const useSolana = (privateKey: string): WalletInterface => {
   const [error, setError] = useState<string>();
   const [address, setAddress] = useState('');
   const [connection, setConnection] = useState<Connection>();
   const [keypair, setKeypair] = useState<Keypair>();
+  const {SOLANA_CLUSTER_API_URL} = useBcNetworks();
 
   useEffect(() => {
-    if (!privateKey) {
-      setError('privateKey is null');
-      return;
-    }
     try {
       // const secretKey = bs58.decode(privateKey)
       // let keypair = !!privateKey ? Keypair.fromSecretKey(secretKey) : getSolanaKeypair(mnemonic);
-      let keypair = Keypair.fromSecretKey(
+      let _keypair = Keypair.fromSecretKey(
         new Uint8Array(bs58.decode(privateKey)),
       );
 
-      const connection = createConnection();
-      setKeypair(keypair);
-      setAddress(keypair.publicKey.toBase58());
-      setConnection(connection);
+      const _connection = createConnection(SOLANA_CLUSTER_API_URL);
+      setKeypair(_keypair);
+      setAddress(_keypair.publicKey.toBase58());
+      setConnection(_connection);
     } catch (e: any) {
       setError(e.message);
     }
-  }, [privateKey]);
+  }, [privateKey, SOLANA_CLUSTER_API_URL]);
 
   const getBalanceOf = async (publicKey: string) => {
     let walletPublicKey = new PublicKey(publicKey);

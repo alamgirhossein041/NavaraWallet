@@ -7,12 +7,10 @@ import {useDarkMode} from '../../hooks/useModeDarkMode';
 import ListChainsChart from '../Home/ListChainsChart';
 
 const ReceiveToken = ({navigation}) => {
-  const modeColor = useDarkMode();
   return (
-    <View style={tw`h-full flex flex-col ${modeColor}`}>
-      <View
-        style={tw`w-full  flex-1 flex-col items-center justify-between shadow  rounded-t-3xl ${modeColor}`}>
-        <ScrollView style={tw`w-full mb-5 ${modeColor}`}>
+    <View style={tw`flex flex-col h-full `}>
+      <View style={tw`flex-col justify-between flex-1 w-full`}>
+        <ScrollView style={tw`w-full mb-5 `}>
           <Loading type={'spin'}>
             <ListChainsChart next="ReceiveSpecificToken" caching />
           </Loading>

@@ -43,10 +43,8 @@ const EnableAppLock = ({onSuccess}) => {
     setLoading(false);
   };
   //text darkmode
-  const textColor = useTextDarkMode();
+
   //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
-  const modeColor = useDarkMode();
 
   return (
     <View style={tw`items-center flex-1`}>

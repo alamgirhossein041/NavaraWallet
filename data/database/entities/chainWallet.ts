@@ -28,6 +28,6 @@ export class ChainWallet {
   @Column()
   symbol: string;
 
-  @Column({nullable: true})
+  @Column({nullable: true, default: 0})
   balance?: number;
 }

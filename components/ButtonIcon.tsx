@@ -1,6 +1,6 @@
-import { TouchableOpacity } from "react-native";
-import { tw } from "../utils/tailwind";
-import React, { useState } from 'react';
+import {TouchableOpacity} from 'react-native';
+import {tw} from '../utils/tailwind';
+import React, {useState} from 'react';
 const ButtonIcon = ({
   icon,
   onPress,
@@ -11,13 +11,13 @@ const ButtonIcon = ({
   style?: any;
 }) => {
   return (
-    <TouchableOpacity activeOpacity={0.6}
+    <TouchableOpacity
+      activeOpacity={0.6}
       onPress={onPress}
-      style={tw`rounded-full bg-white p-1 ${style} mx-2`}
-    >
+      style={tw`rounded-full bg-white dark:bg-[#18191A]  p-1 ${style} mx-2`}>
       {icon}
     </TouchableOpacity>
   );
 };
 
-export default ButtonIcon
+export default ButtonIcon;

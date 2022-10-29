@@ -29,20 +29,19 @@ const ModalResult = ({
   fromSymbol,
   toSymbol,
 }: IModalProps) => {
-  const modeColor = useDarkMode();
   //text darkmode
-  // const textColor = useTextDarkMode();
+  //
   //grid, shadow darkmode
-  // const gridColor = useGridDarkMode();
+  //
   return (
     <>
       <Modal isOpen={showingModal === 'confirmation'}>
         <Modal.Content
-          style={tw`p-6 flex flex-col items-center justify-center rounded-3xl ${modeColor}`}>
+          style={tw`p-6 flex flex-col items-center justify-center rounded-3xl `}>
           {loading ? (
             <View style={tw`flex items-center`}>
               <Spinner color={primaryColor} size="lg" />
-              <Text style={tw`text-center text-gray-700 mt-3`}>
+              <Text style={tw`dark:text-white  text-center text-gray-700 mt-3`}>
                 {`Swapping ${fromSymbol} for ${toSymbol}...`}
               </Text>
             </View>
@@ -55,7 +54,7 @@ const ModalResult = ({
                   fill="#FFE600"
                 />
               </View>
-              <Text style={tw`text-sm`}>{message}</Text>
+              <Text style={tw`dark:text-white  text-sm`}>{message}</Text>
               <View style={tw`flex flex-row justify-between mt-4`} />
               <View style={tw`w-full flex flex-row`}>
                 <View style={tw`w-1/2 px-1`}>
@@ -88,7 +87,7 @@ const ModalResult = ({
 
       <Modal isOpen={showingModal === 'success' || showingModal === 'failed'}>
         <Modal.Content
-          style={tw`p-6 flex flex-col items-center justify-center rounded-3xl bg-white`}>
+          style={tw`p-6 flex flex-col items-center justify-center rounded-3xl bg-white dark:bg-[#18191A] `}>
           <View style={tw` w-1/4 h-20`}>
             {showingModal === 'success' && (
               <CheckCircleIcon width="100%" height="100%" fill={primaryColor} />
@@ -97,7 +96,7 @@ const ModalResult = ({
               <ExclamationCircleIcon width="100%" height="100%" fill="red" />
             )}
           </View>
-          <Text style={tw`text-base`}>
+          <Text style={tw`dark:text-white  text-base`}>
             {showingModal === 'success' && 'Swap successful!'}
             {showingModal === 'failed' && 'Swap failed!'}
           </Text>

@@ -17,8 +17,8 @@ const SearchEngine = () => {
   const selected = browserSettings?.searchEngine;
 
   return (
-    <View style={tw`flex-1 bg-white`}>
-      <View style={tw`m-4 bg-gray-100 rounded-lg`}>
+    <View style={tw`flex-1 bg-white dark:bg-[#18191A] `}>
+      <View style={tw`m-4 bg-gray-800  rounded-lg`}>
         {searchEngines.map(([key, value], index) => {
           const hostname = new URL(value.url).hostname;
           return (
@@ -37,7 +37,9 @@ const SearchEngine = () => {
                 <Favicon domain={hostname} />
                 <View style={tw`flex-1 ml-2`}>
                   <Text>{key}</Text>
-                  <Text style={tw`text-gray-500`}>{hostname}</Text>
+                  <Text style={tw`dark:text-white  text-gray-500`}>
+                    {hostname}
+                  </Text>
                 </View>
                 <View style={tw`w-5 `}>
                   {selected === key && (

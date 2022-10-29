@@ -49,14 +49,14 @@ const EnableBiometric = ({navigation}) => {
     }
   };
 
-  const modeColor = useDarkMode();
   //text darkmode
-  const textColor = useTextDarkMode();
+
   return (
-    <View style={tw`h-full flex-col  items-center android:py-2 ios:py-3 px-3`}>
+    <View
+      style={tw`h-full flex-col  items-center android:py-2 ios:py-3 px-3 bg-white dark:bg-[#18191A] `}>
       <View style={tw`pt-20`}>
-        <Text style={tw`text-center text-2xl font-semibold ${textColor} `}>
-          use Biometric Authentication
+        <Text style={tw`dark:text-white  text-center text-2xl font-semibold  `}>
+          Use Biometric Authentication
         </Text>
         <View style={tw`flex-row`}>
           <Text

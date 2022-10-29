@@ -46,10 +46,9 @@ const SelectOption = ({
   useEffect(() => {
     setFilteredList(options);
   }, [options]);
-  const textColor = useTextDarkMode();
+
   //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
-  const modeColor = useDarkMode();
+
   return (
     <TouchableOpacity
       activeOpacity={0.6}
@@ -57,7 +56,7 @@ const SelectOption = ({
       style={tw`px-2 flex-row items-center justify-between bg-blue-500/50 h-10  rounded-3xl max-w-96 ${style}`}>
       <View style={tw`flex-row items-center justify-between`}>
         <View
-          style={tw`rounded-full ${iconSize} bg-white mr-2 items-center justify-center`}>
+          style={tw`rounded-full ${iconSize} bg-white dark:bg-[#18191A]  mr-2 items-center justify-center`}>
           {icon}
         </View>
         <View>
@@ -71,7 +70,7 @@ const SelectOption = ({
         <ChevronDownIcon height={15} width={15} fill="white" />
       </View>
       <Actionsheet isOpen={isOpen} onClose={onClose}>
-        <Actionsheet.Content style={tw`${gridColor}`}>
+        <Actionsheet.Content style={tw``}>
           <ScrollView style={tw`w-full`}>
             {filter && (
               <SearchBar
@@ -89,14 +88,12 @@ const SelectOption = ({
                   onPress={() => handleSelectOption(item)}
                   key={index}
                   style={tw`w-full p-3 items-center flex-row justify-between ${
-                    isSelected ? 'bg-${modeColor}' : ''
+                    isSelected ? 'bg-' : ''
                   } mb-1 rounded-lg`}>
                   {item.iconUri && <TokenIcon uri={item.iconUri} />}
                   <Text
                     style={tw` font-medium text-base  ${
-                      isSelected
-                        ? `font-bold text-[${primaryColor}]`
-                        : `${textColor}`
+                      isSelected ? `font-bold text-[${primaryColor}]` : ``
                     }`}>
                     {item.value}
                   </Text>

@@ -32,15 +32,15 @@ const SettingsMenu = ({navigation}) => {
       ],
     },
   ];
-  const modeColor = useDarkMode();
+
   //text darkmode
-  const textColor = useTextDarkMode();
+
   return (
-    <View style={tw`h-full  flex flex-col ${modeColor}`}>
+    <View style={tw`h-full  flex flex-col `}>
       <ScrollView style={tw`mb-[${insets.bottom + 60}] px-4`}>
         {menu.map((group, index) => (
           <View key={index} style={tw`mb-5`}>
-            <Text style={tw`text-base font-semibold px-3 ${textColor}`}>
+            <Text style={tw`dark:text-white  text-base font-semibold px-3 `}>
               {group.group}
             </Text>
             {group.items.map(

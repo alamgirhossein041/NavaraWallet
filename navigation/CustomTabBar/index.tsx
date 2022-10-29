@@ -1,5 +1,12 @@
 import React from 'react';
-import {Animated, Dimensions, Platform, Text, View} from 'react-native';
+import {
+  Animated,
+  Dimensions,
+  Platform,
+  Text,
+  useColorScheme,
+  View,
+} from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import Svg, {Path} from 'react-native-svg';
 import IconBrowser from '../../assets/logo/logo.svg';
@@ -17,6 +24,7 @@ const {width: maxWidth} = Dimensions.get('window');
 
 const CustomTabBar = ({state, descriptors, navigation}) => {
   const insets = useSafeAreaInsets();
+  const theme = useColorScheme();
   const focusedOptions = descriptors[state.routes[state.index].key].options;
   const isHideTabBar = focusedOptions?.tabBarStyle?.display === 'none';
 
@@ -31,7 +39,7 @@ const CustomTabBar = ({state, descriptors, navigation}) => {
   const height = 65;
   const barHeight = height + bottomInset;
   const circleWidth = height - 10;
-  const bgColor = 'white';
+  const bgColor = theme === 'light' ? 'white' : '#18191A';
   const d =
     type === 'DOWN'
       ? getPath(
@@ -46,6 +54,7 @@ const CustomTabBar = ({state, descriptors, navigation}) => {
           circleWidth >= 50 ? circleWidth : 50,
           bottomInset,
         );
+
   return (
     <Animated.View style={tw`absolute bottom-0 z-10 w-full shadow-lg`}>
       <SVG width={maxWidth} height={barHeight + (type === 'DOWN' ? 0 : 30)}>
@@ -100,7 +109,9 @@ const CustomTabBar = ({state, descriptors, navigation}) => {
             };
 
             return (
-              <View key={index} style={tw`items-center justify-center flex-1`}>
+              <View
+                key={index}
+                style={tw`items-center justify-center flex-1 dark:bg-[#18191A]`}>
                 {index === Math.floor(array.length / 2) ? (
                   <View
                     style={[
@@ -113,7 +124,10 @@ const CustomTabBar = ({state, descriptors, navigation}) => {
                             ? barHeight - circleWidth
                             : circleWidth / 2,
                       },
-                      tw`${type === 'DOWN' && 'shadow-lg bg-white'}`,
+                      tw`${
+                        type === 'DOWN' &&
+                        ' bg-white dark:bg-[#1f2124] shadow-lg'
+                      }`,
                     ]}>
                     <PressableAnimatedSpin
                       onPress={() => navigation.navigate('Browser')}
@@ -132,10 +146,22 @@ const CustomTabBar = ({state, descriptors, navigation}) => {
                     onPress={onPress}
                     onLongPress={onLongPress}
                     style={tw`items-center justify-center flex-1`}>
-                    {getIcon(label, 24, isFocused ? focusedColor : primaryGray)}
+                    {theme === 'light'
+                      ? getIcon(
+                          label,
+                          24,
+                          isFocused ? focusedColor : primaryGray,
+                        )
+                      : getIcon(
+                          label,
+                          24,
+                          isFocused ? primaryGray : focusedColor,
+                        )}
                     <Text
                       style={tw`font-medium text-[${
                         isFocused ? focusedColor : primaryGray
+                      }] dark:text-[${
+                        isFocused ? primaryGray : focusedColor
                       }]`}>
                       {label}
                     </Text>

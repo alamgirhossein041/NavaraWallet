@@ -17,16 +17,16 @@ import ImportWallet from '../OnBoard/ImportWallet';
 
 const ManageWallets = () => {
   const Stack = createNativeStackNavigator();
-  // const modeColor = useDarkMode();
+  //
   //text darkmode
-  const textColor = useTextDarkMode();
+
   //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
+
   return (
     <Stack.Navigator
       screenOptions={{
         headerTitleAlign: 'center',
-        headerStyle: tw`bg-white`,
+        headerStyle: tw`bg-white dark:bg-[#18191A] `,
         headerShadowVisible: false,
         headerLeft: () => <BackButton />,
       }}>
@@ -37,7 +37,11 @@ const ManageWallets = () => {
           title: 'Manage Wallets',
         }}
       />
-      <Stack.Screen name="CreateWallet" component={CreateWallet} options={{title: ''}} />
+      <Stack.Screen
+        name="CreateWallet"
+        component={CreateWallet}
+        options={{title: ''}}
+      />
       <Stack.Screen
         name="ImportWallet"
         options={{

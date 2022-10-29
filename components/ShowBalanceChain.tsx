@@ -17,9 +17,9 @@ export default function ShowBalanceChain({chain}: {chain: IChain}) {
   const balance = chain.balance;
   const Icon = CHAIN_ICONS[chain.network];
   //text darkmode
-  const textColor = useTextDarkMode();
+
   //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
+
   return (
     <View>
       <TouchableOpacity onPress={() => setInVisible(!inVisible)}>
@@ -36,16 +36,16 @@ export default function ShowBalanceChain({chain}: {chain: IChain}) {
       </TouchableOpacity>
       <View style={tw`flex-row justify-center w-full`}>
         <View
-          style={tw`flex-row items-center justify-center w-full mb-4 bg-white rounded-full shadow h-17 w-17`}>
+          style={tw`flex-row items-center justify-center w-full mb-4 bg-white dark:bg-[#18191A]  rounded-full shadow h-17 w-17`}>
           <Icon height={50} width={50} />
         </View>
       </View>
       {!inVisible ? (
-        <Text style={tw`text-center text-2xl mb-4 ${textColor} font-bold`}>
+        <Text style={tw`dark:text-white  text-center text-2xl mb-4  font-bold`}>
           {balance === 0 ? 0 : balance?.toFixed(4)} {chain.symbol}
         </Text>
       ) : (
-        <Text style={tw`text-center text-2xl mb-4 ${textColor} font-bold`}>
+        <Text style={tw`dark:text-white  text-center text-2xl mb-4  font-bold`}>
           ••••• {chain.symbol}
         </Text>
       )}

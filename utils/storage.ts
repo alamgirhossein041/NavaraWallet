@@ -40,14 +40,13 @@ export const LIST_CHAINS = 'LIST_CHAINS';
 
 export const GOOGLE_ACCESS_TOKEN = 'GOOGLE_ACCESS_TOKEN';
 
-export const COLOR_SCHEME = 'COLOR_SCHEME';
 export const CURRENCY_SYMBOL = 'CURRENCY_SYMBOL';
 export const LOCALES = 'LOCALES'; //Use this to store the locale along with the language
 export const BROWSER_TABS = 'BROWSER_TABS';
 export const BROWSER_HISTORY = 'BROWSER_HISTORY';
 export const BROWSER_SETTINGS = 'BROWSER_SETTINGS';
-export const TYPE_NETWORKS = 'TYPE_NETWORKS';
-export const ENABLE_NETWORKS = 'ENABLE_NETWORKS';
 export const COLOR_MODE = 'COLOR_MODE';
 
 export const SELECTED_WALLET = 'SELECTED_WALLET';
+export const NETWORKS_ENVIRONMENT = 'NETWORKS_ENVIRONMENT';
+export const TYPE_LANGUAGE = 'TYPE_LANGUAGE';

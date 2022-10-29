@@ -32,25 +32,24 @@ const EnableCloudBackup = ({navigation}) => {
       navigation.replace('TabsNavigation');
     }
   });
-  const modeColor = useDarkMode();
+
   //text darkmode
-  const textColor = useTextDarkMode();
+
   return (
-    <View style={tw`h-full flex-col  items-center android:py-2 ios:py-3 px-3`}>
+    <View
+      style={tw`h-full flex-col  items-center android:py-2 ios:py-3 px-3 bg-white dark:bg-[#18191A] `}>
       <View style={tw`pt-10`}>
-        <Text
-          style={tw`text-center text-3xl font-semibold py-3  ${textColor} `}>
+        <Text style={tw`text-center text-3xl font-semibold py-3   `}>
           Enable Cloud Backup
         </Text>
         <View style={tw``}>
           <Figure width="100%" />
         </View>
         <View>
-          <Text
-            style={tw`w-full text-center text-base font-semibold py-3 ${textColor}`}>
+          <Text style={tw`w-full text-center text-base font-semibold py-3 `}>
             Do you want to enable Cloud backup?
           </Text>
-          <Text style={tw` text-left  ${textColor}`}>
+          <Text style={tw`dark:text-white   text-left  `}>
             Your master password is used to encrypt and decrypt your wallet
             recovery file. This password is required when you import/export your
             wallet

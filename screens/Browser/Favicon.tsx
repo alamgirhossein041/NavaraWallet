@@ -16,7 +16,7 @@ export default function Favicon({domain, size = 10}: IFavicon) {
     <View
       style={tw`w-${size + 2} h-${
         size + 2
-      } items-center justify-center p-1 bg-white border border-gray-100 rounded-full`}>
+      } items-center justify-center p-1 bg-white dark:bg-[#18191A]  border border-gray-100 dark:border-gray-600 rounded-full`}>
       {domain === NEW_TAB ? (
         <GlobeAltIcon width={30} height={30} fill="gray" />
       ) : (

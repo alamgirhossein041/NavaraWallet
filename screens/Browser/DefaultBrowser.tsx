@@ -293,12 +293,15 @@ const DefaultBrowser = ({openLink}: any) => {
                   key={index}
                   onPress={() => openLink(item.href)}
                   style={tw`flex flex-row mt-3 items-center`}>
-                  <View style={tw`bg-gray-100 h-10 w-10 rounded-full`}>
+                  <View style={tw`bg-gray-800  h-10 w-10 rounded-full`}>
                     {item.icon}
                   </View>
                   <View style={tw`px-2`}>
-                    <Text style={tw`text-[16px] font-bold`}>{item.title}</Text>
-                    <Text style={tw`text-[14px] text-gray-400 mr-5`}>
+                    <Text style={tw`dark:text-white  text-[16px] font-bold`}>
+                      {item.title}
+                    </Text>
+                    <Text
+                      style={tw`dark:text-white  text-[14px] text-gray-400 mr-5`}>
                       {item.description}{' '}
                     </Text>
                   </View>

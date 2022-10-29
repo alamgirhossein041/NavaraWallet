@@ -52,10 +52,9 @@ const TextField = (props: ITextFieldProps) => {
     autoComplete = 'off',
   } = props;
   //text darkmode
-  const textColor = useTextDarkMode();
+
   //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
-  const modeColor = useDarkMode();
+
   const [hidePassword, setHidePassword] = useState(type === 'password');
   const [focused, setFocused] = useState<boolean>(false);
   const labelTop = useRef(new Animated.Value(0)).current;
@@ -124,7 +123,7 @@ const TextField = (props: ITextFieldProps) => {
   return (
     <View style={tw`w-full my-1`}>
       <View
-        style={tw`w-full my-5 ${styleInput}  relative flex flex-row items-center px-3 ${gridColor} rounded-xl  mb-1 border ${
+        style={tw`w-full my-5 ${styleInput}  relative flex flex-row items-center px-3  rounded-xl  mb-1 border ${
           err ? 'border-red-500 bg-red-100' : 'border-gray-300'
         }`}>
         {iconPosition === 'left' && (
@@ -136,7 +135,10 @@ const TextField = (props: ITextFieldProps) => {
             Keyboard.dismiss();
             setFocused(false);
           }}
-          style={[tw`w-full android:py-2 ios:py-3 ${textColor}`, props.style]}
+          style={[
+            tw`w-full text-black android:py-2 ios:py-3 dark:text-white `,
+            props.style,
+          ]}
           type={type}
           placeholder={placeholder}
           placeholderTextColor={secondaryGray}
@@ -156,7 +158,7 @@ const TextField = (props: ITextFieldProps) => {
               fontSize: 14,
             },
           ]}>
-          <Text style={tw`${textColor} font-bold`}> {label}</Text>
+          <Text style={tw`font-bold dark:text-white`}> {label}</Text>
         </Animated.Text>
         <PressableAnimated
           onPress={() => {
@@ -184,7 +186,7 @@ const TextField = (props: ITextFieldProps) => {
         </PressableAnimated>
       </View>
       {typeof err === 'string' && err && (
-        <Text style={tw`text-center text-red-500`}>{err}</Text>
+        <Text style={tw`text-center text-red-500 dark:text-white`}>{err}</Text>
       )}
     </View>
   );

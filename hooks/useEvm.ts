@@ -1,48 +1,44 @@
-import {ethers, Wallet} from 'ethers';
+import {ethers} from 'ethers';
 import {useState, useEffect} from 'react';
-import {NETWORK_CONFIG} from '../configs/bcNetworks';
-import {NETWORKS} from '../enum/bcEnum';
+import {DEVIVERATION_PATH} from '../configs/bcNetworks';
+import {NETWORKS, NETWORK_ENVIRONMENT_ENUM} from '../enum/bcEnum';
 import {WalletInterface, WalletProps} from '../data/types';
-import API from "../data/api";
-
+import {hdkey} from 'ethereumjs-wallet';
+import {getNetworkConfig, useBcNetworks} from './useBcNetworks';
+import mainnetConfig from '../configs/bcMainnets';
+import testnetConfig from '../configs/bcTestnets';
 /**
  * @dev Create Wallet from Mnemonic
  * @param mnemonic = Mnemonic phrase
  * @param index  = Account index
  * @returns wallet
  */
-export const createWallet = async (
-  mnemonic: string,
-  index: number,
-): Promise<Wallet> => {
-  return Wallet.fromMnemonic(mnemonic);
-};
 
-export const getEthereumAddressByPrivateKey = (privateKey: string): string => {
-  let wallet = new ethers.Wallet(privateKey);
-  return wallet.address;
-};
-
-export const getEthereumAddress = async (mnemonic: string): Promise<string> => {
-  let wallet = await getEthereumKeypair(mnemonic);
-  return wallet.address;
-};
-
-export const getEthereumKeypair = async (mnemonic: string): Promise<any> => {
-  let wallet = await createWallet(mnemonic, 0);
+export const createEthereumWallet = (seed: Buffer, accountIndex = 0) => {
+  const hdwallet = hdkey.fromMasterSeed(seed);
+  const path = DEVIVERATION_PATH[NETWORKS.ETHEREUM](accountIndex);
+  const wallet = hdwallet.derivePath(path).getWallet();
+  const address = wallet.getAddressString();
+  const privateKey = wallet.getPrivateKeyString();
+  const publicKey = wallet.getPublicKey().toString('hex');
   return {
-    ...wallet,
     network: NETWORKS.ETHEREUM,
-    publicKey: wallet.address,
-    privateKey: wallet.privateKey,
+    publicKey: publicKey,
+    address: address,
+    privateKey: privateKey,
   };
 };
 
 export const getEthereumBalance = async (
   address: string,
   network: NETWORKS,
+  env: NETWORK_ENVIRONMENT_ENUM,
 ) => {
+  const NETWORK_CONFIG = getNetworkConfig(env);
   const config = NETWORK_CONFIG[network];
+
+  console.log(config.chainId, 'config.chainId');
+
   let provider = new ethers.providers.JsonRpcProvider(config.rpc);
   if (provider) {
     const balance = await provider.getBalance(address);
@@ -55,7 +51,8 @@ export const getEthereumBalance = async (
   }
 };
 
-const useEvm = ({network, privateKey}: WalletProps): WalletInterface => {
+const useEvm = (network: NETWORKS, privateKey: string): WalletInterface => {
+  const {NETWORK_CONFIG} = useBcNetworks();
   const config = NETWORK_CONFIG[network];
   const [provider, setProvider] = useState<ethers.providers.JsonRpcProvider>();
   const [wallet, setWallet] = useState<ethers.Wallet>();

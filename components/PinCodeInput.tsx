@@ -57,10 +57,9 @@ const PinCodeInput = ({
   error = '',
 }: IPinCodeInputProps) => {
   //text darkmode
-  const textColor = useTextDarkMode();
+
   //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
-  const modeColor = useDarkMode();
+
   const appLock = useRecoilValue(appLockState);
   const [err, setErr] = useState(error);
   const focusRef = useRef(null);
@@ -134,7 +133,7 @@ const PinCodeInput = ({
       behavior={Platform.OS === 'ios' ? 'padding' : null}
       style={tw`flex flex-col items-center justify-around flex-1 w-full`}>
       <View style={tw`flex-col p-3`}>
-        <Text style={tw`mb-5 text-2xl font-bold text-center ${textColor}`}>
+        <Text style={tw`dark:text-white  mb-5 text-2xl font-bold text-center `}>
           {label}
         </Text>
         <Controller
@@ -181,7 +180,11 @@ const PinCodeInput = ({
             name="rePassword"
           />
         )}
-        {!!err && <Text style={tw`text-center text-red-500`}>{err}</Text>}
+        {!!err && (
+          <Text style={tw`dark:text-white  text-center text-red-500`}>
+            {err}
+          </Text>
+        )}
       </View>
       {biometric && appLock.typeBioMetric === BiometryTypes.Biometrics && (
         <PressableAnimated onPress={checkBioMetric}>

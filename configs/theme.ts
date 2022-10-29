@@ -11,7 +11,7 @@ export const selectGray = '#F8F8F8';
 export const bgTab = '#F5F5FA';
 export const colorTextTabSelected = '#3B82F6';
 export const bgUnreadNotification = '#EDFFFE';
-export const focusedColor = '#060A1D';
+export const focusedColor = '#787575';
 
 export const cardColorDarkMode = '#0F172A';
 export const backgroundColorDarkMode = '#171E2E';

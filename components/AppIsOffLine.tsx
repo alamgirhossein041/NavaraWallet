@@ -9,7 +9,9 @@ const AppIsOffLine = () => {
   return (
     netInfo.isConnected === false && (
       <SafeAreaView style={tw`bg-red-500 p-1`}>
-        <Text style={tw`text-center text-white font-bold`}>No connection</Text>
+        <Text style={tw`dark:text-white  text-center text-white font-bold`}>
+          No connection
+        </Text>
       </SafeAreaView>
     )
   );

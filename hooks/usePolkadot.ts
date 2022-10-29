@@ -5,12 +5,13 @@ import {WalletInterface, WalletProps} from '../data/types';
 import {mnemonicGenerate, mnemonicValidate} from '@polkadot/util-crypto';
 import {ApiPromise, WsProvider} from '@polkadot/api';
 import {Keyring} from '@polkadot/keyring';
-import {POLKADOT_WS_ENDPOINT} from '../configs/bcNetworks';
+import {getPolkadotWsEndpoint, useBcNetworks} from './useBcNetworks';
+import {NETWORK_ENVIRONMENT_ENUM} from '../enum/bcEnum';
 
 const keyring = new Keyring({type: 'sr25519'});
 
-const connect = async () => {
-  const provider = new WsProvider(POLKADOT_WS_ENDPOINT);
+const connect = async (endPoint: string) => {
+  const provider = new WsProvider(endPoint);
   const api = await ApiPromise.create({provider});
   return api.isReady;
 };
@@ -24,8 +25,10 @@ const createAccount = mnemonic => {
 
 export const getBalanceByMnemonic = async (
   mnemonic,
+  env: NETWORK_ENVIRONMENT_ENUM,
 ): Promise<[address: string, balance: string]> => {
-  const api = await connect();
+  const POLKADOT_WS_ENDPOINT = getPolkadotWsEndpoint(env);
+  const api = await connect(POLKADOT_WS_ENDPOINT);
   const {account} = createAccount(mnemonic);
   const [balance, {tokenDecimals, tokenSymbol}] = await Promise.all([
     api.derive.balances.all(account.address),
@@ -42,6 +45,7 @@ const usePolkadot = ({mnemonic}: WalletProps): WalletInterface => {
   const [account, setAccount] = useState(null);
   const [api, setApi] = useState(null);
   const [chainDecimals, setChainDecimals] = useState(10);
+  const {POLKADOT_WS_ENDPOINT} = useBcNetworks();
 
   const initHook = async (api, mnemonic) => {
     const {account} = createAccount(mnemonic);
@@ -58,7 +62,7 @@ const usePolkadot = ({mnemonic}: WalletProps): WalletInterface => {
       setError('INVALID MNEMONIC');
     }
     try {
-      connect()
+      connect(POLKADOT_WS_ENDPOINT)
         .then(api => {
           //
           api.registry.chainDecimals;
@@ -68,7 +72,7 @@ const usePolkadot = ({mnemonic}: WalletProps): WalletInterface => {
     } catch (e) {
       setError(e.message);
     }
-  }, [mnemonic]);
+  }, [POLKADOT_WS_ENDPOINT, mnemonic]);
 
   const getBalanceOf = async address => {
     const [balance, {tokenDecimals, tokenSymbol}] = await Promise.all([

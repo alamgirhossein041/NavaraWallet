@@ -18,17 +18,16 @@ const SignPinCode = () => {
     navigation.goBack();
   }, []);
   //text darkmode
-  const textColor = useTextDarkMode();
+
   //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
-  const modeColor = useDarkMode();
+
   return (
     <Modal
       overlayVisible
       animationPreset={'slide'}
       style={tw`flex-row items-start justify-start w-full h-full `}
       isOpen={isOpen}>
-      <Modal.Body style={tw`w-screen h-screen bg-white`}>
+      <Modal.Body style={tw`w-screen h-screen bg-white dark:bg-[#18191A] `}>
         <View style={tw`mt-10`}>
           <TouchableOpacity
             activeOpacity={0.6}

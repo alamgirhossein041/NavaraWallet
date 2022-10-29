@@ -36,7 +36,7 @@ export default function TotalAssets(props) {
       totalAssets: totalAssets,
     });
   };
-  const [reloading, setReloading] = useRecoilState(reloadingWallets);
+
   return (
     <TouchableOpacity onPress={() => setInVisible(!inVisible)}>
       {inVisible ? (
@@ -44,21 +44,13 @@ export default function TotalAssets(props) {
           <EyeOffIcon fill={'white'} width={30} height={30} />
         </View>
       ) : (
-        <View>
-          {reloading ? (
-            <View>
-              <Spinner size={30} color={'white'} />
-            </View>
-          ) : (
-            <View style={tw`flex-row items-center`}>
-              <CurrencyFormat
-                style="text-white font-bold mr-3"
-                value={+totalAssets}
-                size="3xl"
-              />
-              <EyeIcon fill={'white'} width={30} height={30} />
-            </View>
-          )}
+        <View style={tw`flex-row items-center`}>
+          <CurrencyFormat
+            style="text-white font-bold mr-3"
+            value={+totalAssets}
+            size="3xl"
+          />
+          <EyeIcon fill={'white'} width={30} height={30} />
         </View>
       )}
     </TouchableOpacity>

@@ -1,15 +1,22 @@
 import {TOKEN_SYMBOLS} from '../configs/bcNetworks';
-import {getSolanaKeypair} from '../hooks/useSolana';
-import {getEthereumKeypair} from '../hooks/useEvm';
-import {getNearKeypair} from '../hooks/useNEAR';
+import {createSolanaWallet} from '../hooks/useSolana';
+import {createEthereumWallet} from '../hooks/useEvm';
+import {createNearWallet} from '../hooks/useNEAR';
+import {mnemonicToSeed} from './mnemonic';
 
-const createWalletsByNetworks = async (seedPhrase: string) => {
-  if (seedPhrase) {
-    let ethKeypair = getEthereumKeypair(seedPhrase);
-    let solanaKeypair = getSolanaKeypair(seedPhrase);
-    let nearKeypair = getNearKeypair(seedPhrase);
+const createWalletsByNetworks = async (mnemonic: string, helperUrl: string) => {
+  if (mnemonic) {
+    const seed = await mnemonicToSeed(mnemonic);
 
-    const result = await Promise.all([ethKeypair, solanaKeypair, nearKeypair]);
+    const ethereumWallet = createEthereumWallet(seed);
+    const solanaWallet = createSolanaWallet(seed);
+    const nearWallet = createNearWallet(seed, 0, helperUrl);
+
+    const result = await Promise.all([
+      ethereumWallet,
+      solanaWallet,
+      nearWallet,
+    ]);
     const walletsByNetwork = result.map(keyPair => {
       return {
         address: keyPair.address,

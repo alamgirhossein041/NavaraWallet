@@ -1,4 +1,4 @@
-import {TouchableHighlight, StyleProp} from 'react-native';
+import {TouchableHighlight, StyleProp, useColorScheme} from 'react-native';
 import React from 'react';
 import {Actionsheet} from 'native-base';
 import {tw} from '../utils/tailwind';
@@ -9,10 +9,11 @@ interface IActionSheetItem {
   style?: StyleProp<any>;
 }
 const ActionSheetItem = ({children, onPress, style}: IActionSheetItem) => {
+  const theme = useColorScheme();
   return (
     <TouchableHighlight
       activeOpacity={0.6}
-      underlayColor="#DDDDDD"
+      underlayColor={theme === 'light' ? '#DDDDDD' : '#363636'}
       color={'amber.100'}
       onPress={onPress}
       active

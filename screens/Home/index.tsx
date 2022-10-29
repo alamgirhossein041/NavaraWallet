@@ -58,18 +58,16 @@ const Home = ({navigation, route}) => {
       });
   }, [insets.bottom, navigation, route]);
   //background Darkmode
-  const modeColor = useDarkMode();
+
   //text darkmode
-  const textColor = useTextDarkMode();
+
   //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
 
   return (
     <Stack.Navigator
       screenOptions={{
         headerShadowVisible: false,
         headerTitleAlign: 'center',
-        headerStyle: {backgroundColor: 'white'},
         headerLeft: () => <BackButton />,
       }}>
       <Stack.Screen

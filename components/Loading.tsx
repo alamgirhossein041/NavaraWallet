@@ -3,6 +3,7 @@ import React, {FunctionComponent} from 'react';
 
 import {View} from 'react-native';
 import {primaryColor} from '../configs/theme';
+import {useWalletSelected} from '../hooks/useWalletSelected';
 import {tw} from '../utils/tailwind';
 
 /**
@@ -34,12 +35,13 @@ const SpinnerLoading = () => {
   );
 };
 const SkeletonFlatList = () => {
+  const {enabledNetworks} = useWalletSelected();
   return (
     <View>
-      {[...Array(6)].map((_, index) => (
+      {[...Array(enabledNetworks.length || 3)].map((_, index) => (
         <View
           key={index}
-          style={tw`flex-row items-center mb-1 bg-white rounded-full`}>
+          style={tw`flex-row items-center mb-1 bg-white dark:bg-[#18191A]  rounded-full`}>
           <View style={tw`mr-3`}>
             <Skeleton size="12" rounded="full" />
           </View>

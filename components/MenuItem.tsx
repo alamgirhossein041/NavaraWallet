@@ -17,12 +17,11 @@ const MenuItem = ({
   next = true,
   iconPadding = 'p-2.5',
 }: WalletType) => {
-  const modeColor = useDarkMode();
   //text darkmode
-  const textColor = useTextDarkMode();
+
   //grid, shadow darkmode
   //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
+
   return (
     <PressableAnimated
       component={TouchableOpacity}
@@ -33,23 +32,25 @@ const MenuItem = ({
     >
       <View style={tw`flex flex-row items-center justify-between `}>
         <View
-          style={tw` w-10 h-10 rounded-full border border-gray-100 bg-white dark:bg-gray-800 flex items-center justify-center ${iconPadding}`}>
+          style={tw` w-10 h-10 rounded-full border border-gray-100 dark:border-gray-600 bg-white dark:bg-[#18191A]  dark:bg-gray-800 flex items-center justify-center ${iconPadding}`}>
           {icon}
         </View>
-        <Text style={tw`ml-2 text-sm font-bold text-gray-400 dark:text-white`}>
+        <Text
+          style={tw`dark:text-white  ml-2 text-sm font-bold text-gray-400 dark:text-white`}>
           {name}
         </Text>
       </View>
       <View style={tw`flex flex-row items-center mr-2`}>
         {typeof value === 'string' ? (
-          <Text style={tw`text-xs font-bold text-gray-400 dark:text-white`}>
+          <Text
+            style={tw`dark:text-white  text-xs font-bold text-gray-400 dark:text-white`}>
             {value}
           </Text>
         ) : (
           value
         )}
         {next && (
-          <View style={tw` w-4 h-4 ml-2 ${textColor}`}>
+          <View style={tw` w-4 h-4 ml-2 `}>
             <ChevronRightIcon width="100%" height="100%" />
           </View>
         )}

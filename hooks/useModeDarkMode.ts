@@ -15,7 +15,10 @@ const useDarkMode = () => {
   const toggleMode = useColorModeValue('Light', 'Dark');
 
   // let backgroundMode = toggleMode === "Light" ? `bg-[${backgroundColorDarkMode}]` : `bg-[${backgroundColorLightMode}]`
-  let backgroundMode = toggleMode === 'Dark' ? `bg-white` : `bg-white`;
+  let backgroundMode =
+    toggleMode === 'Dark'
+      ? `bg-white dark:bg-[#18191A] `
+      : `bg-white dark:bg-[#18191A] `;
   return backgroundMode;
 };
 

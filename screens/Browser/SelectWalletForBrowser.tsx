@@ -17,9 +17,7 @@ import {primaryColor} from '../../configs/theme';
 import {ChainWallet} from '../../data/database/entities/chainWallet';
 import {NETWORKS} from '../../enum/bcEnum';
 import {shortenAddress} from '../../utils/stringsFunction';
-const getAvatar = (id: number) => {
-  return `https://gravatar.com/avatar/${MD5(id.toString())}?s=400&d=retro`;
-};
+import getAvatar from '../../utils/getAvatar';
 const SelectWalletForBrowser = memo((props: any) => {
   const {onReload} = props;
   const {isOpen, onOpen, onClose} = useDisclose();

@@ -185,9 +185,6 @@ const BackupWallet = ({navigation, route}) => {
     })();
   }, [storedAccessToken]);
 
-  const modeColor = useDarkMode();
-  const textColor = useTextDarkMode();
-
   const textFields = [
     {
       type: 'text',
@@ -213,8 +210,10 @@ const BackupWallet = ({navigation, route}) => {
 
   return (
     <View
-      style={tw`h-full w-full px-4 pt-10 flex flex-col justify-between items-center ${modeColor}`}>
-      <Text style={tw`w-full`}>{storedAccessToken?.email}</Text>
+      style={tw`h-full w-full px-4 pt-10 flex flex-col justify-between items-center `}>
+      <Text style={tw`dark:text-white  w-full`}>
+        {storedAccessToken?.email}
+      </Text>
       <ScrollView style={tw`flex`}>
         {textFields.map((item, index) => {
           if (isAppPassword && index > 0) {
@@ -228,7 +227,7 @@ const BackupWallet = ({navigation, route}) => {
                 <TextField
                   type={item.type}
                   value={value}
-                  labelStyle={`${textColor} `}
+                  labelStyle={` `}
                   onChangeText={onChange}
                   label={item.label}
                 />
@@ -240,7 +239,7 @@ const BackupWallet = ({navigation, route}) => {
       </ScrollView>
       <View style={tw`absolute w-full bottom-5`}>
         <View style={tw`flex-row items-center justify-between w-full mb-5`}>
-          <Text style={tw`font-semibold`}>
+          <Text style={tw`dark:text-white  font-semibold`}>
             Use App's Password for encryption
           </Text>
           <Switch

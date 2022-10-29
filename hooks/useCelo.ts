@@ -2,17 +2,18 @@ import React, {useState, useEffect} from 'react';
 import Web3 from 'web3';
 import ContractKit from '@celo/contractkit';
 import {WalletInterface, WalletProps} from '../data/types';
-import {NETWORK_CONFIG} from '../configs/bcNetworks';
 import {GoldTokenWrapper} from '@celo/contractkit/lib/wrappers/GoldTokenWrapper';
 import {StableTokenWrapper} from '@celo/contractkit/lib/wrappers/StableTokenWrapper';
 import {ethers} from 'ethers';
 import BigNumber from 'bignumber.js';
+import {useBcNetworks} from './useBcNetworks';
 
 const useCelo = ({
   network,
   privateKey,
   address,
 }: WalletProps): WalletInterface => {
+  const {NETWORK_CONFIG} = useBcNetworks();
   const config = NETWORK_CONFIG[network];
   const [error, setError] = useState<string>();
   const [celotoken, setCelotoken] = useState<GoldTokenWrapper>();

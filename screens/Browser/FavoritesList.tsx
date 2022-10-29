@@ -31,10 +31,7 @@ const FavoritesList = ({callback}) => {
     })();
   }, []);
 
-  const textColor = useTextDarkMode();
   //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
-  const modeColor = useDarkMode();
 
   const handleOpenUrl = (items: BrowserFavorites) => {
     setBrowser([...browser, items]);
@@ -49,13 +46,15 @@ const FavoritesList = ({callback}) => {
   let rowRefs = new Map();
   if (listFavorite.length === 0) {
     return (
-      <View style={tw`flex-row items-center justify-center flex-1 bg-white`}>
-        <Text style={tw`text-xl font-bold`}>No favorite</Text>
+      <View
+        style={tw`flex-row items-center justify-center flex-1 bg-white dark:bg-[#18191A] `}>
+        <Text style={tw`dark:text-white  text-xl font-bold`}>No favorite</Text>
       </View>
     );
   }
   return (
-    <ScrollView style={tw`flex flex-col w-screen h-full bg-white`}>
+    <ScrollView
+      style={tw`flex flex-col w-screen h-full bg-white dark:bg-[#18191A] `}>
       <View>
         {listFavorite.map(item => {
           const handleOnPress = () => {
@@ -98,7 +97,7 @@ const FavoriteItem = ({
           <Favicon domain={getHostname(item.url)} size={7} />
         </View>
         <View style={tw`flex-1 mr-2`}>
-          <Text style={tw`font-bold`} numberOfLines={1}>
+          <Text style={tw`dark:text-white  font-bold`} numberOfLines={1}>
             {item.title}
           </Text>
           <Text>{getHostname(item.url)}</Text>

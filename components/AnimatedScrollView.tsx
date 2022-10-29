@@ -6,9 +6,6 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import {useDarkMode} from '../hooks/useModeDarkMode';
-import {useLocalStorage} from '../hooks/useLocalStorage';
-import {COLOR_SCHEME} from '../utils/storage';
 import {tw} from '../utils/tailwind';
 
 interface IAnimatedScrollProps {
@@ -25,8 +22,6 @@ const AnimatedScrollView = ({
   const {height: screenHeight} = useWindowDimensions();
   const [headerHeight, setHeaderHeight] = useState(0);
   const [scrollRef, setScrollRef] = useState(null);
-  const [colorSchemeRecoil] = useLocalStorage(COLOR_SCHEME);
-  const modeColor = useDarkMode();
 
   const onScrollEndDragHandler = (
     scrollEvent: NativeSyntheticEvent<NativeScrollEvent>,

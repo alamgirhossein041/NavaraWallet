@@ -36,11 +36,12 @@ export default function ResultTransaction({route, navigation}) {
     });
   };
   return (
-    <SafeAreaView style={tw`flex-col items-center h-full p-4 bg-white`}>
+    <SafeAreaView
+      style={tw`flex-col items-center h-full p-4 bg-white dark:bg-[#18191A] `}>
       <ViewShot
         captureMode="mount"
         ref={viewShotRef}
-        style={tw`w-full py-5 bg-white`}
+        style={tw`w-full py-5 bg-white dark:bg-[#18191A] `}
         options={{format: 'jpg', quality: 1.0}}>
         <View style={tw`flex-row justify-center w-full`}>
           <View
@@ -49,21 +50,23 @@ export default function ResultTransaction({route, navigation}) {
           </View>
         </View>
         <View
-          style={tw`w-full p-4 bg-white shadow rounded-2xl ios:border ios:border-gray-100`}>
+          style={tw`w-full p-4 bg-white dark:bg-[#18191A]  shadow rounded-2xl ios:border ios:border-gray-100 dark:border-gray-600`}>
           <View style={tw`flex-row items-center justify-between mb-3`}>
-            <Text style={tw`text-lg font-bold text-[${primaryColor}]`}>
+            <Text
+              style={tw`dark:text-white  text-lg font-bold text-[${primaryColor}]`}>
               Navara
             </Text>
-            <Text style={tw`text-xs text-gray-400`}>
+            <Text style={tw`dark:text-white  text-xs text-gray-400`}>
               {dayjs(new Date()).format('DD/MM/YYYY HH:mm:ss')}
             </Text>
           </View>
           <View style={tw`p-2 mb-3 bg-blue-200 rounded-lg`}>
-            <Text style={tw`text-lg font-bold text-center text-blue-500 `}>
+            <Text
+              style={tw`dark:text-white  text-lg font-bold text-center text-blue-500 `}>
               Transfer successful
             </Text>
           </View>
-          <Text style={tw`text-xl font-bold text-center`}>
+          <Text style={tw`dark:text-white  text-xl font-bold text-center`}>
             {amount} {token.symbol}
           </Text>
           {card}
@@ -80,7 +83,7 @@ export default function ResultTransaction({route, navigation}) {
             width={20}
             height={20}
           />
-          <Text style={tw`mx-1 text-lg `}>Save</Text>
+          <Text style={tw`dark:text-white  mx-1 text-lg `}>Save</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -92,7 +95,7 @@ export default function ResultTransaction({route, navigation}) {
             width={20}
             height={20}
           />
-          <Text style={tw`mx-1 text-lg `}>Share</Text>
+          <Text style={tw`dark:text-white  mx-1 text-lg `}>Share</Text>
         </TouchableOpacity>
       </View>
 
@@ -100,7 +103,9 @@ export default function ResultTransaction({route, navigation}) {
         <Button onPress={() => navigation.replace('TabsNavigation')}>
           <View style={tw`flex-row items-center`}>
             <HomeIcon fill={'white'} width={30} />
-            <Text style={tw`text-lg font-bold text-white`}>Go to home</Text>
+            <Text style={tw`dark:text-white  text-lg font-bold text-white`}>
+              Go to home
+            </Text>
           </View>
         </Button>
       </View>

@@ -63,7 +63,7 @@ const OptionWallet = ({data, index}) => {
                   stroke={primaryColor}
                   style={tw`mr-2`}
                 /> */}
-            <Text style={tw`text-[${primaryColor}] font-bold`}>
+            <Text style={tw`dark:text-white  text-[${primaryColor}] font-bold`}>
               Change name wallet
             </Text>
           </View>
@@ -74,7 +74,7 @@ const OptionWallet = ({data, index}) => {
             onClose();
           }}>
           <View style={tw`flex-row items-center`}>
-            <Text style={tw`text-[${primaryColor}] font-bold`}>
+            <Text style={tw`dark:text-white  text-[${primaryColor}] font-bold`}>
               Backup passphrase
             </Text>
           </View>
@@ -86,7 +86,7 @@ const OptionWallet = ({data, index}) => {
             // onClose();
           }}>
           <View style={tw`flex-row items-center`}>
-            <Text style={tw`text-[${primaryColor}] font-bold`}>
+            <Text style={tw`dark:text-white  text-[${primaryColor}] font-bold`}>
               Show seedphrase
             </Text>
           </View>
@@ -96,7 +96,9 @@ const OptionWallet = ({data, index}) => {
             onClose();
           }}>
           <View style={tw`flex-row items-center`}>
-            <Text style={tw`font-bold text-red-500`}>Delete Wallet</Text>
+            <Text style={tw`dark:text-white  font-bold text-red-500`}>
+              Delete Wallet
+            </Text>
           </View>
         </ActionSheetItem>
       </Actionsheet.Content>

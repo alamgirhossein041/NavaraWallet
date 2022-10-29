@@ -20,10 +20,9 @@ const SelectFile = ({navigation}) => {
   const [storedAccessToken] = useLocalStorage(GOOGLE_ACCESS_TOKEN);
   const [isOpenLoginModal, setIsOpenModal] = useState(false);
   const [listFiles, setListFiles] = useState<IFileData[]>([]);
-  const textColor = useTextDarkMode();
+
   //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
-  const modeColor = useDarkMode();
+
   const popupResult = usePopupResult();
 
   const decodeFileName = (fileName: string) => {
@@ -75,7 +74,7 @@ const SelectFile = ({navigation}) => {
   }, []);
 
   return (
-    <View style={tw`h-full px-4 flex flex-col  justify-between ${modeColor}`}>
+    <View style={tw`h-full px-4 flex flex-col  justify-between `}>
       <ScrollView style={tw`w-full`}>
         <View style={tw`w-full `}>
           {listFiles && listFiles.length > 0 ? (
@@ -89,7 +88,7 @@ const SelectFile = ({navigation}) => {
                   });
                 }}>
                 <View
-                  style={tw`w-full py-2 px-3 flex flex-row items-center justify-start ${gridColor} rounded-full mt-2`}>
+                  style={tw`w-full py-2 px-3 flex flex-row items-center justify-start  rounded-full mt-2`}>
                   <View style={tw`p-1 mr-2 rounded-full`}>
                     <DocumentTextIcon
                       width={25}
@@ -98,10 +97,10 @@ const SelectFile = ({navigation}) => {
                     />
                   </View>
                   <View>
-                    <Text style={tw`text-base font-semibold ${textColor}`}>
+                    <Text style={tw`dark:text-white  text-base font-semibold `}>
                       FileName: {file.fileName}
                     </Text>
-                    <Text style={tw`text-xs ${textColor}`}>
+                    <Text style={tw`dark:text-white  text-xs `}>
                       Backup date: {new Date(file.date).toLocaleDateString()}
                     </Text>
                   </View>
@@ -110,7 +109,7 @@ const SelectFile = ({navigation}) => {
             ))
           ) : (
             <View>
-              <Text style={tw`text-center ${textColor}`}>
+              <Text style={tw`dark:text-white  text-center `}>
                 No backup file found
               </Text>
             </View>

@@ -3,19 +3,21 @@ import {ScrollView, Switch, Text, View} from 'react-native';
 import {tw} from '../../utils/tailwind';
 import {primaryColor, primaryGray} from '../../configs/theme';
 import MenuItem from '../../components/MenuItem';
-import {
-  CreditCardIcon,
-  KeyIcon,
-  LockClosedIcon,
-} from 'react-native-heroicons/solid';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useDeviceContext} from 'twrnc';
-
-import {useTextDarkMode} from '../../hooks/useModeDarkMode';
-import {useRecoilState} from 'recoil';
+import {useRecoilState, useRecoilValue} from 'recoil';
 import {listWalletsState} from '../../data/globalState/listWallets';
 import {appLockState} from '../../data/globalState/appLock';
 import {useColorMode} from 'native-base';
+import IconLanguage from '../../assets/icons/icon-language.svg';
+import IconCurrency from '../../assets/icons/icon-currency.svg';
+import IconManageWallet from '../../assets/icons/icon-manager-wallet.svg';
+import IconLock from '../../assets/icons/icon-lock.svg';
+import IconKey from '../../assets/icons/icon-key.svg';
+import {BeakerIcon} from 'react-native-heroicons/solid';
+import {walletEnvironmentState} from '../../data/globalState/userData';
+import {ENVIRONMENT} from '../../global.config';
+
 const Menu = ({navigation}) => {
   const insets = useSafeAreaInsets();
   const [listWallets] = useRecoilState(listWalletsState);
@@ -28,17 +30,13 @@ const Menu = ({navigation}) => {
       return address;
     }
   };
-
-  const {toggleColorMode, colorMode} = useColorMode();
-
+  const walletEnvironment = useRecoilValue(walletEnvironmentState);
   const menu = [
     {
       group: 'Wallets',
       items: [
         {
-          icon: (
-            <CreditCardIcon width="100%" height="100%" fill={primaryColor} />
-          ),
+          icon: <IconManageWallet />,
           name: 'Manage wallets',
           onPress: () => {
             navigation.push('ManageWallets');
@@ -47,12 +45,24 @@ const Menu = ({navigation}) => {
             <View style={tw`flex flex-row items-center`}>
               <View
                 style={tw`bg-[${primaryColor}] mx-1 rounded-full px-3 py-1`}>
-                <Text style={tw`font-bold text-white`}>
+                <Text style={tw`font-bold text-white dark:text-white`}>
                   {listWallets.length}
                 </Text>
               </View>
             </View>
           ),
+          next: true,
+        },
+        {
+          icon: <BeakerIcon />,
+          name: `${
+            walletEnvironment === ENVIRONMENT.DEVELOPMENT
+              ? 'Using Testnet'
+              : 'Try Testnet'
+          } (beta)`,
+          onPress: () => {
+            navigation.navigate('NetworksEnvironment');
+          },
           next: true,
         },
         // {
@@ -62,7 +72,7 @@ const Menu = ({navigation}) => {
         //     navigation.push('ConnectAccounts');
         //   },
         //   value: (
-        //     <Text style={tw`text-xs text-red-400`}>
+        //      <Text style={tw`text-xs text-red-400 dark:text-white`}>
         //       01 account(s) connected
         //     </Text>
         //   ),
@@ -99,22 +109,20 @@ const Menu = ({navigation}) => {
         //   value: <></>,
         //   next: false,
         // },
-        //DEVELOPMENT OPTIONS
+        // DEVELOPMENT OPTIONS
         // {
         //   icon: (
-        //     <UserCircleIcon width="100%" height="100%" fill={primaryColor} />
+        //     <IconKey width="100%" height="100%" fill={primaryColor} />
         //   ),
         //   name: 'Developer Options',
         //   onPress: () => {
-        //     navigation.navigate('DeveloperOptions');
+        //     navigation.navigate('NetworksEnvironment');
         //   },
         //   value: '',
         //   next: true,
         // },
         {
-          icon: (
-            <LockClosedIcon width="100%" height="100%" fill={primaryColor} />
-          ),
+          icon: <IconLock />,
           name: 'App Lock',
           onPress: () => {
             navigation.navigate('AppLock');
@@ -123,7 +131,7 @@ const Menu = ({navigation}) => {
           next: true,
         },
         {
-          icon: <KeyIcon width="100%" height="100%" fill={primaryColor} />,
+          icon: <IconKey />,
           name: 'Transaction signing',
           onPress: () => {},
           value: (
@@ -145,32 +153,24 @@ const Menu = ({navigation}) => {
     //   group: 'General',
     //   items: [
     //     {
-    //       icon: <GlobeAltIcon width="100%" height="100%" fill={primaryColor} />,
+    //       icon: <IconLanguage />,
     //       name: 'Language',
-    //       onPress: () => {},
-    //       value: 'English',
-    //       next: true,
-    //     },
-    //     {
-    //       icon: <CashIcon width="100%" height="100%" fill={primaryColor} />,
-    //       name: 'Currency',
-    //       onPress: () => {},
-    //       value: 'USD',
-    //       next: true,
-    //     },
-    //     {
-    //       icon: (
-    //         <LocationMarkerIcon
-    //           width="100%"
-    //           height="100%"
-    //           fill={primaryColor}
-    //         />
-    //       ),
-    //       name: 'Address book',
-    //       onPress: () => {},
+    //       onPress: () => {
+    //         navigation.navigate('Language');
+    //       },
     //       value: '',
     //       next: true,
     //     },
+    //     {
+    //       icon: <IconCurrency  />,
+    //       name: 'Currency',
+    //       onPress: () => {
+    //         navigation.navigate('Currency');
+    //       },
+    //       value: '',
+    //       next: true,
+    //     },
+
     //   ],
     // },
     // {
@@ -200,12 +200,16 @@ const Menu = ({navigation}) => {
   //grid, shadow darkmode
 
   return (
-    <View style={tw`flex flex-col h-full bg-white`}>
+    <View style={tw`flex flex-col h-full bg-white dark:bg-[#18191A] `}>
       {/* <HeaderScreen title="Settings" /> */}
       <ScrollView style={tw`mb-[${insets.bottom + 60}]`}>
         {menu.map((group, index) => (
-          <View key={index} style={tw`mb-3 border-b border-gray-100`}>
-            <Text style={tw`px-3 text-base font-semibold`}>{group.group}</Text>
+          <View
+            key={index}
+            style={tw`mb-3 border-b border-gray-100 dark:border-gray-600 dark:border-gray-800`}>
+            <Text style={tw`px-3 text-base font-semibold dark:text-white`}>
+              {group.group}
+            </Text>
             {group.items.map(
               (item, index) =>
                 item.name && (

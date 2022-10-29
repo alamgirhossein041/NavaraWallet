@@ -1,7 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
 import {ethers} from 'ethers';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {Alert, GestureResponderEvent, View} from 'react-native';
+import {Alert, GestureResponderEvent, useColorScheme, View} from 'react-native';
 import ViewShot from 'react-native-view-shot';
 import {WebView} from 'react-native-webview';
 import {NETWORK_CONFIG_BY_CHAIN_ID} from '../../configs/bcNetworks';
@@ -23,6 +23,8 @@ import API from '../../data/api';
 import {useRecoilState} from 'recoil';
 import {listWalletsState} from '../../data/globalState/listWallets';
 import {ethErrors} from 'eth-rpc-errors';
+import GrantAccessWeb3 from './GrantAccessWeb3';
+import ConnectWallet from './ConnectWallet';
 
 const webInject3Script = InpageBridgeWeb3 + SPA_urlChangeListener;
 
@@ -44,7 +46,7 @@ const BrowserTab = props => {
   const [rpcEndpoint, setRpcEndpoint] = useState<string>();
   const [listWallets] = useRecoilState(listWalletsState);
   const [accounts, setAccount] = useState<string[]>([]);
-
+  const [tab, setTab] = useState<any>();
   useEffect(() => {
     const {chains} = selectedWallet;
     const ethereumWallet = chains.find(
@@ -89,7 +91,10 @@ const BrowserTab = props => {
   const goBack = useCallback(() => {
     const {current} = webviewRef;
     current && current.goBack();
-  }, []);
+    if (!tab.canGoBack) {
+      gotoHomePage();
+    }
+  }, [tab]);
 
   const goNext = useCallback(() => {
     const {current} = webviewRef;
@@ -106,6 +111,7 @@ const BrowserTab = props => {
     const {current} = webviewRef;
     current && current.injectJavaScript(JS_WEBVIEW_URL);
     updateTabData({...nativeEvent}, false);
+    setTab(nativeEvent);
   };
 
   const onLoadStart = ({nativeEvent}) => {
@@ -246,7 +252,7 @@ const BrowserTab = props => {
             params: payload.params,
             id: payload.id,
           })
-            .then(res => {
+            .then((res: any) => {
               let msg = createResponseMessage(
                 data.name,
                 payload.id,
@@ -298,7 +304,6 @@ const BrowserTab = props => {
           provider
             .getBlockNumber()
             .then(result => {
-              console.log(result, 'eth_blockNumber');
               const msg = createResponseMessage(
                 data.name,
                 payload.id,
@@ -340,9 +345,9 @@ const BrowserTab = props => {
       }
     }
   };
-
+  const theme = useColorScheme();
   return (
-    <View style={tw`flex-1 bg-white`}>
+    <View style={tw`flex-1 bg-white dark:bg-[#18191A] `}>
       <AddressBar
         progress={progress}
         url={initialUrl}
@@ -377,7 +382,9 @@ const BrowserTab = props => {
               allowsInlineMediaPlayback
               javascriptEnabled
               sendCookies
+              forceDarkOn={theme === 'dark'} // only Android
               useWebkit
+              style={tw`bg-white dark:bg-[#18191A]`}
               allowsFullscreenVideo // only Android
               cacheEnabled
               cacheMode="LOAD_DEFAULT"
@@ -395,7 +402,10 @@ const BrowserTab = props => {
         gotoHomePage={gotoHomePage}
         isShow={isShow}
         openManageTabs={openManageTabs}
+        tabData={tab}
       />
+      <GrantAccessWeb3 url={initialUrl} />
+      <ConnectWallet url={initialUrl} />
     </View>
   );
 };

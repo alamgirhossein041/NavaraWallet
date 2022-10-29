@@ -79,17 +79,16 @@ export default function OptionsBrowser(props) {
       onPress: () => closeTabBrowser(tabId, false),
     },
   ];
-  const textColor = useTextDarkMode();
+
   //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
-  const modeColor = useDarkMode();
+
   return (
     <View style={tw`px-3`}>
       <TouchableOpacity onPress={onOpen}>
         <DotsHorizontalIcon width={30} height={30} fill={'gray'} />
       </TouchableOpacity>
       <Actionsheet isOpen={isOpen} onClose={onClose}>
-        <Actionsheet.Content style={tw`${modeColor}`}>
+        <Actionsheet.Content style={tw``}>
           <View style={tw`flex-row flex-wrap justify-start w-full`}>
             <AddFavorite />
             {menuItems.map(item => {
@@ -104,7 +103,7 @@ export default function OptionsBrowser(props) {
                   style={tw`flex-col items-center w-1/4 mb-3`}>
                   <View style={tw`m-1`}>{item.icon}</View>
                   {item.text && (
-                    <Text style={tw`${textColor}`}>{item.text}</Text>
+                    <Text style={tw`dark:text-white  `}>{item.text}</Text>
                   )}
                 </TouchableOpacity>
               );

@@ -129,12 +129,15 @@ const AddressBar = props => {
     <View
       scrollEnabled={false}
       style={[
-        tw`absolute z-10 w-full  bg-white ${isEditing ? 'h-full' : ''} `,
+        tw`absolute z-10 w-full  bg-white dark:bg-[#18191A]  ${
+          isEditing ? 'h-full' : ''
+        } `,
       ]}>
-      <View style={tw`flex-row items-center w-full px-3 py-1 bg-white`}>
+      <View
+        style={tw`flex-row items-center w-full px-3 py-1 bg-white dark:bg-[#18191A] `}>
         {!isEditing && url !== NEW_TAB && <SelectWalletForBrowser {...props} />}
         <View
-          style={tw`flex-row items-center justify-center flex-1 w-full h-10 px-1 bg-gray-100 border border-gray-100 rounded-full`}>
+          style={tw`flex-row items-center justify-center flex-1 w-full h-10 px-1 bg-gray-100 border border-gray-100 rounded-full dark:bg-stone-800 dark:border-stone-800`}>
           {!isEditing && !isNewTab ? (
             <View style={tw`flex-row items-center justify-between px-1`}>
               <TouchableOpacity
@@ -150,7 +153,10 @@ const AddressBar = props => {
                   <ExclamationIcon width={15} color={'red'} />
                 )}
 
-                <Text style={tw`mx-1 text-center`}>{currentUrl.hostname}</Text>
+                <Text
+                  style={tw`mx-1 text-center text-gray-600 dark:text-gray-200`}>
+                  {currentUrl.hostname}
+                </Text>
               </TouchableOpacity>
             </View>
           ) : (
@@ -165,7 +171,8 @@ const AddressBar = props => {
                 onChangeText={text => setSearchInput(text)}
                 value={searchInput}
                 onSubmitEditing={() => handleGoTo(searchInput)}
-                style={tw`flex-1 h-20 p-3`}
+                style={tw`flex-1 h-20 p-3 dark:text-white `}
+                placeholderTextColor="gray"
                 placeholder="Search name or link"
               />
               {searchInput.trim().length > 0 && (
@@ -186,7 +193,7 @@ const AddressBar = props => {
                 setSearchInput('');
               }}
               style={tw`mx-3`}>
-              <Text>Cancel</Text>
+              <Text style={tw`text-black dark:text-white`}>Cancel</Text>
             </TouchableOpacity>
           ) : (
             <View style={tw`flex-row ml-3`}>
@@ -206,7 +213,7 @@ const AddressBar = props => {
             <View>
               {!isNewTab && (
                 <View
-                  style={tw`flex-row items-center px-3 py-2 border-b border-gray-100`}>
+                  style={tw`flex-row items-center px-3 py-2 border-b border-gray-100 dark:border-gray-600`}>
                   <View style={tw`justify-center mr-1`}>
                     <Favicon domain={currentUrl.hostname} size={7} />
                   </View>
@@ -350,7 +357,10 @@ const SuggestionAutoComplete = ({
                 <View style={tw`flex-row items-center justify-between`}>
                   <View style={tw`flex-row items-center flex-1 px-1`}>
                     <SearchIcon color="gray" width={25} />
-                    <Text style={tw`mx-2 text-lg `}>{keyword}</Text>
+                    <Text
+                      style={tw`mx-2 text-lg text-gray-600 dark:text-white `}>
+                      {keyword}
+                    </Text>
                   </View>
 
                   <Pressable
@@ -364,7 +374,10 @@ const SuggestionAutoComplete = ({
         {(asyncSuggetion.length === 0 || searchInput.length === 0) &&
           searchRecent.length > 0 && (
             <View>
-              <Text style={tw`px-5 mt-5 font-bold`}>Search recent</Text>
+              <Text
+                style={tw`px-5 mt-5 font-bold text-gray-600 dark:text-white`}>
+                Search recent
+              </Text>
               {searchRecent.map((result: SearchRecent) => {
                 const {keyword} = result;
                 if (searchInput === keyword) {
@@ -379,7 +392,10 @@ const SuggestionAutoComplete = ({
                     <View style={tw`flex-row items-center justify-between`}>
                       <View style={tw`flex-row items-center flex-1 px-1`}>
                         <ClockIcon color="gray" width={25} />
-                        <Text style={tw`mx-2 text-lg `}>{keyword}</Text>
+                        <Text
+                          style={tw`mx-2 text-lg text-gray-600 dark:text-white `}>
+                          {keyword}
+                        </Text>
                       </View>
 
                       <Pressable
@@ -408,7 +424,9 @@ const SuggestionAutoComplete = ({
             onPress={event => handleSearchByKeyWord(event, searchInput)}>
             <View style={tw`flex-row items-center px-1`}>
               <SearchIcon color="gray" width={25} />
-              <Text style={tw`mx-2 text-lg `}>{searchInput}</Text>
+              <Text style={tw`mx-2 text-lg text-gray-600 dark:text-white `}>
+                {searchInput}
+              </Text>
             </View>
           </TouchableHighlight>
         )}

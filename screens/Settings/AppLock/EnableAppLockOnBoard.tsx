@@ -20,11 +20,11 @@ export default function EnableAppLockOnBoard({navigation, route}) {
   const {walletController} = useDatabase();
   const [listWallets, setListWallets] = useRecoilState(listWalletsState);
   //background Darkmode
-  const modeColor = useDarkMode();
+
   //text darkmode
-  const textColor = useTextDarkMode();
+
   //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
+
   const handlePress = async () => {
     const password = await getFromKeychain();
 
@@ -51,7 +51,8 @@ export default function EnableAppLockOnBoard({navigation, route}) {
     navigation.navigate('EnableBiometric');
   };
   return (
-    <View style={tw`relative items-center w-full min-h-full px-3 bg-white`}>
+    <View
+      style={tw`relative items-center w-full min-h-full px-3 bg-white dark:bg-[#18191A] `}>
       <View style={tw`mt-10`}>
         <Logo width={120} height={120} />
       </View>

@@ -1,5 +1,6 @@
 import {ethers} from 'ethers';
 import { entropyToMnemonic } from 'ethers/utils/hdnode';
+import * as bip39 from 'bip39'
 
 const { utils } = ethers;
 
@@ -15,3 +16,8 @@ export function generateMnemonics() {
 export function normalizeSeedPhrase(seedPhrase) {
     return seedPhrase.trim().split(/\s+/).map(part => part.toLowerCase()).join(' ')
 } 
+
+export async function mnemonicToSeed(mnemonic) {
+    const seed = await bip39.mnemonicToSeedAsync(normalizeSeedPhrase(mnemonic)) 
+    return seed
+}

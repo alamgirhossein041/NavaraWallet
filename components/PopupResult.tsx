@@ -31,39 +31,40 @@ const PopupResult = () => {
   const onClose = () => {
     setPopupResult({...popupResult, isOpen: false});
   };
-  const modeColor = useDarkMode();
+
   //text darkmode
-  const textColor = useTextDarkMode();
+
   //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
+
   useEffect(() => {
     if (!!isOpen) {
       setTimeout(() => {
         onClose();
-      }, 500000000);
+      }, 5000);
     }
   }, [isOpen]);
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <View
-        style={tw`${gridColor} h-1/5 w-3/4 rounded-xl relative flex items-center  `}>
+      <View style={tw`relative flex items-center w-3/4 h-1/5 rounded-xl`}>
         {type === 'success' && (
           <View
-            style={tw`h-20 w-20 rounded-full border-2 flex items-center justify-center border-white bg-green-400 -top-10 absolute`}>
+            style={tw`absolute flex items-center justify-center w-20 h-20 bg-green-400 border-2 border-white rounded-full -top-10`}>
             <CheckIcon fill="white" height={50} width={50} />
           </View>
         )}
         {type === 'error' && (
           <View
-            style={tw`h-20 w-20 rounded-full border-2 flex items-center justify-center border-white bg-red-400 -top-10 absolute`}>
+            style={tw`absolute flex items-center justify-center w-20 h-20 bg-red-400 border-2 border-white rounded-full -top-10`}>
             <XIcon fill="white" height={50} width={50} />
           </View>
         )}
         <View
-          style={tw`w-full h-full px-5 flex-row items-center justify-center flex`}>
-          <Text style={tw`text-center text-2xl font-bold ${textColor}`}>{title}</Text>
+          style={tw`flex flex-row items-center justify-center w-full h-full px-5`}>
+          <Text style={tw`text-2xl font-bold text-center dark:text-white `}>
+            {title}
+          </Text>
         </View>
-        {/* <View style={tw`absolute bottom-3 w-full px-3`}>
+        {/* <View style={tw`absolute w-full px-3 bottom-3`}>
           <Button onPress={onClose}>{buttonText ? buttonText : 'Close'}</Button>
         </View> */}
       </View>

@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useMemo, useState} from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   AlreadyHasActiveConnectionError,
   createConnection,
@@ -6,20 +6,20 @@ import {
   getRepository,
 } from 'typeorm/browser';
 import toastr from '../../utils/toastr';
-import {ChainWallet} from './entities/chainWallet';
-import {BrowserFavorites} from './entities/favoritesBrowser';
-import {BrowserHistory} from './entities/historyBrowser';
-import {Wallet} from './entities/wallet';
+import { ChainWallet } from './entities/chainWallet';
+import { BrowserFavorites } from './entities/favoritesBrowser';
+import { BrowserHistory } from './entities/historyBrowser';
+import { Wallet } from './entities/wallet';
 import CryptoJS from 'crypto-js';
-import {getFromKeychain} from '../../utils/keychain';
-import {SearchRecent} from './entities/searchRecent';
+import { getFromKeychain } from '../../utils/keychain';
+import { SearchRecent } from './entities/searchRecent';
 
 const useDatabase = () => {
   const [connection, setconnection] = useState(null);
   const findConnection = async () => {
     try {
-      const connection = await getConnection();
-      setconnection(connection);
+      const _connection = await getConnection();
+      setconnection(_connection);
     } catch (error) {
       toastr.error("Can't connect to database");
     }
@@ -27,7 +27,7 @@ const useDatabase = () => {
 
   const setupConnection = useCallback(async () => {
     try {
-      const connection = await createConnection({
+      const _connection = await createConnection({
         type: 'react-native',
         database: 'navara',
         location: 'default',
@@ -43,7 +43,7 @@ const useDatabase = () => {
         ],
       });
       //
-      setconnection(connection);
+      setconnection(_connection);
     } catch (error) {
       if (error.constructor === AlreadyHasActiveConnectionError) {
         return findConnection();
@@ -80,14 +80,14 @@ const useDatabase = () => {
       newValue: {},
     ): Promise<any> => {
       const walletRepository = getRepository(Wallet);
-      const wallet = await walletRepository.findOneBy({id: walletId});
-      return walletRepository.save({...wallet, ...newValue});
+      const wallet = await walletRepository.findOne({ id: walletId });
+      return walletRepository.save({ ...wallet, ...newValue });
     },
 
     removeWallet: async (id: string): Promise<any> => {
       const walletRepository = getRepository(Wallet);
       const chainWalletRepository = getRepository(ChainWallet);
-      await chainWalletRepository.delete({walletId: id});
+      await chainWalletRepository.delete({ walletId: id });
       return walletRepository.delete(id);
     },
 
@@ -116,7 +116,7 @@ const useDatabase = () => {
       url: string,
       title: string,
     ): Promise<BrowserHistory> => {
-      if (latestHistory === url) return;
+      if (latestHistory === url) { return; }
       const newBrowserHistory = new BrowserHistory();
       newBrowserHistory.url = url;
       newBrowserHistory.title = title;
@@ -148,13 +148,13 @@ const useDatabase = () => {
       const historyBrowserRepository = getRepository(BrowserHistory);
       return historyBrowserRepository
         .createQueryBuilder('history')
-        .where('history.url like :query', {query: `%${query}%`})
+        .where('history.url like :query', { query: `%${query}%` })
         .getRawOne();
     },
 
     createSearchRecent: async (keyword: string): Promise<any> => {
       const searchRecentRepository = getRepository(SearchRecent);
-      return searchRecentRepository.save({keyword});
+      return searchRecentRepository.save({ keyword });
     },
 
     getSearchRecent: async (): Promise<SearchRecent[]> => {
@@ -200,12 +200,12 @@ const useDatabase = () => {
 
     deleteFavoritesByUrl: async (url: string): Promise<any> => {
       const favoritesBrowserRepository = getRepository(BrowserFavorites);
-      return favoritesBrowserRepository.delete({url});
+      return favoritesBrowserRepository.delete({ url });
     },
 
     findFavoritesByUrl: async (url: string): Promise<BrowserFavorites> => {
       const favoritesBrowserRepository = getRepository(BrowserFavorites);
-      return favoritesBrowserRepository.findOneBy({url});
+      return favoritesBrowserRepository.findOne({ url });
     },
   };
   return {

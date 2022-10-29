@@ -1,7 +1,7 @@
 import {TOKEN_SYMBOLS} from '../configs/bcNetworks';
 import {ChainWallet} from '../data/database/entities/chainWallet';
 import {Wallet} from '../data/database/entities/wallet';
-import {NETWORKS} from '../enum/bcEnum';
+import {NETWORKS, NETWORK_ENVIRONMENT_ENUM} from '../enum/bcEnum';
 import {getEthereumBalance} from '../hooks/useEvm';
 import {getNearBalance} from '../hooks/useNEAR';
 import {getSolanaBalance} from '../hooks/useSolana';
@@ -18,6 +18,7 @@ const updateBalanceForWallet = async (
   wallet: Wallet,
   currentList: ChainWallet[],
   netWorkEnable: string[],
+  env: NETWORK_ENVIRONMENT_ENUM,
 ): Promise<Wallet> => {
   /**
    * get list network enable and fucntion get balance for  network
@@ -25,19 +26,19 @@ const updateBalanceForWallet = async (
   const _newListNetworks = netWorkEnable.map((network: NETWORKS) => {
     if (network === NETWORKS.SOLANA) {
       const data = currentList.find(item => item.network === network);
-      return {data, getBalance: getSolanaBalance(data.address)};
+      return {data, getBalance: getSolanaBalance(data.address, env)};
     } else if (network === NETWORKS.NEAR) {
       const data = currentList.find(item => item.network === network);
       return {
         data,
-        getBalance: getNearBalance(data.address),
+        getBalance: getNearBalance(data.address, env),
       };
     } else {
       const data = currentList.find(item => item.network === NETWORKS.ETHEREUM);
       const symbol = TOKEN_SYMBOLS[network];
       return {
         data: {...data, symbol, network},
-        getBalance: getEthereumBalance(data.address, network),
+        getBalance: getEthereumBalance(data.address, network, env),
       };
     }
   });

@@ -1,26 +1,25 @@
-import {View, Text, ScrollView} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {tw} from '../../utils/tailwind';
-import {WalletInterface} from '../../data/types';
-import {useWallet} from '../../hooks/useWallet';
-import toastr from '../../utils/toastr';
-import usePopupResult from '../../hooks/usePopupResult';
-import Button from '../../components/Button';
-import {CHAIN_ICONS} from '../../configs/bcNetworks';
-import CurrencyFormat from '../../components/CurrencyFormat';
 import {Skeleton, Spinner} from 'native-base';
-import {primaryColor} from '../../configs/theme';
-import {useWalletSelected} from '../../hooks/useWalletSelected';
+import React, {useEffect, useState} from 'react';
+import {Text, View} from 'react-native';
 import {
   CheckCircleIcon,
   ShieldExclamationIcon,
 } from 'react-native-heroicons/solid';
-import SignPinCode from '../../components/SignPinCode';
 import {useRecoilValue} from 'recoil';
-import {appLockState} from '../../data/globalState/appLock';
-import {NETWORKS} from '../../enum/bcEnum';
+import Button from '../../components/Button';
+import CurrencyFormat from '../../components/CurrencyFormat';
 import FormatToken from '../../components/FormatToken';
+import SignPinCode from '../../components/SignPinCode';
+import {CHAIN_ICONS} from '../../configs/bcNetworks';
+import {primaryColor} from '../../configs/theme';
+import {appLockState} from '../../data/globalState/appLock';
+import {WalletInterface} from '../../data/types';
+import {NETWORKS} from '../../enum/bcEnum';
+import usePopupResult from '../../hooks/usePopupResult';
+import {useWallet} from '../../hooks/useWallet';
+import {useWalletSelected} from '../../hooks/useWalletSelected';
 import {shortenAddress} from '../../utils/stringsFunction';
+import {tw} from '../../utils/tailwind';
 export default function ConfirmTransaction({route, navigation}) {
   const appLock = useRecoilValue(appLockState);
   const {seed, receiver, amount, token, isScam} = route.params;
@@ -30,6 +29,7 @@ export default function ConfirmTransaction({route, navigation}) {
   const [balance, setBalance] = useState(0);
   const [sending, setSending] = useState(false);
   const [fee, setFee] = useState(0);
+
   navigation.setOptions({
     title: `Send ${token.symbol}`,
   });
@@ -56,21 +56,18 @@ export default function ConfirmTransaction({route, navigation}) {
     });
     setFee(+gasFee);
     const resultBalance = await getBalanceOf(address);
+
     setBalance(+resultBalance);
     setLoadingBalance(false);
   };
 
   useEffect(() => {
-    if (token.symbol.toUpperCase() === NETWORKS.NEAR && near) {
-      getBalance(token.address);
-    } else if (!!provider) {
-      provider && getBalance(token.address);
-    } else if (token.network === NETWORKS.SOLANA && connection) {
+    if (near || provider || connection) {
       getBalance(token.address);
     }
   }, [token.address, provider, near, connection]);
 
-  const handleTranfer = () => {
+  const handleTransfer = () => {
     setSending(true);
     transfer(receiver.address, amount)
       .then(response => {
@@ -97,7 +94,8 @@ export default function ConfirmTransaction({route, navigation}) {
           <Text>From: </Text>
           <View style={tw`flex-col items-end `}>
             <View style={tw`flex-row items-center`}>
-              <Text style={tw`text-[${primaryColor}] mr-1 font-bold`}>
+              <Text
+                style={tw`dark:text-white  text-[${primaryColor}] mr-1 font-bold`}>
                 {walletSelected.data.name ||
                   `Wallet ${walletSelected.index + 1}`}
               </Text>
@@ -122,7 +120,9 @@ export default function ConfirmTransaction({route, navigation}) {
                     {receiver.domain.toLowerCase()}
                   </Text>
                   {isScam && (
-                    <Text style={tw`font-bold text-red-500`}>(scam)</Text>
+                    <Text style={tw`dark:text-white  font-bold text-red-500`}>
+                      (scam)
+                    </Text>
                   )}
                   {!isScam ? (
                     <CheckCircleIcon
@@ -134,7 +134,8 @@ export default function ConfirmTransaction({route, navigation}) {
                     <ShieldExclamationIcon width={20} height={20} color="red" />
                   )}
                 </View>
-                <Text style={tw`${isScam ? 'text-red-500' : ''}`}>
+                <Text
+                  style={tw`dark:text-white  ${isScam ? 'text-red-500' : ''}`}>
                   {shortenAddress(receiver.address)}
                 </Text>
               </View>
@@ -144,28 +145,31 @@ export default function ConfirmTransaction({route, navigation}) {
         <View style={tw`flex-row justify-between mb-3`}>
           <View style={tw`flex-row items-center`}>
             <Text>Amount:</Text>
-            {/* <Text style={tw`mx-1 font-bold`}>{`${fee} ${token.symbol}`}</Text> */}
+            {/*  <Text style={tw`dark:text-white  mx-1 font-bold`}>{`${fee} ${token.symbol}`}</Text> */}
           </View>
           {loadingBalance ? (
             <Skeleton startColor={'gray.200'} rounded="lg" h={'3'} w={'24'} />
           ) : (
-            <Text style={tw`font-bold `}>{`${amount} ${token.symbol}`}</Text>
+            <Text
+              style={tw`dark:text-white  font-bold `}>{`${amount} ${token.symbol}`}</Text>
           )}
         </View>
         <View style={tw`flex-row justify-between mb-3`}>
           <View style={tw`flex-row items-center`}>
             <Text>Fee:</Text>
-            {/* <Text style={tw`mx-1 font-bold`}>{`${fee} ${token.symbol}`}</Text> */}
+            {/*  <Text style={tw`dark:text-white  mx-1 font-bold`}>{`${fee} ${token.symbol}`}</Text> */}
           </View>
           {loadingBalance ? (
             <Skeleton startColor={'gray.200'} rounded="lg" h={'3'} w={'24'} />
           ) : (
-            <Text style={tw`font-bold `}>{`${fee} ${token.symbol}`}</Text>
+            <Text style={tw`dark:text-white  font-bold `}>
+              ~ {`${fee.toFixed(2)} ${token.symbol}`}
+            </Text>
           )}
         </View>
         <View style={tw`mb-3 border-b border-gray-300`} />
         <View style={tw`flex-row items-center justify-between`}>
-          <Text style={tw`text-lg font-bold`}>Total:</Text>
+          <Text style={tw`dark:text-white  text-lg font-bold`}>Total:</Text>
           {loadingBalance ? (
             <Skeleton startColor={'gray.400'} rounded="lg" h={'3'} w={'16'} />
           ) : (
@@ -181,7 +185,7 @@ export default function ConfirmTransaction({route, navigation}) {
 
   const minusAmount = token.symbol === NETWORKS.NEAR ? +amount + fee : +amount;
   return (
-    <View style={tw`relative h-full px-4 bg-white`}>
+    <View style={tw`relative h-full px-4 bg-white dark:bg-[#18191A] dark:border-gray-100 `}>
       <View style={tw`flex-row justify-center w-full mb-4`}>
         <Icon height={60} width={60} />
       </View>
@@ -191,32 +195,38 @@ export default function ConfirmTransaction({route, navigation}) {
         </View>
       ) : (
         <View style={tw`flex-row justify-center`}>
-          <Text style={tw`text-3xl font-bold text-black`}>-</Text>
+          <Text
+            style={tw`dark:text-white  text-3xl font-bold dark:text-white `}>
+            -
+          </Text>
           <FormatToken
-            style="mb-5 text-3xl font-bold text-center text-black"
+            style="mb-5 text-3xl font-bold text-center dark:text-white "
             value={parseFloat(amount)}
             network={token.symbol}
           />
         </View>
       )}
 
-      {/* <Text style={tw`mb-5 text-3xl font-bold text-center text-black`}>
+      {/*  <Text style={tw`dark:text-white  mb-5 text-3xl font-bold text-center dark:text-white `}>
         {`-${amount} ${token.symbol}`}
       </Text> */}
 
       <View
         style={[
-          tw`w-full p-4 bg-white shadow rounded-2xl ios:border ios:border-gray-100`,
+          tw`w-full p-4 bg-white dark:bg-[#18191A]  shadow rounded-2xl ios:border ios:border-gray-100 dark:border-gray-600`,
         ]}>
         <CardDetailTransaction />
       </View>
-      <Text style={tw`mx-3 my-1 text-xs italic text-right text-gray-400`}>
+      <Text
+        style={tw`dark:text-white  mx-3 my-1 text-xs italic text-right text-gray-400`}>
         {`1 ${token.symbol} = ${token.price}$`}
       </Text>
       {isScam && (
         <View
           style={tw`items-center py-5 my-5 bg-red-200 border border-red-500 rounded-lg`}>
-          <Text style={tw`text-lg font-bold text-red-500`}>Scam warning</Text>
+          <Text style={tw`dark:text-white  text-lg font-bold text-red-500`}>
+            Scam warning
+          </Text>
           <ShieldExclamationIcon width={30} height={30} color="red" />
         </View>
       )}
@@ -224,7 +234,8 @@ export default function ConfirmTransaction({route, navigation}) {
         <View style={tw`absolute w-full bottom-5 left-4 right-4`}>
           {balance < amount ? (
             <View style={tw`p-3 bg-red-100 rounded-lg`}>
-              <Text style={tw`text-lg text-center text-red-800`}>
+              <Text
+                style={tw`dark:text-white  text-lg text-center text-red-800`}>
                 Not enough balance
               </Text>
             </View>
@@ -233,7 +244,7 @@ export default function ConfirmTransaction({route, navigation}) {
               <Button
                 loading={sending}
                 stringStyle="text-center text-xl font-medium text-white"
-                onPress={handleTranfer}>
+                onPress={handleTransfer}>
                 Confirm
               </Button>
               {appLock.transactionSigning && <SignPinCode />}

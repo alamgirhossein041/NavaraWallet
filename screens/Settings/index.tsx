@@ -9,7 +9,9 @@ import ShareAddress from '../ReceiveToken/ShareAddress';
 import AppLock from './AppLock/AppLock';
 import EnableAppLock from './AppLock/EnableAppLock';
 import ConnectedAccounts from './ConnectAccounts';
-import DeveloperOptions from './DeveloperOptions/DeveloperOptions';
+import {Currency} from './Currency/Currency';
+import NetworksEnvironment from './NetworksEnvironment';
+import {Language} from './Language/Language';
 import Menu from './Menu';
 
 const Settings = ({navigation, route}) => {
@@ -40,7 +42,6 @@ const Settings = ({navigation, route}) => {
       screenOptions={{
         headerTitleAlign: 'center',
         headerShadowVisible: false,
-        headerStyle: {backgroundColor: 'white'},
         headerLeft: () => <BackButton />,
       }}>
       <Stack.Screen
@@ -100,10 +101,26 @@ const Settings = ({navigation, route}) => {
         }}
       />
       <Stack.Screen
-        name="DeveloperOptions"
-        component={DeveloperOptions}
+        name="NetworksEnvironment"
+        component={NetworksEnvironment}
         options={{
-          title: 'Developer Options',
+          title: 'Networks Environment',
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="Currency"
+        component={Currency}
+        options={{
+          title: 'Currency',
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="Language"
+        component={Language}
+        options={{
+          title: 'Select Language',
           headerShown: true,
         }}
       />

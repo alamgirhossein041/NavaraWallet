@@ -4,7 +4,8 @@ import ImportSeedPhrase from '../../components/ImportSeedPhrase';
 import {tw} from '../../utils/tailwind';
 const ImportWallet = props => {
   return (
-    <View style={tw`flex flex-col justify-between h-full px-2 bg-white`}>
+    <View
+      style={tw`flex flex-col justify-between h-full px-2 bg-white dark:bg-[#18191A] `}>
       <ImportSeedPhrase {...props} />
     </View>
   );

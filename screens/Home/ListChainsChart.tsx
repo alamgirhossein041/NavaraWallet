@@ -3,7 +3,7 @@ import React, {useEffect, useMemo} from 'react';
 import {Text, View} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {CogIcon} from 'react-native-heroicons/outline';
-import {useRecoilState, useSetRecoilState} from 'recoil';
+import {useRecoilState, useRecoilValue, useSetRecoilState} from 'recoil';
 import Loading, {SkeletonFlatList} from '../../components/Loading';
 import {primaryColor} from '../../configs/theme';
 import {ChainWallet} from '../../data/database/entities/chainWallet';
@@ -13,8 +13,9 @@ import {
   listWalletsState,
   reloadingWallets,
 } from '../../data/globalState/listWallets';
-import {NETWORKS} from '../../enum/bcEnum';
-import {getEthereumBalance} from '../../hooks/useEvm';
+import {walletEnvironmentState} from '../../data/globalState/userData';
+import {ENVIRONMENT} from '../../global.config';
+import {getNetworkEnvironment} from '../../hooks/useBcNetworks';
 import {useWalletSelected} from '../../hooks/useWalletSelected';
 import {tw} from '../../utils/tailwind';
 import updateBalanceForWallet from '../../utils/updateBalanceForWallet';
@@ -25,8 +26,6 @@ interface IListChains {
   caching?: boolean;
 }
 
-// walletSelected => chain fixed => chain Enabled
-// output: get balance for chains of walletSelected
 const ListChainsChart = ({next, filter, caching = false}: IListChains) => {
   const [reloading, setReloading] = useRecoilState(reloadingWallets);
   const walletSelected = useWalletSelected();
@@ -34,6 +33,7 @@ const ListChainsChart = ({next, filter, caching = false}: IListChains) => {
   const {walletController} = useDatabase();
   const isFocused = useIsFocused();
   const setListWallets = useSetRecoilState(listWalletsState);
+  const walletEnvironment = useRecoilValue(walletEnvironmentState);
 
   const getBalance = async () => {
     const listWalletsDB = await walletController.getWallets();
@@ -43,6 +43,7 @@ const ListChainsChart = ({next, filter, caching = false}: IListChains) => {
         selectedWallets,
         selectedWallets.chains,
         walletSelected.enabledNetworks,
+        getNetworkEnvironment(walletEnvironment),
       );
 
       if (walletsUpdatedBalance) {
@@ -90,14 +91,6 @@ const ListChainsChart = ({next, filter, caching = false}: IListChains) => {
 
   useEffect(() => {
     reloading && isFocused && getBalance();
-    (async () => {
-      const bal = await getEthereumBalance(
-        '0xC9481c83033e84d3ba4e07ECbee5375533857Df6',
-        NETWORKS.BINANCE_SMART_CHAIN,
-      );
-      console.log('====================================');
-      console.log(bal);
-    })();
   }, [isFocused, reloading]);
 
   return (
@@ -105,7 +98,10 @@ const ListChainsChart = ({next, filter, caching = false}: IListChains) => {
       <View style={tw`px-4`}>
         {!caching && (
           <View style={tw`flex-row items-center justify-between w-full`}>
-            <Text style={tw`text-xl font-semibold mb-3`}>Assets by chains</Text>
+            <Text
+              style={tw`dark:text-white text-black text-xl font-semibold mb-3`}>
+              Assets by chains
+            </Text>
             <TouchableOpacity
               style={tw`flex-row items-center justify-center`}
               onPress={() => navigation.navigate('ManageChains' as never)}>

@@ -1,22 +1,20 @@
-import {useLinkTo} from '@react-navigation/native';
-import React, {useEffect} from 'react';
-import {RefreshControl, ScrollView, Text, View} from 'react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useRecoilRefresher_UNSTABLE, useRecoilState} from 'recoil';
-import Loading from '../../components/Loading';
+import { useLinkTo } from '@react-navigation/native';
+import React, { useEffect } from 'react';
+import {
+  RefreshControl,
+  ScrollView,
+  Text,
+  useColorScheme,
+  View
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRecoilRefresher_UNSTABLE, useRecoilState } from 'recoil';
 import PressableAnimated from '../../components/PressableAnimated';
 import TabBarMenu from '../../components/TabBarMenu';
-import {reloadingWallets} from '../../data/globalState/listWallets';
-import {priceTokenState} from '../../data/globalState/priceTokens';
-import {
-  useDarkMode,
-  useGridDarkMode,
-  useTextDarkMode,
-} from '../../hooks/useModeDarkMode';
-import {useWalletSelected} from '../../hooks/useWalletSelected';
-import {tw} from '../../utils/tailwind';
-import toastr from '../../utils/toastr';
-import BonusCryptoCard from './BonusCryptoCard';
+import { reloadingWallets } from '../../data/globalState/listWallets';
+import { priceTokenState } from '../../data/globalState/priceTokens';
+import { useWalletSelected } from '../../hooks/useWalletSelected';
+import { tw } from '../../utils/tailwind';
 import HeaderHome from './HeaderHome';
 import ListChainsChart from './ListChainsChart';
 import ListNFT from './ListNFT';
@@ -31,29 +29,26 @@ export interface ButtonProps {
 }
 
 const WalletDashboard = () => {
+  const scheme = useColorScheme();
   const [reloading, setReloading] = useRecoilState(reloadingWallets);
   const insets = useSafeAreaInsets();
-  const wait = timeout => {
-    return new Promise(resolve => setTimeout(resolve, timeout));
-  };
-  const {enabledNetworks} = useWalletSelected();
+  const { enabledNetworks, index } = useWalletSelected();
 
   const refresh = useRecoilRefresher_UNSTABLE(priceTokenState);
   const onRefresh = React.useCallback(() => {
     refresh();
     setReloading(true);
-  }, []);
+  }, [refresh, setReloading]);
 
   useEffect(() => {
     if (!reloading) {
       onRefresh();
     }
-  }, [JSON.stringify(enabledNetworks)]);
-
+  }, [JSON.stringify(enabledNetworks), index, scheme]);
   const [tabSelected, setTabSelected] = React.useState(0);
   return (
     <View style={tw`flex flex-col h-full`}>
-      <View style={tw`pt-[${insets.top}] bg-white dark:bg-red-500 flex-1 `}>
+      <View style={tw`pt-[${insets.top}] bg-white dark:bg-[#18191A]   flex-1 `}>
         <ScrollView
           scroll={false}
           refreshControl={
@@ -71,7 +66,10 @@ const WalletDashboard = () => {
           ) : (
             <ListNFT />
           )}
-          <Text style={tw`mx-3 text-xl font-semibold`}>News</Text>
+          <Text
+            style={tw`mx-3 text-xl font-semibold text-black dark:text-white `}>
+            News
+          </Text>
           <News />
         </ScrollView>
       </View>
@@ -79,25 +77,19 @@ const WalletDashboard = () => {
   );
 };
 
-const ButtonAction = ({icon, label, path}: ButtonProps) => {
+const ButtonAction = ({ icon, label, path }: ButtonProps) => {
   let linkTo = useLinkTo();
-  //background Darkmode
-  const modeColor = useDarkMode();
-  //text darkmode
-  const textColor = useTextDarkMode();
-  //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
   return (
-    <View style={tw`text-center items-center ${modeColor}`}>
+    <View style={tw`items-center text-center `}>
       <PressableAnimated
         activeOpacity={0.6}
-        style={tw`    ${gridColor}  mb-3 h-18 w-18 rounded-3xl items-center justify-center`}
+        style={tw`items-center justify-center mb-3 h-18 w-18 rounded-3xl`}
         onPress={() => linkTo(path)}>
         {icon}
       </PressableAnimated>
-      <Text style={tw`${textColor}`}>{label}</Text>
+      <Text style={tw`text-gray-600 dark:text-white `}>{label}</Text>
     </View>
   );
 };
-export {ButtonAction};
+export { ButtonAction };
 export default WalletDashboard;

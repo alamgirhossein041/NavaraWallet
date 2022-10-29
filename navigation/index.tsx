@@ -1,6 +1,6 @@
 import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
-import {SafeAreaView, StatusBar, View} from 'react-native';
+import {SafeAreaView, StatusBar, useColorScheme, View} from 'react-native';
 import {primaryColor, secondaryGray} from '../configs/theme';
 import Home from '../screens/Home';
 import NotUse from '../screens/OnBoard';
@@ -72,10 +72,15 @@ const TabsNavigation = () => {
     </Tab.Navigator>
   );
 };
+
 const AppRoutes = () => {
+  const scheme = useColorScheme();
   return (
     <View style={tw`flex-1`}>
-      <StatusBar barStyle="dark-content" backgroundColor="white" />
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor={scheme === 'light' ? 'white' : '#18191A'}
+      />
       <RootStack.Navigator>
         <RootStack.Screen
           name="Splash"

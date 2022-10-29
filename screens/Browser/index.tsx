@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { tw } from '../../utils/tailwind';
+import React, {useEffect, useRef} from 'react';
+import {tw} from '../../utils/tailwind';
 import {
   CardStyleInterpolators,
   createStackNavigator,
@@ -9,32 +9,31 @@ import {
   currentTabState,
   newTabDefaultData,
 } from '../../data/globalState/browser';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import {useRecoilState, useRecoilValue} from 'recoil';
 import PagerView from 'react-native-pager-view';
 import ManageTabs from './ManageTabs';
-import { cloneDeep, uniqueId } from 'lodash';
+import {cloneDeep, uniqueId} from 'lodash';
 import useDatabase from '../../data/database/useDatabase';
 import BrowserHistory from './BrowserHistory';
 import SettingsMenu from './Settings/SettingsMenu';
 import SearchEngine from './Settings/SearchEngine';
 import BackButton from '../../components/BackButton';
-import { Spinner, View } from 'native-base';
+import {Spinner, View} from 'native-base';
 import FavoritesList from './FavoritesList';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { BROWSER_TABS, localStorage } from '../../utils/storage';
-import { primaryColor } from '../../configs/theme';
-import { useTabBrowser } from './useTabBrowser';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {BROWSER_TABS, localStorage} from '../../utils/storage';
+import {primaryColor} from '../../configs/theme';
+import {useTabBrowser} from './useTabBrowser';
 import BrowserTab from './BrowserTab';
-
-const MainBrowser = ({ route }) => {
-  const { params } = route;
-  const { historyBrowserController } = useDatabase();
-  const { createTabBrowser } = useTabBrowser();
+const MainBrowser = ({route}) => {
+  const {params} = route;
+  const {historyBrowserController} = useDatabase();
+  const {createTabBrowser} = useTabBrowser();
   const tabsRef = useRef(null);
   const [browser, setBrowser] = useRecoilState(browserState);
   const currentTab = useRecoilValue(currentTabState);
   const setToPage = index => {
-    const { current } = tabsRef;
+    const {current} = tabsRef;
     if (!!current) {
       current.setPageWithoutAnimation(index);
     }
@@ -46,7 +45,7 @@ const MainBrowser = ({ route }) => {
 
   const updateTabData = (data, index, isReloading) => {
     const dataUpdate = cloneDeep(browser);
-    dataUpdate[index] = { ...dataUpdate[index], ...data };
+    dataUpdate[index] = {...dataUpdate[index], ...data};
     setBrowser(dataUpdate);
     if (isReloading) return;
 
@@ -60,7 +59,7 @@ const MainBrowser = ({ route }) => {
       .then((data: any) => {
         if (data.length > 0) {
           setBrowser(data);
-          createTabBrowser({ url: params.url, id: uniqueId() });
+          createTabBrowser({url: params.url, id: uniqueId()});
         } else {
           setBrowser([newTabDefaultData]);
         }
@@ -78,13 +77,14 @@ const MainBrowser = ({ route }) => {
 
   if (initBrowser) {
     return (
-      <View style={tw`items-center justify-center flex-1 bg-white `}>
+      <View
+        style={tw`items-center justify-center flex-1 bg-white dark:bg-[#18191A]  `}>
         <Spinner color={primaryColor} size={50} />
       </View>
     );
   }
   return (
-    <View style={tw`flex-1 bg-white`}>
+    <View style={tw`flex-1 bg-white dark:bg-[#18191A] `}>
       <SafeAreaView style={tw`flex-1`} edges={['top']}>
         <PagerView
           testID="pager-view"
@@ -100,7 +100,7 @@ const MainBrowser = ({ route }) => {
               updateTabData={(data, isReloading) =>
                 updateTabData(data, index, isReloading)
               }
-              scrollEnabled={state => { }}
+              scrollEnabled={state => {}}
               tabId={tab.id}
             />
           ))}
@@ -172,5 +172,5 @@ const StackBrowser = () => {
     </Stack.Navigator>
   );
 };
-export { MainBrowser };
+export {MainBrowser};
 export default React.memo(StackBrowser);

@@ -12,12 +12,13 @@ import {
 import {useRecoilState} from 'recoil';
 import IconSwap from '../../assets/icons/icon-swap.svg';
 import Button from '../../components/Button';
-import {CHAIN_ICONS, NETWORK_CONFIG} from '../../configs/bcNetworks';
+import {CHAIN_ICONS} from '../../configs/bcNetworks';
 import {defaultToken} from '../../configs/defaultValue';
 import {primaryColor, primaryGray} from '../../configs/theme';
 import {balanceChainsState} from '../../data/globalState/priceTokens';
 import {IToken} from '../../data/types';
 import {NETWORKS} from '../../enum/bcEnum';
+import {useBcNetworks} from '../../hooks/useBcNetworks';
 import useEvm from '../../hooks/useEvm';
 import {useDarkMode, useTextDarkMode} from '../../hooks/useModeDarkMode';
 import {useWallet} from '../../hooks/useWallet';
@@ -48,6 +49,7 @@ const SwapScreen = ({route, navigation}) => {
   const {token: chain} = route?.params;
   const network = chain?.network || NETWORKS.ETHEREUM;
   const privateKey = chain?.privateKey;
+  const {NETWORK_CONFIG} = useBcNetworks();
   const config = NETWORK_CONFIG[network];
   const [balanceChains, setBalanceChains] = useRecoilState(balanceChainsState);
   const {getBalanceOf} = useWallet({
@@ -55,7 +57,7 @@ const SwapScreen = ({route, navigation}) => {
     privateKey: privateKey,
   });
 
-  const evm = useEvm({network: network, privateKey: chain?.privateKey});
+  const evm = useEvm(network, chain?.privateKey);
   const wallet: ethers.Wallet = evm.getWallet();
   const provider = evm.provider;
   const Icon = CHAIN_ICONS[chain.network];
@@ -286,11 +288,10 @@ const SwapScreen = ({route, navigation}) => {
     return value1 < value2 ? value1 : value2;
   };
 
-  const modeColor = useDarkMode();
   //text darkmode
-  const textColor = useTextDarkMode();
+
   return (
-    <View style={tw`h-full  flex flex-col ${modeColor}`}>
+    <View style={tw`h-full  flex flex-col `}>
       <ScrollView style={tw`p-4`}>
         <View style={tw`flex flex-col mt-5`}>
           <WalletsCard address={evm?.address} />
@@ -300,7 +301,8 @@ const SwapScreen = ({route, navigation}) => {
             <View
               style={tw`flex flex-row items-center justify-between w-full mb-2 `}>
               <View>
-                <Text style={tw`text-base font-light text-gray-500`}>
+                <Text
+                  style={tw`dark:text-white  text-base font-light text-gray-500`}>
                   You Send
                 </Text>
                 <TextInput
@@ -334,7 +336,7 @@ const SwapScreen = ({route, navigation}) => {
                     setSrcToken(value);
                   }}
                 />
-                <Text style={tw`${textColor}`}>
+                <Text style={tw`dark:text-white  `}>
                   {fromBalance} {srcToken.symbol} Available
                 </Text>
               </View>
@@ -361,13 +363,14 @@ const SwapScreen = ({route, navigation}) => {
             <View
               style={tw`flex flex-row items-center justify-between w-full mb-2`}>
               <View>
-                <Text style={tw`text-base font-light text-gray-500`}>
+                <Text
+                  style={tw`dark:text-white  text-base font-light text-gray-500`}>
                   You Receive
                 </Text>
                 <Text
                   style={tw` text-${
-                    Number(toValue) === 0 && `${textColor}`
-                  } font-semibold text-xl text-black`}>
+                    Number(toValue) === 0 && ``
+                  } font-semibold text-xl dark:text-white `}>
                   {Number(toValue) === 0 ? '0.0' : toValue}
                 </Text>
               </View>
@@ -381,7 +384,7 @@ const SwapScreen = ({route, navigation}) => {
                     setDestToken(value);
                   }}
                 />
-                <Text style={tw`text-right`}>
+                <Text style={tw`dark:text-white  text-right`}>
                   {toAmount} {destToken.symbol} Available
                 </Text>
               </View>
@@ -396,7 +399,7 @@ const SwapScreen = ({route, navigation}) => {
               ) : (
                 <View style={tw`flex-row items-center`}>
                   <View style={tw`h-2 w-2 rounded-full bg-[${primaryColor}]`} />
-                  <Text style={tw`text-lg text-gray-400`}>
+                  <Text style={tw`dark:text-white  text-lg text-gray-400`}>
                     {' '}
                     1 {srcToken.symbol} ~{' '}
                     {Number(Number(price).toFixed(6)).toString()}{' '}
@@ -407,13 +410,15 @@ const SwapScreen = ({route, navigation}) => {
               {/* {loading === 'Gas' ? (
                 <Skeleton rounded="lg" w={'32'} h={'4'} />
               ) : (
-                <Text style={tw`${textColor}0`}>
+                 <Text style={tw`dark:text-white  0`}>
                   Fee ~ {Number(gasCost).toString()} {chain?.symbol}
                 </Text>
               )} */}
               <View
                 style={tw`flex-row items-center justify-around w-full mt-8`}>
-                <Text style={tw`text-xl`}>Optimized Gas fee</Text>
+                <Text style={tw`dark:text-white  text-xl`}>
+                  Optimized Gas fee
+                </Text>
                 <Switch
                   trackColor={{false: primaryGray, true: primaryColor}}
                   thumbColor="white"
@@ -423,15 +428,18 @@ const SwapScreen = ({route, navigation}) => {
                 style={tw`flex-row items-center justify-around w-full mt-8`}>
                 <View
                   style={tw`flex-wrap flex-row items-center justify-center`}>
-                  <Text style={tw`text-center flex items-center text-gray-400`}>
+                  <Text
+                    style={tw`dark:text-white  text-center flex items-center text-gray-400`}>
                     Click here for
                   </Text>
                   <TouchableOpacity style={tw``}>
-                    <Text style={tw`text-[${primaryColor}] font-semibold`}>
+                    <Text
+                      style={tw`dark:text-white  text-[${primaryColor}] font-semibold`}>
                       Terms & Conditions
                     </Text>
                   </TouchableOpacity>
-                  <Text style={tw`text-center flex items-center text-gray-400`}>
+                  <Text
+                    style={tw`dark:text-white  text-center flex items-center text-gray-400`}>
                     For this transaction fee will be taken
                   </Text>
                 </View>

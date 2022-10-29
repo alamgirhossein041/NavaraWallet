@@ -1,5 +1,8 @@
 /* eslint-disable import/no-nodejs-modules */
 import { decode, encode } from 'base-64';
+import { fetch as fetchPolyfill } from 'whatwg-fetch'
+
+global.fetch = fetchPolyfill
 
 if (!global.btoa) {
   global.btoa = encode;

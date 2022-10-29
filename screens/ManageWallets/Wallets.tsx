@@ -1,35 +1,26 @@
-import {Actionsheet, useDisclose} from 'native-base';
-import React, {useCallback, useEffect} from 'react';
+import { Actionsheet, useDisclose } from 'native-base';
+import React from 'react';
 import {
-  ImageBackground,
   ScrollView,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
-import IconMore from '../../assets/icons/icon-more.svg';
-import {PlusIcon} from 'react-native-heroicons/outline';
-import {CreditCardIcon} from 'react-native-heroicons/solid';
-import {useRecoilState} from 'recoil';
-import ActionSheetItem from '../../components/ActionSheetItem';
-import MenuItem from '../../components/MenuItem';
-import {primaryColor} from '../../configs/theme';
-import useDatabase from '../../data/database/useDatabase';
-import {listWalletsState} from '../../data/globalState/listWallets';
-import {useDarkMode} from '../../hooks/useModeDarkMode';
-import {useGridDarkMode} from '../../hooks/useModeDarkMode';
-import {useTextDarkMode} from '../../hooks/useModeDarkMode';
-import WalletAdd from '../../assets/icons/icon-wallet-add.svg';
-import {tw} from '../../utils/tailwind';
-import MyDomain from '../Home/MyDomain';
-import CardWallet from '../Home/CardWallet';
-import {useNavigation} from '@react-navigation/native';
-import OptionWallet from './OptionWallet';
-import IconCloudRestore from '../../assets/icons/icon-folder-cloud.svg';
+import { PlusIcon } from 'react-native-heroicons/outline';
+import { DotsHorizontalIcon } from 'react-native-heroicons/solid';
+import { useRecoilState } from 'recoil';
 import IconImport from '../../assets/icons/icon-folder-add.svg';
+import IconCloudRestore from '../../assets/icons/icon-folder-cloud.svg';
+import WalletAdd from '../../assets/icons/icon-wallet-add.svg';
+import ActionSheetItem from '../../components/ActionSheetItem';
+import { primaryColor } from '../../configs/theme';
+import useDatabase from '../../data/database/useDatabase';
+import { listWalletsState } from '../../data/globalState/listWallets';
+import { tw } from '../../utils/tailwind';
+import CardWallet from '../Home/CardWallet';
 
-const Wallets = ({navigation}) => {
-  const {isOpen, onOpen, onClose} = useDisclose();
+const Wallets = ({ navigation }) => {
+  const { isOpen, onOpen, onClose } = useDisclose();
   navigation.setOptions({
     headerRight: () => (
       <TouchableOpacity onPress={onOpen}>
@@ -46,7 +37,7 @@ const Wallets = ({navigation}) => {
     }
     // onOpen()
   };
-  const {walletController} = useDatabase();
+  const { walletController } = useDatabase();
 
   const [listWallets, setListWallets] = useRecoilState(listWalletsState);
 
@@ -54,10 +45,9 @@ const Wallets = ({navigation}) => {
   //   isOpen()
   // }
 
-  const gridColor = useGridDarkMode();
   const actionSheetCreateWallet = (
     <Actionsheet isOpen={isOpen} onClose={onClose}>
-      <Actionsheet.Content style={tw`${gridColor}`}>
+      <Actionsheet.Content>
         <ActionSheetItem
           onPress={() => {
             navigation.navigate('CreateWallet');
@@ -70,7 +60,9 @@ const Wallets = ({navigation}) => {
               stroke={primaryColor}
               style={tw`mr-2`}
             />
-            <Text style={tw` font-bold`}>Create a new wallet</Text>
+            <Text style={tw`dark:text-white   font-bold`}>
+              Create a new wallet
+            </Text>
           </View>
         </ActionSheetItem>
         <ActionSheetItem
@@ -85,7 +77,7 @@ const Wallets = ({navigation}) => {
               stroke={primaryColor}
               style={tw`mr-2`}
             />
-            <Text style={tw` font-bold`}>Import wallet</Text>
+            <Text style={tw`dark:text-white   font-bold`}>Import wallet</Text>
           </View>
         </ActionSheetItem>
         <ActionSheetItem
@@ -100,7 +92,9 @@ const Wallets = ({navigation}) => {
               stroke={primaryColor}
               style={tw`mr-2`}
             />
-            <Text style={tw` font-bold`}>Restore wallet from cloud</Text>
+            <Text style={tw`dark:text-white   font-bold`}>
+              Restore wallet from cloud
+            </Text>
           </View>
         </ActionSheetItem>
       </Actionsheet.Content>
@@ -108,35 +102,29 @@ const Wallets = ({navigation}) => {
   );
 
   return (
-    <ScrollView style={tw`bg-white`}>
+    <ScrollView style={tw`bg-white dark:bg-[#18191A] px-4 py-1`}>
       <View style={tw` flex flex-col justify-between`}>
         <View>
           {/* <HeaderScreen title="Manage Wallets" showBack /> */}
-          {/* <Text style={tw`text-base mt-10`}>Choose network (${enabledNetwork.length}/${networks.length})</Text> */}
+          {/*  <Text style={tw`dark:text-white  text-base mt-10`}>Choose network (${enabledNetwork.length}/${networks.length})</Text> */}
           <View style={tw``}>
             {listWallets &&
               listWallets.map((wallet, index) => (
                 //
-                <View
-                  style={tw`w-full ${
-                    index % 2 ? 'bg-gray-100 rounded-lg' : ''
-                  }`}>
-                  <View style={tw`flex flex-row mx-10 py-3`}>
-                    <Text style={tw`font-bold `}>
+                <View key={wallet.id} style={tw`mb-3`}>
+                  <View
+                    style={tw`flex flex-row mx-5 justify-between items-center mb-1`}>
+                    <Text style={tw`dark:text-white  font-bold `}>
                       {wallet.name === null
                         ? `Wallet ${index + 1}`
                         : `${wallet.name}`}
                     </Text>
-                    <View style={tw`ml-auto`}>
-                      {/* <OptionWallet index={index} data={wallet} /> */}
-                      <TouchableOpacity onPress={() => onWalletPress(index)}>
-                        <IconMore />
-                      </TouchableOpacity>
-                    </View>
-                    {/* <TouchableOpacity onPress={() => onWalletPress(index)} style={tw`ml-auto`}><OptionWallet /></TouchableOpacity> */}
+                    <TouchableOpacity onPress={() => onWalletPress(index)}>
+                      <DotsHorizontalIcon color="gray" />
+                    </TouchableOpacity>
                   </View>
 
-                  <View style={tw`m-3`}>
+                  <View style={tw``}>
                     <CardWallet wallet={wallet} index={index} />
                   </View>
                 </View>

@@ -15,12 +15,16 @@ export default function TryAgainButton({
 }: ITryAgarinButtonProps) {
   return (
     <View style={tw`items-center justify-center`}>
-      <Text style={tw`my-5 font-bold text-gray-500`}>{message}</Text>
+      <Text style={tw`dark:text-white  my-5 font-bold text-gray-500`}>
+        {message}
+      </Text>
       <View style={tw`w-1/3`}>
         <PressableAnimated
           onPress={onPress}
           style={tw`items-center p-3 text-center bg-[${primaryColor}] rounded-full`}>
-          <Text style={tw`font-bold text-white`}>Try again</Text>
+          <Text style={tw`dark:text-white  font-bold text-white`}>
+            Try again
+          </Text>
         </PressableAnimated>
       </View>
     </View>

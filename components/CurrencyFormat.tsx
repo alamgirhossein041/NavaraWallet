@@ -43,9 +43,9 @@ const CurrencyFormat = ({
   const [storedLocale] = useLocalStorage(LOCALES, 'en-US');
   const [storedcurrencySymbol] = useLocalStorage(CURRENCY_SYMBOL, 'USD');
   //text darkmode
-  const textColor = useTextDarkMode();
+
   //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
+
   const locale = storedLocale || 'en-US';
   const currencySymbol = storedcurrencySymbol || 'USD';
   const roundNumber = +value > 0.001 ? 3 : 20;
@@ -61,7 +61,7 @@ const CurrencyFormat = ({
 
   return (
     <View style={tw``}>
-      <Text style={tw`text-${size} ${style} ${textColor}`}>
+      <Text style={tw`dark:text-white text-gray-800  text-${size} ${style} `}>
         {formatCurrency(+value ? +value : 0)}
       </Text>
     </View>

@@ -20,12 +20,11 @@ const ReceiveSpecificToken = ({route, navigation}) => {
   const {token} = route.params;
   const walletSelected = useWalletSelected();
   //background Darkmode
-  const modeColor = useDarkMode();
+
   navigation.setOptions({
     title: `Receive ${token.symbol}`,
   });
   const Icon = CHAIN_ICONS[token.network];
-  const textColor = useTextDarkMode();
 
   const viewShotRef: any = useRef();
   const captureViewShot = async () => {
@@ -48,7 +47,7 @@ const ReceiveSpecificToken = ({route, navigation}) => {
   // }
   const linkTo = useLinkTo();
   return (
-    <ScrollView style={tw`h-full  flex-col  ${modeColor} p-2`}>
+    <ScrollView style={tw`flex-col h-full p-2`}>
       <ViewShot
         captureMode="mount"
         ref={viewShotRef}
@@ -67,7 +66,8 @@ const ReceiveSpecificToken = ({route, navigation}) => {
                 toastr.info('Copied');
               }}>
               <IconDomain />
-              <Text style={tw`mx-2 text-sm font-bold text-center `}>
+              <Text
+                style={tw`mx-2 text-sm font-bold text-center dark:text-white `}>
                 {walletSelected.data.domain}
               </Text>
             </TouchableOpacity>
@@ -77,7 +77,8 @@ const ReceiveSpecificToken = ({route, navigation}) => {
                 activeOpacity={0.6}
                 onPress={() => linkTo('/GetYourDomain')}
                 style={tw`bg-[${primaryColor}] mx-10 rounded-full my-3 `}>
-                <Text style={tw`px-2 py-2 font-bold text-center text-white `}>
+                <Text
+                  style={tw`px-2 py-2 font-bold text-center text-white dark:text-white `}>
                   Get your domain
                 </Text>
               </TouchableOpacity>
@@ -86,7 +87,7 @@ const ReceiveSpecificToken = ({route, navigation}) => {
 
           <View style={tw`flex items-center justify-center w-full my-5`}>
             <View
-              style={tw`relative items-center justify-center w-2/3 p-5 bg-white border-2 border-gray-100/60 rounded-3xl`}>
+              style={tw`relative items-center justify-center w-2/3 p-5 bg-white border-2 border-gray-100 dark:border-gray-600/60 rounded-3xl`}>
               <QRCode value={`${token.address}`} size={200} />
             </View>
           </View>
@@ -98,7 +99,7 @@ const ReceiveSpecificToken = ({route, navigation}) => {
               await Clipboard.setString(token.address);
               toastr.info('Copied');
             }}>
-            <Text style={tw`text-sm text-center px-5 ${textColor}`}>
+            <Text style={tw`px-5 text-sm text-center dark:text-white `}>
               {shortenAddress(token.address)}
             </Text>
           </TouchableOpacity>
@@ -112,7 +113,7 @@ const ReceiveSpecificToken = ({route, navigation}) => {
           }}
           style={tw`items-center justify-center w-20 text-center `}>
           <IconCopy />
-          <Text style={tw`text-lg font-bold text-center ${textColor} `}>
+          <Text style={tw`text-lg font-bold text-center dark:text-white `}>
             Copy
           </Text>
         </TouchableOpacity>
@@ -120,15 +121,15 @@ const ReceiveSpecificToken = ({route, navigation}) => {
           onPress={captureViewShot}
           style={tw`items-center justify-center w-20 text-center `}>
           <IconShare />
-          <Text style={tw`text-lg font-bold text-center ${textColor}`}>
+          <Text style={tw`text-lg font-bold text-center dark:text-white `}>
             Share
           </Text>
         </TouchableOpacity>
       </View>
-      <Text style={tw`mx-auto text-[10px]`}>
+      <Text style={tw`dark:text-white  mx-auto text-[10px]`}>
         Accept payment from other Navara{' '}
       </Text>
-      <Text style={tw`mx-auto text-[10px]`}>Wallet users</Text>
+      <Text style={tw`dark:text-white  mx-auto text-[10px]`}>Wallet users</Text>
     </ScrollView>
   );
 };

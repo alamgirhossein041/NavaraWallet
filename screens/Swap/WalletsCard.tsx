@@ -16,8 +16,10 @@ const WalletsCard = ({address}) => {
       style={tw`flex-row items-center w-full py-2 px-1 border rounded-lg border-[${primaryColor}]`}>
       <WalletAvatar domain={walletData?.domain} />
       <View style={tw`ml-2`}>
-        <Text style={tw`text-lg font-semibold`}>{walletData?.domain}</Text>
-        <Text style={tw`text-xs text-gray-400`}>
+        <Text style={tw`dark:text-white  text-lg font-semibold`}>
+          {walletData?.domain}
+        </Text>
+        <Text style={tw`dark:text-white  text-xs text-gray-400`}>
           {shortenAddress(address, 36)}
         </Text>
       </View>

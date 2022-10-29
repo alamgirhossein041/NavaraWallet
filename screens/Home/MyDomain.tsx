@@ -10,9 +10,9 @@ import {useRecoilState} from 'recoil';
 import {listWalletsState} from '../../data/globalState/listWallets';
 import IconDetailWallet from '../../assets/icons/icon-detail-wallet.svg';
 import IconGetDomain from '../../assets/icons/icon-get-domain.svg';
-import { ChevronDownIcon, ChevronUpIcon } from 'react-native-heroicons/solid';
+import {ChevronDownIcon} from 'react-native-heroicons/solid';
 import Clipboard from '@react-native-clipboard/clipboard';
-import IconCopy from "../../assets/icons/icon-copy.svg"
+import IconCopy from '../../assets/icons/icon-copy.svg';
 import toastr from '../../utils/toastr';
 const MyDomain = props => {
   return (
@@ -25,8 +25,8 @@ const MyDomain = props => {
 const ButtonGetYourDomain = ({domain, data, index}) => {
   const linkTo = useLinkTo();
 
-  return <RenderDomain domain={domain} data={data} index={index} />
-  // return 
+  return <RenderDomain domain={domain} data={data} index={index} />;
+  // return
 };
 
 const RenderDomain = ({domain, data, index}: any) => {
@@ -44,7 +44,7 @@ const RenderDomain = ({domain, data, index}: any) => {
   const onChangeText = text => {
     // setWallet({...wallet, label: text, value: text});
   };
-  
+
   const walletSelected = useWalletSelected();
   const nameWallet =
     data.name === null ? `Wallet ${index + 1}` : `${data.name}`;
@@ -54,10 +54,13 @@ const RenderDomain = ({domain, data, index}: any) => {
   const handleDetailWallet = () => {
     // console.log("1233")
     onClose();
-    navigation.navigate('DetailWallet', {
-      index,
-      data: listWallets[index],
-    });
+    navigation.navigate(
+      'DetailWallet' as never,
+      {
+        index,
+        data: listWallets[index],
+      } as never,
+    );
   };
 
   const handleGetNameService = () => {
@@ -71,17 +74,14 @@ const RenderDomain = ({domain, data, index}: any) => {
         activeOpacity={0.6}
         onPress={detailWallet}
         style={[tw`flex-row items-center h-10 rounded-full `]}>
-        <Text style={tw`mt-2 mr-2`}>
-          {domain ?<IconDomain />:<></>}
+        <Text style={tw`mt-2 text-black dark:text-white`}>
+          {domain ? <IconDomain /> : <></>}
         </Text>
-        {domain?<Text numberOfLines={1} style={tw`text-lg text-white`}>
-          {domain}
-        </Text>:<Text numberOfLines={1} style={tw`text-lg text-white`}>
-          {nameWallet}
-        </Text>}
-        <Text style={tw`ios:mt-2 android:mt-2`}>
-          <ChevronUpIcon width={30} height={30} fill="white" />
+
+        <Text numberOfLines={1} style={tw`text-lg text-white`}>
+          {domain ? domain : nameWallet}
         </Text>
+        <ChevronDownIcon width={30} height={30} fill="white" />
       </TouchableOpacity>
       <Actionsheet isOpen={isOpen} onClose={onClose}>
         <Actionsheet.Content>
@@ -90,7 +90,9 @@ const RenderDomain = ({domain, data, index}: any) => {
               onClose();
             }}>
             <View style={tw`items-center `}>
-              <Text style={tw`font-bold `}>{nameWallet}</Text>
+              <Text style={tw`font-bold text-black dark:text-white `}>
+                {nameWallet}
+              </Text>
             </View>
           </ActionSheetItem>
 
@@ -99,27 +101,31 @@ const RenderDomain = ({domain, data, index}: any) => {
               onClose();
             }}>
             <View style={tw`flex flex-col `}>
-              <Text style={tw`  text-[14px] px-2 `}>Name Wallet</Text>
+              <Text style={tw`text-gray-500 dark:text-white`}>Name Wallet</Text>
 
               {/* {domain ? ( */}
               <TouchableOpacity
-                style={tw`w-full flex flex-row p-3 mr-2 border border-white rounded-full `}
+                style={tw`flex flex-row w-full mb-5 rounded-full`}
                 onPress={handleDetailWallet}>
                 <View>
-                <Text style={tw`font-bold`}> {nameWallet}</Text>
+                  <Text style={tw`font-bold text-black dark:text-white`}>
+                    {nameWallet}
+                  </Text>
                 </View>
                 <View style={tw`ml-auto`}>
                   <IconDetailWallet />
                 </View>
               </TouchableOpacity>
 
-              <Text style={tw`  text-[14px] px-2 `}>Domain</Text>
+              <Text style={tw`text-gray-500 dark:text-white`}>Domain</Text>
               {!domain ? (
                 <TouchableOpacity
-                  style={tw`w-full flex flex-row p-3 mr-2 border border-white rounded-full `}
+                  style={tw`flex flex-row w-full rounded-full `}
                   onPress={handleGetNameService}>
                   <View>
-                    <Text style={tw`font-bold `}>Get your favorite domain</Text>
+                    <Text style={tw`font-bold text-black dark:text-white `}>
+                      Get your favorite domain
+                    </Text>
                   </View>
                   <View activeOpacity={0.6} style={tw`ml-auto`}>
                     <IconGetDomain />
@@ -127,15 +133,17 @@ const RenderDomain = ({domain, data, index}: any) => {
                 </TouchableOpacity>
               ) : (
                 <TouchableOpacity
-                style={tw`w-full flex flex-row p-3 mr-2 border border-white rounded-full `}
-                onPress={handleCopyToClipboard}>
-                <View>
-                  <Text style={tw`font-bold `}>{domain}</Text>
-                </View>
-                <View activeOpacity={0.6} style={tw`ml-auto`}>
-                  <IconCopy />
-                </View>
-              </TouchableOpacity>
+                  style={tw`flex flex-row w-full rounded-full `}
+                  onPress={handleCopyToClipboard}>
+                  <View>
+                    <Text style={tw`font-bold text-black dark:text-white `}>
+                      {domain}
+                    </Text>
+                  </View>
+                  <View activeOpacity={0.6} style={tw`ml-auto`}>
+                    <IconCopy />
+                  </View>
+                </TouchableOpacity>
               )}
             </View>
           </ActionSheetItem>

@@ -49,17 +49,18 @@ const PinCodeRequired = () => {
     })();
   }, []);
   //text darkmode
-  const textColor = useTextDarkMode();
+
   //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
-  const modeColor = useDarkMode();
+
   return (
-    <Modal style={tw`w-full h-full bg-white`} isOpen={isOpen}>
+    <Modal
+      style={tw`w-full h-full bg-white dark:bg-[#18191A] `}
+      isOpen={isOpen}>
       <SafeAreaView
         style={tw`flex items-center justify-center w-full min-h-full`}>
         <Logo width={120} height={120} />
         <PinCodeInput
-          label="Enter Current PIN Code"
+          label="Enter Current Password"
           type="required"
           hide
           onSuccess={onClose}

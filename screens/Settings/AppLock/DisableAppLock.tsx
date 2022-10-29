@@ -36,7 +36,8 @@ const DisableAppLock = ({onSuccess}) => {
   return (
     <ScrollView scrollEnabled={false}>
       <View style={tw`flex-col items-center justify-center p-3 min-h-2/3`}>
-        <Text style={tw`mb-3 text-lg font-bold text-center dark:text-white`}>
+        <Text
+          style={tw`dark:text-white  mb-3 text-lg font-bold text-center dark:text-white`}>
           Enter Current PIN Code
         </Text>
         <PinCodeInput

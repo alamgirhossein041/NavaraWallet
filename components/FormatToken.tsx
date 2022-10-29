@@ -14,7 +14,7 @@ export default function FormatToken({
   const formatedValue = value > 0.0001 ? 4 : 10;
   return (
     <View>
-      <Text style={tw`${style}`}>
+      <Text style={tw`dark:text-white  ${style}`}>
         {+value.toFixed(formatedValue)} {network}
       </Text>
     </View>

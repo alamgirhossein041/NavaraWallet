@@ -30,11 +30,11 @@ const SlideOnBoard = ({navigation}) => {
       desc: 'Navara give you a free unique domain name, one name for all address, no more copying and pasting long addresses',
     },
   ];
-  const modeColor = useDarkMode();
+
   //text darkmode
-  const textColor = useTextDarkMode();
+
   //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
+
   const slideRef = useRef(null);
   useEffect(() => {
     const autoChangeSlide = setInterval(() => {
@@ -52,7 +52,7 @@ const SlideOnBoard = ({navigation}) => {
     current.setPage(slideIndex);
   }, [slideIndex]);
   return (
-    <View style={tw` h-full ${modeColor} pt-10 relative`}>
+    <View style={tw`relative h-full pt-10 `}>
       <PagerView
         ref={slideRef}
         overdrag
@@ -64,11 +64,14 @@ const SlideOnBoard = ({navigation}) => {
               <Image source={onboard[index].img} />
             </View>
             <View style={tw`mb-5`}>
-              <Text style={tw`text-3xl text-center font-bold ${textColor}`}>
+              <Text
+                style={tw`text-3xl font-bold text-center text-gray-500 dark:text-white `}>
                 {slide.title}
               </Text>
             </View>
-            <Text style={tw`text-center text-gray-400`}>{slide.desc}</Text>
+            <Text style={tw`text-center text-gray-500 dark:text-white `}>
+              {slide.desc}
+            </Text>
           </View>
         ))}
       </PagerView>
@@ -79,7 +82,7 @@ const SlideOnBoard = ({navigation}) => {
         <Button
           fullWidth
           onPress={() => {
-            navigation.replace('CreateWallet');
+            navigation.navigate('CreateWallet');
           }}>
           Create a new wallet
         </Button>

@@ -65,17 +65,21 @@ export default function BrowserHistory({navigation}) {
   };
   if (loading) {
     return (
-      <View style={tw`items-center justify-center flex-1 bg-white`}>
+      <View
+        style={tw`items-center justify-center flex-1 bg-white dark:bg-[#18191A] `}>
         <Spinner size={60} color={primaryColor} />
       </View>
     );
   }
   return histories.length === 0 ? (
-    <View style={tw`flex-row items-center justify-center flex-1 bg-white`}>
-      <Text style={tw`text-xl font-bold`}>No browsing history</Text>
+    <View
+      style={tw`flex-row items-center justify-center flex-1 bg-white dark:bg-[#18191A] `}>
+      <Text style={tw`dark:text-white  text-xl font-bold`}>
+        No browsing history
+      </Text>
     </View>
   ) : (
-    <ScrollView style={tw`flex-1 bg-white`}>
+    <ScrollView style={tw`flex-1 bg-white dark:bg-[#18191A] `}>
       <FlatList
         data={histories}
         renderItem={({item}: {item: BrowserHistoryEntity}) => (
@@ -115,7 +119,7 @@ const ItemHistoryBrowser = React.memo(
           style={tw`flex-row items-center px-3 mb-3`}>
           <Favicon domain={getOnLyDomain(item.url)} size={7} />
           <View style={tw`flex-1 mx-2`}>
-            <Text style={tw`font-bold`} numberOfLines={1}>
+            <Text style={tw`dark:text-white  font-bold`} numberOfLines={1}>
               {item.title}
             </Text>
             <Text>{getOnLyDomain(item.url)}</Text>

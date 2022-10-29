@@ -63,7 +63,7 @@ const ManageTabs = ({navigation, route}) => {
     event.preventDefault();
   };
   return (
-    <View style={tw`flex-1 bg-white android:py-3`}>
+    <View style={tw`flex-1 bg-white dark:bg-[#18191A]  android:py-3`}>
       <SafeAreaView style={tw`flex-1`}>
         <ScrollView style={tw`px-3`}>
           <View style={tw`flex-row flex-wrap `}>
@@ -80,14 +80,14 @@ const ManageTabs = ({navigation, route}) => {
                       tw`${
                         currentTab === index
                           ? 'border-blue-500'
-                          : 'border-gray-100'
+                          : 'border-gray-100 dark:border-gray-800'
                       }`,
                     ]}>
                     <View
                       style={[
                         tw`flex-row items-center justify-between px-1 rounded-t`,
                         tw`${
-                          currentTab === index ? 'bg-blue-500' : 'bg-gray-100 '
+                          currentTab === index ? 'bg-blue-500' : 'bg-gray-800  '
                         }`,
                       ]}>
                       <Favicon domain={url?.hostname} size={5} />
@@ -113,18 +113,19 @@ const ManageTabs = ({navigation, route}) => {
             })}
           </View>
         </ScrollView>
-        <View style={tw`flex-row justify-between bg-white rounded-t-xl`}>
+        <View
+          style={tw`flex-row justify-between bg-white dark:bg-[#18191A]  rounded-t-xl`}>
           <TouchableOpacity
             onPress={handleCloseAllTabs}
             style={tw`flex-row items-center justify-center w-1/3 px-3`}>
             <XIcon style={tw`mx-1`} fill={'red'} />
-            <Text style={tw`text-red-500`}>Close all</Text>
+            <Text style={tw`text-red-500 dark:text-white`}>Close all</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handleAddNewTab}
             style={tw`flex-row items-center justify-center w-1/3 px-3 `}>
             <View
-              style={tw`items-center justify-center w-10 h-10 bg-gray-100 rounded-full`}>
+              style={tw`items-center justify-center w-10 h-10 bg-gray-800 rounded-full`}>
               <PlusIcon style={tw`mx-1`} fill={'gray'} />
             </View>
           </TouchableOpacity>
@@ -132,7 +133,9 @@ const ManageTabs = ({navigation, route}) => {
             onPress={() => navigation.goBack()}
             style={tw`flex-row items-center justify-center w-1/3 px-3`}>
             <CheckIcon style={tw`mx-1`} fill={primaryColor} />
-            <Text style={tw`text-[${primaryColor}] font-bold`}>Done</Text>
+            <Text style={tw`dark:text-white  text-[${primaryColor}] font-bold`}>
+              Done
+            </Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>

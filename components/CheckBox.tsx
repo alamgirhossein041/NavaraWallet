@@ -43,7 +43,7 @@ const CheckBox = ({
           )}
         </TouchableOpacity>
         <View style={tw`w-11/12`}>
-          <Text style={tw`text-sm  ${labelStyle}`}>
+          <Text style={tw`dark:text-white  text-sm  ${labelStyle}`}>
             {label}
           </Text>
         </View>

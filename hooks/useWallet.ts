@@ -11,11 +11,11 @@ export const useWallet = ({
     privateKey
 }) : WalletInterface | null  => {
     if (EVM_CHAINS.includes(network)) {
-        return useEvm({network, privateKey})
+        return useEvm(network, privateKey)
     } else if (network === NETWORKS.SOLANA) {
-        return useSolana({privateKey})
+        return useSolana(privateKey)
     } else if (network === NETWORKS.NEAR) {
-        return useNEAR({privateKey})
+        return useNEAR(privateKey)
     }
     return null
 }

@@ -24,11 +24,11 @@ export default function AutoLock() {
     return null;
   }
   const {isOpen, onOpen, onClose} = useDisclose();
-  const modeColor = useDarkMode();
+
   //text darkmode
-  const textColor = useTextDarkMode();
+
   //grid, shadow darkmode
-  const gridColor = useGridDarkMode();
+
   const options = [
     {
       time: 0,
@@ -77,7 +77,7 @@ export default function AutoLock() {
     <View>
       <MenuItem {...menu} />
       <Actionsheet isOpen={isOpen} onClose={onClose}>
-        <Actionsheet.Content style={tw`${gridColor}`}>
+        <Actionsheet.Content style={tw``}>
           {options.map((item, index) => {
             const isSelected = item.time === appLock.autoLockAfterSeconds;
             return (
@@ -88,7 +88,7 @@ export default function AutoLock() {
                 style={tw`flex-row items-center justify-between w-full p-3`}>
                 <Text
                   style={tw`
-                                        }] text-lg ${textColor}`}>
+                                        }] text-lg `}>
                   {item.label}
                 </Text>
                 {isSelected && <CheckCircleIcon color={primaryColor} />}

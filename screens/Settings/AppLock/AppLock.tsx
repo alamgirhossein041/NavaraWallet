@@ -24,7 +24,7 @@ import SignPinCode from '../../../components/SignPinCode';
 import FaceId from './FaceId';
 import {localStorage, STORAGE_APP_LOCK} from '../../../utils/storage';
 import {getFromKeychain} from '../../../utils/keychain';
-import IconKeyPassword from "../../../assets/icons/icon-key.svg"
+import IconKeyPassword from '../../../assets/icons/icon-key.svg';
 
 const AppLock = ({navigation}) => {
   const password = useMemo(async () => {
@@ -44,17 +44,19 @@ const AppLock = ({navigation}) => {
     //     onPress: () => setShowModalPincode({ show: true, type: PinRequiredEnum.DISABLE_PIN_CODE }),
     //     next: true,
     // },
-    {
-      icon: <IconKeyPassword width="100%" height="100%" stroke={primaryColor} />,
-      name: 'Change Password',
-      value: '',
-      onPress: () =>
-        setShowModalPincode({
-          show: true,
-          type: PinRequiredEnum.CHANGE_PIN_CODE,
-        }),
-      next: true,
-    },
+    // {
+    //   icon: (
+    //     <IconKeyPassword width="100%" height="100%" stroke={primaryColor} />
+    //   ),
+    //   name: 'Change Password',
+    //   value: '',
+    //   onPress: () =>
+    //     setShowModalPincode({
+    //       show: true,
+    //       type: PinRequiredEnum.CHANGE_PIN_CODE,
+    //     }),
+    //   next: true,
+    // },
     // {
     //     icon: <UserIcon width="100%" height="100%" fill={primaryColor} />,
     //     name: "FaceID",
@@ -88,9 +90,9 @@ const AppLock = ({navigation}) => {
     setShowModalPincode(defaultModalPinCode);
     toastr.success('Success');
   };
-  const modeColor = useDarkMode();
+
   return (
-    <View style={tw`h-full w-full ${modeColor}`}>
+    <View style={tw`w-full h-full `}>
       <SignPinCode />
       <View style={tw`px-3`}>
         {!password ? (
@@ -131,7 +133,7 @@ const AppLock = ({navigation}) => {
         )}
 
         <Modal
-          style={tw`h-full w-full ${modeColor}`}
+          style={tw`w-full h-full `}
           isOpen={modalPincode.show}
           onClose={() => setShowModalPincode(defaultModalPinCode)}>
           <KeyboardAvoidingView
