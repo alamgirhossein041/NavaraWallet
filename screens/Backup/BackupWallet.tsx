@@ -1,53 +1,51 @@
-import {GoogleSignin} from '@react-native-google-signin/google-signin';
-import {cloneDeep} from 'lodash';
-import React, {useEffect, useState} from 'react';
-import {ScrollView, Text, View} from 'react-native';
-import {useRecoilState} from 'recoil';
-import Button from '../../components/Button';
-import TextField from '../../components/TextField';
-import {listWalletsState} from '../../data/globalState/listWallets';
-import {useDarkMode} from '../../hooks/useModeDarkMode';
-import {useLocalStorage} from '../../hooks/useLocalStorage';
-import usePopupResult from '../../hooks/usePopupResult';
-import {useTextDarkMode} from '../../hooks/useModeDarkMode';
-import {googleDriveStoreFile} from '../../module/googleApi/GoogleDrive';
-import {GOOGLE_ACCESS_TOKEN} from '../../utils/storage';
-import {tw} from '../../utils/tailwind';
-import toastr from '../../utils/toastr';
-import base64 from 'react-native-base64';
-import {IBackupData, IFileData} from '../../data/types';
-import useDatabase from '../../data/database/useDatabase';
-import {Controller, useForm} from 'react-hook-form';
-import {Switch} from 'native-base';
-import {primaryColor, primaryGray} from '../../configs/theme';
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import { cloneDeep } from "lodash";
+import { Switch } from "native-base";
+import React, { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { ScrollView, Text, View } from "react-native";
+import base64 from "react-native-base64";
+import { useRecoilState } from "recoil";
+import Button from "../../components/UI/Button";
+import TextField from "../../components/UI/TextField";
+import { Regex } from "../../configs/defaultValue";
+import { primaryColor, primaryGray } from "../../configs/theme";
+import useDatabase from "../../data/database/useDatabase";
+import { listWalletsState } from "../../data/globalState/listWallets";
+import { IBackupData, IFileData } from "../../data/types";
+import { useLocalStorage } from "../../hooks/useLocalStorage";
+import usePopupResult from "../../hooks/usePopupResult";
+import { googleDriveStoreFile } from "../../module/googleApi/GoogleDrive";
 import {
   decryptAESWithKeychain,
   encryptAESWithKeychain,
-} from '../../utils/keychain';
-import {Regex} from '../../configs/defaultValue';
+} from "../../utils/keychain";
+import { GOOGLE_ACCESS_TOKEN } from "../../utils/storage";
+import { tw } from "../../utils/tailwind";
+import toastr from "../../utils/toastr";
 
-type nameType = 'password' | 'rePassword' | 'fileName' | 'passwordHint';
+type nameType = "password" | "rePassword" | "fileName" | "passwordHint";
 
-const BackupWallet = ({navigation, route}) => {
+const BackupWallet = ({ navigation, route }) => {
   const [storedAccessToken, setStorageAccessToken] =
     useLocalStorage(GOOGLE_ACCESS_TOKEN);
-  const [accessToken, setAccessToken] = useState('');
+  const [accessToken, setAccessToken] = useState("");
   const [isAppPassword, setIsAppPassword] = useState(true);
   const [loading, setLoading] = useState(false);
   const popupResult = usePopupResult();
-  const {walletController} = useDatabase();
+  const { walletController } = useDatabase();
   const {
     control,
     setValue,
     getValues,
     watch,
-    formState: {errors},
+    formState: { errors },
   } = useForm({
     defaultValues: {
-      fileName: '',
-      password: '',
-      rePassword: '',
-      passwordHint: '',
+      fileName: "",
+      password: "",
+      rePassword: "",
+      passwordHint: "",
     },
   });
   const [listWallets, setListWallets] = useRecoilState(listWalletsState);
@@ -55,41 +53,41 @@ const BackupWallet = ({navigation, route}) => {
   const seedPhrase = listWallets[indexSelected]?.seedPhrase;
 
   const resetValue = (value?: string) => {
-    if (value === 'password') {
-      setValue('password', '');
-      setValue('rePassword', '');
+    if (value === "password") {
+      setValue("password", "");
+      setValue("rePassword", "");
     }
-    setValue('fileName', '');
-    setValue('password', '');
-    setValue('rePassword', '');
-    setValue('passwordHint', '');
+    setValue("fileName", "");
+    setValue("password", "");
+    setValue("rePassword", "");
+    setValue("passwordHint", "");
   };
 
   const handleError = () => {
-    const {fileName, password, rePassword} = getValues();
+    const { fileName, password, rePassword } = getValues();
     if (fileName.length === 0) {
-      return 'Please enter file name';
+      return "Please enter file name";
     }
     if (isAppPassword) {
-      return '';
+      return "";
     }
     if (password.length === 0) {
-      return 'Please enter password';
+      return "Please enter password";
     }
     if (rePassword.length === 0) {
-      return 'Please enter confirm password';
+      return "Please enter confirm password";
     }
 
     if (password !== rePassword) {
-      resetValue('password');
-      return 'Password does not match';
+      resetValue("password");
+      return "Password does not match";
     }
 
     if (!password.match(Regex.password)) {
-      resetValue('password');
-      return 'Password must be at least 8 characters long, contain at least one lowercase letter, one uppercase letter, one number and one special character(@$!%*#?&$)';
+      resetValue("password");
+      return "Password must be at least 8 characters long, contain at least one lowercase letter, one uppercase letter, one number and one special character(@$!%*#?&$)";
     }
-    return '';
+    return "";
   };
 
   const getData = async (password: string) => {
@@ -99,7 +97,7 @@ const BackupWallet = ({navigation, route}) => {
       const decryptedSeedPhrase = await decryptAESWithKeychain(seedPhrase);
       const encryptedSeedPhrase = await encryptAESWithKeychain(
         decryptedSeedPhrase,
-        password,
+        password
       );
       return encryptedSeedPhrase;
     }
@@ -108,10 +106,10 @@ const BackupWallet = ({navigation, route}) => {
   const handleOnPress = async () => {
     const error = handleError();
     if (error.length > 0) {
-      toastr.error(error, {duration: 3000});
+      toastr.error(error, { duration: 3000 });
       return;
     }
-    const {fileName, password, passwordHint} = getValues();
+    const { fileName, password, passwordHint } = getValues();
 
     setLoading(true);
     if (accessToken) {
@@ -129,33 +127,33 @@ const BackupWallet = ({navigation, route}) => {
       const result = await googleDriveStoreFile(
         accessToken,
         encodedFileName,
-        encodedFileData,
+        encodedFileData
       );
-      if (result.status === 'success') {
+      if (result.status === "success") {
         setLoading(false);
         await updateWallet();
         await GoogleSignin.signOut();
         navigation.goBack();
         popupResult({
-          title: 'Backup Successfully',
+          title: "Backup Successfully",
           isOpen: true,
-          type: 'success',
+          type: "success",
         });
       } else {
         setLoading(false);
         popupResult({
-          title: 'Backup Error',
+          title: "Backup Error",
           isOpen: true,
-          type: 'error',
+          type: "error",
         });
       }
       await GoogleSignin.signOut();
-      setStorageAccessToken('');
+      setStorageAccessToken("");
       navigation.goBack();
     } else {
       GoogleSignin.signOut();
       navigation.goBack();
-      return toastr.error('Login error', {duration: 3000});
+      return toastr.error("Login error", { duration: 3000 });
     }
     setLoading(false);
     resetValue();
@@ -187,31 +185,32 @@ const BackupWallet = ({navigation, route}) => {
 
   const textFields = [
     {
-      type: 'text',
-      name: 'fileName',
-      label: 'File Name',
+      type: "text",
+      name: "fileName",
+      label: "File Name",
     },
     {
-      type: 'password',
-      name: 'password',
-      label: 'Password',
+      type: "password",
+      name: "password",
+      label: "Password",
     },
     {
-      type: 'password',
-      name: 'rePassword',
-      label: 'Re-enter Password',
+      type: "password",
+      name: "rePassword",
+      label: "Re-enter Password",
     },
     {
-      type: 'text',
-      name: 'passwordHint',
-      label: 'Password Hint',
+      type: "text",
+      name: "passwordHint",
+      label: "Password Hint",
     },
   ];
 
   return (
     <View
-      style={tw`h-full w-full px-4 pt-10 flex flex-col justify-between items-center `}>
-      <Text style={tw`dark:text-white  w-full`}>
+      style={tw`flex flex-col items-center justify-between w-full h-full px-4 pt-10 `}
+    >
+      <Text style={tw`w-full dark:text-white`}>
         {storedAccessToken?.email}
       </Text>
       <ScrollView style={tw`flex`}>
@@ -223,7 +222,7 @@ const BackupWallet = ({navigation, route}) => {
             <Controller
               key={index}
               control={control}
-              render={({field: {onChange, value}}) => (
+              render={({ field: { onChange, value } }) => (
                 <TextField
                   type={item.type}
                   value={value}
@@ -239,13 +238,13 @@ const BackupWallet = ({navigation, route}) => {
       </ScrollView>
       <View style={tw`absolute w-full bottom-5`}>
         <View style={tw`flex-row items-center justify-between w-full mb-5`}>
-          <Text style={tw`dark:text-white  font-semibold`}>
+          <Text style={tw`font-semibold dark:text-white`}>
             Use App's Password for encryption
           </Text>
           <Switch
-            trackColor={{false: primaryGray, true: primaryColor}}
+            trackColor={{ false: primaryGray, true: primaryColor }}
             thumbColor="white"
-            onValueChange={value => setIsAppPassword(value)}
+            onValueChange={(value) => setIsAppPassword(value)}
             value={isAppPassword}
           />
         </View>

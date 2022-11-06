@@ -1,21 +1,22 @@
-import {Image, Text, View} from 'native-base';
-import React from 'react';
-import {tw} from '../../utils/tailwind';
-import BonusCryptoCard from '../Home/BonusCryptoCard';
-import IconCopy from '../../assets/icons/icon-copy.svg';
-import {ScrollView, Touchable, TouchableOpacity} from 'react-native';
-import TextField from '../../components/TextField';
-import IconNPoint from '../../assets/icons/icon-npoint.svg';
+import { Image, Text, View } from "native-base";
+import React from "react";
+import { ScrollView, TouchableOpacity } from "react-native";
+import IconCopy from "../../assets/icons/icon-copy.svg";
+import IconNPoint from "../../assets/icons/icon-npoint.svg";
+import TextField from "../../components/UI/TextField";
+import { tw } from "../../utils/tailwind";
+import BonusCryptoCard from "../Home/BonusCryptoCard";
 
 export const Rewards = () => {
   return (
     <ScrollView style={tw`bg-white dark:bg-[#18191A]  `}>
       <View style={tw`items-center `}>
-        <Image source={require('../../assets/bg-rewards.png')} />
+        <Image source={require("../../assets/bg-rewards.png")} />
       </View>
       <BonusCryptoCard description="Invite your friends with referral code and get special bonus" />
       <View
-        style={tw`mx-4 py-5 flex bg-[#F0F9FF] flex-row items-center justìfy-content-between`}>
+        style={tw`mx-4 py-5 flex bg-[#F0F9FF] flex-row items-center justìfy-content-between`}
+      >
         <TouchableOpacity style={tw`mr-auto px-7`}>
           <IconCopy />
         </TouchableOpacity>
@@ -30,7 +31,8 @@ export const Rewards = () => {
         You earn 15 points for the first time using Navara's wallet
       </Text>
       <View
-        style={tw`mx-4 py-5 flex bg-[#F0F9FF] flex-row items-center justìfy-content-between`}>
+        style={tw`mx-4 py-5 flex bg-[#F0F9FF] flex-row items-center justìfy-content-between`}
+      >
         <View style={tw`mr-auto px-7`}>
           <Text>Wallet1</Text>
         </View>
@@ -53,7 +55,8 @@ export const Rewards = () => {
         />
       </View>
       <View
-        style={tw`mx-auto my-5 items-center bg-[#F0F9FF] p-3 mx-5 rounded-lg`}>
+        style={tw`mx-auto my-5 items-center bg-[#F0F9FF] p-3 mx-5 rounded-lg`}
+      >
         <View style={tw`flex flex-row`}>
           <IconNPoint style={tw``} />
           <Text style={tw`dark:text-white  font-bold text-[14px] mt-1`}>

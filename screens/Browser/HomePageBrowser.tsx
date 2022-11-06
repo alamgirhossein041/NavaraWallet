@@ -1,16 +1,15 @@
-import {useIsFocused, useNavigation} from '@react-navigation/native';
-import React, {useEffect, useState} from 'react';
-import {FlatList, Text, TouchableOpacity, View} from 'react-native';
-import {primaryColor} from '../../configs/theme';
-import {BrowserFavorites} from '../../data/database/entities/favoritesBrowser';
-import useDatabase from '../../data/database/useDatabase';
-import cutString from '../../utils/splitString';
-import {getHostname} from '../../utils/stringsFunction';
-import {tw} from '../../utils/tailwind';
-import DefaultBrowser from './DefaultBrowser';
-import Favicon from './Favicon';
+import { useIsFocused, useNavigation } from "@react-navigation/native";
+import React, { useEffect, useState } from "react";
+import { FlatList, Text, TouchableOpacity, View } from "react-native";
+import { primaryColor } from "../../configs/theme";
+import { BrowserFavorites } from "../../data/database/entities/favoritesBrowser";
+import useDatabase from "../../data/database/useDatabase";
+import cutString from "../../utils/splitString";
+import { tw } from "../../utils/tailwind";
+import DefaultBrowser from "./DefaultBrowser";
+import Favicon from "./Favicon";
 
-const HomePageBrowser = props => {
+const HomePageBrowser = (props) => {
   return (
     <View style={tw`w-full h-full px-4 `}>
       <ListFavorite {...props} />
@@ -19,7 +18,7 @@ const HomePageBrowser = props => {
   );
 };
 
-const ListFavorite = React.memo(({openLink}: any) => {
+const ListFavorite = React.memo(({ openLink }: any) => {
   const isFocused = useIsFocused();
   const [favorites, setFavorites] = useState<BrowserFavorites[]>([]);
 
@@ -32,8 +31,8 @@ const ListFavorite = React.memo(({openLink}: any) => {
       })();
   }, [isFocused]);
 
-  const {favoritesBrowserController} = useDatabase();
-  const handleOpenItem = item => {
+  const { favoritesBrowserController } = useDatabase();
+  const handleOpenItem = (item) => {
     openLink(item.url);
   };
   const navigation = useNavigation();
@@ -43,16 +42,18 @@ const ListFavorite = React.memo(({openLink}: any) => {
   return (
     <View style={tw`mt-2`}>
       <View style={tw`flex flex-row`}>
-        <Text style={tw`dark:text-white  mb-1 text-lg font-bold`}>
+        <Text style={tw`mb-1 text-lg font-bold text-black dark:text-white`}>
           Favorite
         </Text>
         <TouchableOpacity
           style={tw`mt-1 ml-auto`}
           onPress={() => {
-            navigation.navigate('FavoritesList' as never);
-          }}>
+            navigation.navigate("FavoritesList" as never);
+          }}
+        >
           <Text
-            style={tw`dark:text-white  text-[14px] text-[${primaryColor}] `}>
+            style={tw`dark:text-white  text-[14px] text-[${primaryColor}] `}
+          >
             See all
           </Text>
         </TouchableOpacity>
@@ -63,18 +64,21 @@ const ListFavorite = React.memo(({openLink}: any) => {
           horizontal
           showsHorizontalScrollIndicator={false}
           data={favorites}
-          renderItem={({item}) => {
+          renderItem={({ item }) => {
             return (
               <TouchableOpacity
                 showsVerticalScrollIndicator={false}
                 showsHorizontalScrollIndicator={false}
                 style={tw`pb-2 mr-3 `}
-                onPress={() => handleOpenItem(item)}>
+                onPress={() => handleOpenItem(item)}
+              >
                 <View style={tw`flex flex-col items-center justify-center`}>
                   <View style={tw`items-center justify-center`}>
-                    <Favicon domain={getHostname(item.url)} size={8} />
+                    <Favicon url={item.icon} size={8} />
                   </View>
-                  <Text>{cutString(item.title, 12)}</Text>
+                  <Text style={tw`text-black dark:text-white`}>
+                    {cutString(item.title, 12)}
+                  </Text>
                 </View>
               </TouchableOpacity>
             );

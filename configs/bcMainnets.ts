@@ -1,6 +1,6 @@
 import {RpcProviderMethod, NETWORKS} from '../enum/bcEnum';
 
-export default {
+export const EVM_MAINET_CONFIG = {
   [NETWORKS.ETHEREUM]: {
     name: 'ethereum mainnet',
     provider: 'homestead',
@@ -64,3 +64,11 @@ export default {
     rpc: 'https://arb1.arbitrum.io/rpc',
   },
 };
+
+export const NEAR_MAINNET_CONFIG = {
+  networkId: 'mainnet',
+  walletUrl: 'https://wallet.near.org',
+  nodeUrl: 'https://rpc.mainnet.near.org',
+  helperUrl: 'https://api.kitwallet.app',
+  explorerUrl: 'https://explorer.mainnet.near.org',
+}

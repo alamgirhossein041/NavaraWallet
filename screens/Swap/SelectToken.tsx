@@ -1,21 +1,25 @@
-import React, {useState} from 'react';
-import {useQuery} from 'react-query';
-import TokenIcon from '../../components/TokenIcon';
-import API from '../../data/api';
-import {IToken} from '../../data/types';
-import {
-  useDarkMode,
-  useGridDarkMode,
-  useTextDarkMode,
-} from '../../hooks/useModeDarkMode';
-import ModalSelectOption, {IOption} from './ModalSelectOption';
+import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { Text, View } from "react-native";
+import { RefreshIcon } from "react-native-heroicons/solid";
+import PressableAnimatedSpin from "../../components/UI/PressableAnimatedSpin";
+import TokenIcon from "../../components/UI/TokenIcon";
+import { primaryColor } from "../../configs/theme";
+import { IToken } from "../../data/types";
+import { tw } from "../../utils/tailwind";
+import ModalSelectOption from "./ModalSelectOption";
 
 type SelectNetworkProps = {
   value: string;
   onSetValue?: (value: IToken) => void;
   iconUri?: string;
   disabledValue?: string;
-  chainId?: number | string;
+  listTokens?: IToken[];
+  isLoading?: boolean;
+  isError?: boolean;
+  refetch?: () => void;
+  searchValue?: string;
+  setSearchValue?: (value: string) => void;
 };
 
 const SelectToken = ({
@@ -23,67 +27,61 @@ const SelectToken = ({
   onSetValue = () => {},
   iconUri,
   disabledValue,
-  chainId,
+  listTokens,
+  isLoading,
+  isError,
+  refetch,
+  searchValue,
+  setSearchValue,
 }: SelectNetworkProps) => {
-  const [searchValue, setSearchValue] = useState('');
-  const [options, setOptions] = useState<IOption[]>();
+  const { t } = useTranslation();
 
-  //text darkmode
-
-  //grid, shadow darkmode
-
-  const {
-    isLoading,
-    data: listTokens,
-    isError,
-  } = useQuery(
-    ['tokens', chainId, searchValue],
-    async (): Promise<IToken[]> => {
-      const params =
-        searchValue.length > 0
-          ? {
-              chainId: chainId,
-              symbol: searchValue.length > 0 && searchValue.toLowerCase(),
-            }
-          : {
-              chainId: chainId,
-            };
-
-      const response = await API.get('/tokens', {
-        params: params,
-      });
-
-      const _listTokens = response as any;
-      const _options = _listTokens.map((token: IToken) => {
+  const options = useMemo(() => {
+    if (listTokens) {
+      const _options = listTokens.map((token: IToken) => {
         return {
           label: token.symbol,
           value: token.address,
           iconUri: token.img,
         };
       });
-      setOptions(_options);
-      return _listTokens;
-    },
-  );
+      return _options;
+    } else {
+      return [];
+    }
+  }, [listTokens]);
+
+  if (isError) {
+    return (
+      <View style={tw`flex-row items-center justify-between py-2`}>
+        <Text>Get list tokens failed</Text>
+        <PressableAnimatedSpin onPress={refetch}>
+          <RefreshIcon color={primaryColor} />
+        </PressableAnimatedSpin>
+      </View>
+    );
+  }
 
   return (
     <ModalSelectOption
       icon={<TokenIcon uri={iconUri} />}
       loading={isLoading}
-      error={isError ? 'Cannot load' : undefined}
+      error={isError ? `${t("swap.cannot_load")}` : undefined}
       iconSize="w-10 h-10"
       filterType="debounce"
       searchValue={searchValue}
-      handleChange={text => {
+      handleChange={(text) => {
         setSearchValue(text);
       }}
-      stringStyle="font-semibold text-base"
-      value={value === '' ? 'Select' : value}
+      stringStyle="font-semibold text-base dark:text-white"
+      value={value === "" ? `${t("swap.select")}` : value}
       disabledValue={disabledValue}
       options={options}
-      onSetValue={address => {
-        const token = listTokens.find(t => t.address === address);
-        onSetValue(token);
+      onSetValue={(address) => {
+        const selectedToken = listTokens.find(
+          (token) => token.address === address
+        );
+        onSetValue(selectedToken);
       }}
     />
   );

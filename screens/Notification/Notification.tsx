@@ -1,10 +1,8 @@
 import React from 'react';
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
-import {tw} from '../../utils/tailwind';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import IconMobile from '../../assets/icons/icon-mobile-noti.svg';
-import WalletIcon from '../../assets/icons/icon-solid-wallet.svg';
-import {bgUnreadNotification, primaryColor} from '../../configs/theme';
-import {useDarkMode} from '../../hooks/useModeDarkMode';
+import { bgUnreadNotification, primaryColor } from '../../configs/theme';
+import { tw } from '../../utils/tailwind';
 const Notification = () => {
   const BG_COLOR = '#F8FAFC';
   const arrayNoti = [

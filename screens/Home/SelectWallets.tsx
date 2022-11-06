@@ -1,32 +1,34 @@
-import {useLinkTo} from '@react-navigation/native';
-import React from 'react';
+import { useLinkTo } from "@react-navigation/native";
+import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dimensions,
   SafeAreaView,
   Text,
   TouchableOpacity,
   View,
-} from 'react-native';
-import Carousel from 'react-native-snap-carousel';
-import {useRecoilValue, useSetRecoilState} from 'recoil';
-import ReceiveIcon from '../../assets/icons/icon-recevie.svg';
-import SendIcon from '../../assets/icons/icon-send.svg';
-import SwapIcon from '../../assets/icons/icon-swap.svg';
-import {Wallet} from '../../data/database/entities/wallet';
+} from "react-native";
+import Carousel from "react-native-snap-carousel";
+import { useRecoilState, useRecoilValue } from "recoil";
+import ReceiveIcon from "../../assets/icons/icon-recevie.svg";
+import SendIcon from "../../assets/icons/icon-send.svg";
+import SwapIcon from "../../assets/icons/icon-swap.svg";
+import { Wallet } from "../../data/database/entities/wallet";
 import {
   idWalletSelected,
   listWalletsState,
-} from '../../data/globalState/listWallets';
-import {useWalletSelected} from '../../hooks/useWalletSelected';
-import {tw} from '../../utils/tailwind';
-import CardWallet from './CardWallet';
+} from "../../data/globalState/listWallets";
+import { useWalletSelected } from "../../hooks/useWalletSelected";
+import { tw } from "../../utils/tailwind";
+import CardWallet from "./CardWallet";
 
 const SelectWallets = () => {
   const listWallets = useRecoilValue(listWalletsState);
-  const setIndexWalletSelected = useSetRecoilState(idWalletSelected);
+  const [indexWalletSelected, setIndexWalletSelected] =
+    useRecoilState(idWalletSelected);
   const walletSelected = useWalletSelected();
 
-  const {width: viewportWidth} = Dimensions.get('window');
+  const { width: viewportWidth } = Dimensions.get("window");
 
   // useEffect(() => {
   //   (async () => {
@@ -44,17 +46,17 @@ const SelectWallets = () => {
       <SafeAreaView style={tw`flex-1 bg-white dark:bg-[#18191A] `}>
         <View style={tw`flex-row flex-1`}>
           <Carousel
-            firstItem={walletSelected.index}
+            firstItem={indexWalletSelected}
             activeOpacity
-            layout={'default'}
+            layout={"default"}
             data={listWallets}
             sliderWidth={viewportWidth}
             itemWidth={viewportWidth - 45}
-            renderItem={({item, index}: {item: Wallet; index}) => (
+            renderItem={({ item, index }: { item: Wallet; index }) => (
               //
               <CardWallet wallet={item} index={index} />
             )}
-            onSnapToItem={index => setIndexWalletSelected(index)}
+            onSnapToItem={(index) => setIndexWalletSelected(index)}
           />
         </View>
       </SafeAreaView>
@@ -64,21 +66,22 @@ const SelectWallets = () => {
 };
 
 const ButtonActions = () => {
+  const { t } = useTranslation();
   const buttons = [
     {
-      label: 'Send',
+      label: `${t("home.send")}`,
       icon: <SendIcon height={28} width={28} />,
-      path: '/ViewListWallet',
+      path: "/ViewListWallet",
     },
     {
-      label: 'Receive',
+      label: `${t("home.receive")}`,
       icon: <ReceiveIcon height={28} width={28} />,
-      path: '/ReceiveToken',
+      path: "/ReceiveToken",
     },
     {
-      label: 'Swap',
+      label: `${t("home.swap")}`,
       icon: <SwapIcon height={28} width={28} />,
-      path: '/SwapToken',
+      path: "/SwapToken",
     },
     // {
     //   label: 'Secirity',
@@ -90,12 +93,14 @@ const ButtonActions = () => {
   return (
     <View style={tw`absolute flex-row justify-center w-full -bottom-5`}>
       <View
-        style={tw`flex-row w-3/4 p-2 bg-white dark:bg-[#18191A]  shadow z-100 rounded-2xl`}>
-        {buttons.map((button, index) => (
+        style={tw`flex-row w-3/4 p-2 bg-white dark:bg-[#202122]  shadow z-100 rounded-2xl`}
+      >
+        {buttons.map((button) => (
           <TouchableOpacity
             key={button.label}
             onPress={() => linkTo(button.path)}
-            style={tw`flex-col items-center justify-center w-1/${buttons.length} `}>
+            style={tw`flex-col items-center justify-center w-1/${buttons.length} `}
+          >
             {button.icon}
             {/* <View style={tw`relative bg-blue-100 rounded-full w-7 h-7`}>
            

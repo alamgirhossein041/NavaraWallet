@@ -7,17 +7,17 @@ import {
   withScope,
 } from '@sentry/react-native';
 import DefaultPreference from 'react-native-default-preference';
-import { METRICS_OPT_IN, AGREED, DEBUG } from '../constants/storage';
+import {METRICS_OPT_IN, AGREED, DEBUG} from '../constants/storage';
 
 /**
  * Wrapper class that allows us to override
- * console.log and console.error and in the future
+ *
  * we will have flags to do different actions based on
  * the environment, for ex. log to a remote server if prod
  */
 export default class Logger {
   /**
-   * console.log wrapper
+   *
    *
    * @param {object} args - data to be logged
    * @returns - void
@@ -27,7 +27,6 @@ export default class Logger {
     const metricsOptIn = await DefaultPreference.get(METRICS_OPT_IN);
     if (__DEV__) {
       args.unshift(DEBUG);
-      console.log.apply(null, args); // eslint-disable-line no-console
     } else if (metricsOptIn === AGREED) {
       addBreadcrumb({
         message: JSON.stringify(args),
@@ -84,9 +83,9 @@ export default class Logger {
       }
       if (extra) {
         if (typeof extra === 'string') {
-          extra = { message: extra };
+          extra = {message: extra};
         }
-        withScope((scope) => {
+        withScope(scope => {
           scope.setExtras(extra);
           captureException(exception);
         });
@@ -107,7 +106,7 @@ export default class Logger {
     const metricsOptIn = await DefaultPreference.get(METRICS_OPT_IN);
     if (__DEV__) {
       args.unshift('[MetaMask DEBUG]:');
-      // console.log.apply(null, args); // eslint-disable-line no-console
+      //
     } else if (metricsOptIn === 'agreed') {
       captureMessage(JSON.stringify(args));
     }

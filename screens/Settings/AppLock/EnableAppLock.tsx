@@ -1,20 +1,14 @@
-import React, {useState} from 'react';
-import {View} from 'react-native';
-import {useSetRecoilState} from 'recoil';
-import Button from '../../../components/Button';
-import PinCodeInput from '../../../components/PinCodeInput';
-import {Regex} from '../../../configs/defaultValue';
-import {appLockState} from '../../../data/globalState/appLock';
-import {
-  useDarkMode,
-  useGridDarkMode,
-  useTextDarkMode,
-} from '../../../hooks/useModeDarkMode';
-import {storeToKeychain} from '../../../utils/keychain';
-import {localStorage, STORAGE_APP_LOCK} from '../../../utils/storage';
-import {tw} from '../../../utils/tailwind';
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { View } from "react-native";
+import { useSetRecoilState } from "recoil";
+import PinCodeInput from "../../../components/UI/PinCodeInput";
+import { appLockState } from "../../../data/globalState/appLock";
+import { storeToKeychain } from "../../../utils/keychain";
+import { localStorage, STORAGE_APP_LOCK } from "../../../utils/storage";
+import { tw } from "../../../utils/tailwind";
 
-const EnableAppLock = ({onSuccess}) => {
+const EnableAppLock = ({ onSuccess }) => {
   const setAppLock = useSetRecoilState(appLockState);
   // const [err, setErr] = useState('');
   const [loading, setLoading] = useState(false);
@@ -30,7 +24,7 @@ const EnableAppLock = ({onSuccess}) => {
       updatedAt: new Date(),
       openAt: new Date(),
       isLock: false,
-      typeBioMetric: 'none',
+      typeBioMetric: "none",
       autoLockAfterSeconds: 0,
       transactionSigning: true,
     };
@@ -42,16 +36,15 @@ const EnableAppLock = ({onSuccess}) => {
     await onSuccess();
     setLoading(false);
   };
-  //text darkmode
 
-  //grid, shadow darkmode
+  const { t } = useTranslation();
 
   return (
     <View style={tw`items-center flex-1`}>
       <PinCodeInput
         biometric={false}
         type="new"
-        label="Set Password"
+        label={t("setting.apps_lock.set_password")}
         hide
         onSuccess={handlePress}
       />

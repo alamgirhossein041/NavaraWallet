@@ -1,27 +1,22 @@
-import {GoogleSignin} from '@react-native-google-signin/google-signin';
-import React, {useCallback, useEffect, useState} from 'react';
-import {ScrollView, Text, View} from 'react-native';
-import base64 from 'react-native-base64';
-import {DocumentTextIcon} from 'react-native-heroicons/outline';
-import PressableAnimated from '../../components/PressableAnimated';
-import {primaryColor} from '../../configs/theme';
-import {IDriveFile, IFileData} from '../../data/types';
-import {useDarkMode} from '../../hooks/useModeDarkMode';
-import {useLocalStorage} from '../../hooks/useLocalStorage';
-import {googleDriveGetFiles} from '../../module/googleApi/GoogleDrive';
-import {GOOGLE_ACCESS_TOKEN} from '../../utils/storage';
-import {tw} from '../../utils/tailwind';
-import LoginToCloudModal from '../Backup/LoginToCloudModal';
-import usePopupResult from '../../hooks/usePopupResult';
-import {useGridDarkMode} from '../../hooks/useModeDarkMode';
-import {useTextDarkMode} from '../../hooks/useModeDarkMode';
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import React, { useCallback, useEffect, useState } from "react";
+import { ScrollView, Text, View } from "react-native";
+import base64 from "react-native-base64";
+import { DocumentTextIcon } from "react-native-heroicons/outline";
+import PressableAnimated from "../../components/UI/PressableAnimated";
+import { primaryColor } from "../../configs/theme";
+import { IDriveFile, IFileData } from "../../data/types";
+import { useLocalStorage } from "../../hooks/useLocalStorage";
+import usePopupResult from "../../hooks/usePopupResult";
+import { googleDriveGetFiles } from "../../module/googleApi/GoogleDrive";
+import { GOOGLE_ACCESS_TOKEN } from "../../utils/storage";
+import { tw } from "../../utils/tailwind";
+import LoginToCloudModal from "../Backup/LoginToCloudModal";
 
-const SelectFile = ({navigation}) => {
+const SelectFile = ({ navigation }) => {
   const [storedAccessToken] = useLocalStorage(GOOGLE_ACCESS_TOKEN);
   const [isOpenLoginModal, setIsOpenModal] = useState(false);
   const [listFiles, setListFiles] = useState<IFileData[]>([]);
-
-  //grid, shadow darkmode
 
   const popupResult = usePopupResult();
 
@@ -30,13 +25,13 @@ const SelectFile = ({navigation}) => {
       const decoded = base64.decode(fileName);
       return JSON.parse(decoded) as IFileData;
     } catch (e) {
-      return {fileName: '', date: '', id: ''} as IFileData;
+      return { fileName: "", date: "", id: "" } as IFileData;
     }
   };
 
   const getListFiles = useCallback(async (accessToken: string) => {
     const files = (await googleDriveGetFiles(accessToken)) as IDriveFile[];
-    const _listFiles: IFileData[] = files.map(file => {
+    const _listFiles: IFileData[] = files.map((file) => {
       const fileNamedata = decodeFileName(file.name);
 
       if (fileNamedata?.fileName.length > 0) {
@@ -48,10 +43,10 @@ const SelectFile = ({navigation}) => {
       }
     });
     const filteredListFiles = _listFiles.filter(
-      file =>
+      (file) =>
         file?.fileName?.length > 0 &&
         file?.date?.length > 0 &&
-        file?.id?.length > 0,
+        file?.id?.length > 0
     );
     setListFiles(filteredListFiles);
   }, []);
@@ -83,12 +78,14 @@ const SelectFile = ({navigation}) => {
                 key={index}
                 onPress={async () => {
                   await GoogleSignin.signOut();
-                  navigation.navigate('RestoreWallet', {
+                  navigation.navigate("RestoreWallet", {
                     fileId: file.id,
                   });
-                }}>
+                }}
+              >
                 <View
-                  style={tw`w-full py-2 px-3 flex flex-row items-center justify-start  rounded-full mt-2`}>
+                  style={tw`w-full py-2 px-3 flex flex-row items-center justify-start  rounded-full mt-2`}
+                >
                   <View style={tw`p-1 mr-2 rounded-full`}>
                     <DocumentTextIcon
                       width={25}
@@ -129,9 +126,9 @@ const SelectFile = ({navigation}) => {
           } else {
             navigation.goBack();
             popupResult({
-              title: 'You need to login to your Cloud service',
+              title: "You need to login to your Cloud service",
               isOpen: true,
-              type: 'error',
+              type: "error",
             });
           }
           setIsOpenModal(false);

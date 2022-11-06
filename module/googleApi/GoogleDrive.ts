@@ -1,27 +1,27 @@
-import {GoogleSignin} from '@react-native-google-signin/google-signin';
-import axios from 'axios';
-import toastr from '../../utils/toastr';
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import axios from "axios";
+import toastr from "../../utils/toastr";
 
 export const googleDriveStoreFile = async (
   accessToken: string,
   fileName: string,
-  data: string,
+  data: string
 ) => {
   try {
     const metadata = {
       name: fileName,
-      mimeType: 'text/plain',
+      mimeType: "text/plain",
     };
 
     const driveResponse = await axios.post(
-      'https://www.googleapis.com/drive/v3/files',
+      "https://www.googleapis.com/drive/v3/files",
       JSON.stringify(metadata),
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-      },
+      }
     );
 
     const driveResponseJson = await driveResponse.data;
@@ -32,9 +32,9 @@ export const googleDriveStoreFile = async (
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-      },
+      }
     );
 
     const mediaResponseJson = await mediaResponse.data;
@@ -42,28 +42,28 @@ export const googleDriveStoreFile = async (
       throw new Error(mediaResponseJson.error.message);
     }
 
-    return {status: 'success'};
+    return { status: "success" };
   } catch (error) {
-    toastr.error('Backup Failed');
-    return {status: 'failed'};
+    toastr.error("Backup Failed");
+    return { status: "failed" };
   }
 };
 
 export const googleDriveGetFiles = async (accessToken: string) => {
   try {
     const driveResponse = await axios.get(
-      'https://www.googleapis.com/drive/v3/files',
+      "https://www.googleapis.com/drive/v3/files",
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
-      },
+      }
     );
 
     const driveResponseJson = await driveResponse.data;
     return driveResponseJson.files;
   } catch (error) {
-    toastr.error('Failed to get files');
+    toastr.error("Failed to get files");
     GoogleSignin.signOut();
     return [];
   }
@@ -71,7 +71,7 @@ export const googleDriveGetFiles = async (accessToken: string) => {
 
 export const googleDriveReadFileContent = async (
   accessToken: string,
-  fileId: string,
+  fileId: string
 ) => {
   try {
     const driveResponse = await axios.get(
@@ -79,16 +79,16 @@ export const googleDriveReadFileContent = async (
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'text/plain',
+          "Content-Type": "text/plain",
         },
-      },
+      }
     );
     const driveResponseJson = await driveResponse.data;
     return driveResponseJson;
   } catch (error) {
     console.error(error);
-    toastr.error('Failed to read file');
+    toastr.error("Failed to read file");
     GoogleSignin.signOut();
-    return '';
+    return "";
   }
 };

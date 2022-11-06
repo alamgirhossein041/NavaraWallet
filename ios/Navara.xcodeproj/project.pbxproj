@@ -8,13 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* NavaraTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* NavaraTests.m */; };
-		130174A2998E6E5979A80D78 /* libPods-Navara-NavaraTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 64E8EB99654C9046743BC1D9 /* libPods-Navara-NavaraTests.a */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		3F1AE4CE77AEFB9475E64E38 /* libPods-Navara.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DC0CC6CD38C300BD292BB4FA /* libPods-Navara.a */; };
+		27825003DB7AC2B1A441E6D6 /* libPods-Navara.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D7A5C1EB7377F80ECBEBC5F6 /* libPods-Navara.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		966763F3284F582F001BFA47 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		A3C798DB284DFA7700BD8584 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		A3C798DC284E0AB100BD8584 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
+		B6FC7FDD0E6137974C0128D8 /* libPods-Navara-NavaraTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 84BCDC0B2B0A5400D3D84E5F /* libPods-Navara-NavaraTests.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,13 +37,13 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Navara/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Navara/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Navara/main.m; sourceTree = "<group>"; };
-		44818FBDF14DF7E439B4BDBC /* Pods-Navara-NavaraTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Navara-NavaraTests.debug.xcconfig"; path = "Target Support Files/Pods-Navara-NavaraTests/Pods-Navara-NavaraTests.debug.xcconfig"; sourceTree = "<group>"; };
-		64E8EB99654C9046743BC1D9 /* libPods-Navara-NavaraTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Navara-NavaraTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		728CCCF5F533D472080EE7FD /* Pods-Navara-NavaraTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Navara-NavaraTests.release.xcconfig"; path = "Target Support Files/Pods-Navara-NavaraTests/Pods-Navara-NavaraTests.release.xcconfig"; sourceTree = "<group>"; };
-		76F80FA0F6287C179F48E8DD /* Pods-Navara.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Navara.debug.xcconfig"; path = "Target Support Files/Pods-Navara/Pods-Navara.debug.xcconfig"; sourceTree = "<group>"; };
+		5C5E766ACE45D28DD1386B3C /* Pods-Navara.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Navara.debug.xcconfig"; path = "Target Support Files/Pods-Navara/Pods-Navara.debug.xcconfig"; sourceTree = "<group>"; };
+		7C73E3061C7D7A2F7DE1CEE7 /* Pods-Navara.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Navara.release.xcconfig"; path = "Target Support Files/Pods-Navara/Pods-Navara.release.xcconfig"; sourceTree = "<group>"; };
+		7E0F3FA691478C1EAE4BA7CD /* Pods-Navara-NavaraTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Navara-NavaraTests.release.xcconfig"; path = "Target Support Files/Pods-Navara-NavaraTests/Pods-Navara-NavaraTests.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Navara/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		963FE00CA95B31D84415EC78 /* Pods-Navara.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Navara.release.xcconfig"; path = "Target Support Files/Pods-Navara/Pods-Navara.release.xcconfig"; sourceTree = "<group>"; };
-		DC0CC6CD38C300BD292BB4FA /* libPods-Navara.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Navara.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		84BCDC0B2B0A5400D3D84E5F /* libPods-Navara-NavaraTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Navara-NavaraTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A5EACB44524671BA485360A9 /* Pods-Navara-NavaraTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Navara-NavaraTests.debug.xcconfig"; path = "Target Support Files/Pods-Navara-NavaraTests/Pods-Navara-NavaraTests.debug.xcconfig"; sourceTree = "<group>"; };
+		D7A5C1EB7377F80ECBEBC5F6 /* libPods-Navara.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Navara.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -52,7 +52,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				130174A2998E6E5979A80D78 /* libPods-Navara-NavaraTests.a in Frameworks */,
+				B6FC7FDD0E6137974C0128D8 /* libPods-Navara-NavaraTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -60,7 +60,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3F1AE4CE77AEFB9475E64E38 /* libPods-Navara.a in Frameworks */,
+				27825003DB7AC2B1A441E6D6 /* libPods-Navara.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -101,8 +101,8 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				DC0CC6CD38C300BD292BB4FA /* libPods-Navara.a */,
-				64E8EB99654C9046743BC1D9 /* libPods-Navara-NavaraTests.a */,
+				D7A5C1EB7377F80ECBEBC5F6 /* libPods-Navara.a */,
+				84BCDC0B2B0A5400D3D84E5F /* libPods-Navara-NavaraTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -141,10 +141,10 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				76F80FA0F6287C179F48E8DD /* Pods-Navara.debug.xcconfig */,
-				963FE00CA95B31D84415EC78 /* Pods-Navara.release.xcconfig */,
-				44818FBDF14DF7E439B4BDBC /* Pods-Navara-NavaraTests.debug.xcconfig */,
-				728CCCF5F533D472080EE7FD /* Pods-Navara-NavaraTests.release.xcconfig */,
+				5C5E766ACE45D28DD1386B3C /* Pods-Navara.debug.xcconfig */,
+				7C73E3061C7D7A2F7DE1CEE7 /* Pods-Navara.release.xcconfig */,
+				A5EACB44524671BA485360A9 /* Pods-Navara-NavaraTests.debug.xcconfig */,
+				7E0F3FA691478C1EAE4BA7CD /* Pods-Navara-NavaraTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -156,12 +156,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "NavaraTests" */;
 			buildPhases = (
-				5F3BC6150475929D70511280 /* [CP] Check Pods Manifest.lock */,
+				64E1669D15FEFA546C5DF4F6 /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				587CEAD54D35A8BBBAF2E537 /* [CP] Embed Pods Frameworks */,
-				BF4C96769552D3A29FCE9A77 /* [CP] Copy Pods Resources */,
+				F1BAECE45D477E1884903C19 /* [CP] Embed Pods Frameworks */,
+				80E2C0795CA91F636EA27E4F /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -177,15 +177,15 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Navara" */;
 			buildPhases = (
-				408580384698EC844431A67E /* [CP] Check Pods Manifest.lock */,
+				2DA1EC1AD6F6FD7C23285407 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				230E3392312A4D0FABE129D2 /* Upload Debug Symbols to Sentry */,
-				E1B7AB16E0813F11D3C4300E /* [CP] Embed Pods Frameworks */,
-				B8DDA423754CBA46CB379667 /* [CP] Copy Pods Resources */,
+				D9B8337D3BE598A1B987B21F /* [CP] Embed Pods Frameworks */,
+				AC70439BEDB32DCFFD5F0E96 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -280,7 +280,7 @@
 			shellPath = /bin/sh;
 			shellScript = "export SENTRY_PROPERTIES=sentry.properties\n../node_modules/@sentry/cli/bin/sentry-cli upload-dsym";
 		};
-		408580384698EC844431A67E /* [CP] Check Pods Manifest.lock */ = {
+		2DA1EC1AD6F6FD7C23285407 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -302,24 +302,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		587CEAD54D35A8BBBAF2E537 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Navara-NavaraTests/Pods-Navara-NavaraTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Navara-NavaraTests/Pods-Navara-NavaraTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Navara-NavaraTests/Pods-Navara-NavaraTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		5F3BC6150475929D70511280 /* [CP] Check Pods Manifest.lock */ = {
+		64E1669D15FEFA546C5DF4F6 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -341,24 +324,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		B8DDA423754CBA46CB379667 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Navara/Pods-Navara-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Navara/Pods-Navara-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Navara/Pods-Navara-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		BF4C96769552D3A29FCE9A77 /* [CP] Copy Pods Resources */ = {
+		80E2C0795CA91F636EA27E4F /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -375,7 +341,24 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Navara-NavaraTests/Pods-Navara-NavaraTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		E1B7AB16E0813F11D3C4300E /* [CP] Embed Pods Frameworks */ = {
+		AC70439BEDB32DCFFD5F0E96 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Navara/Pods-Navara-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Navara/Pods-Navara-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Navara/Pods-Navara-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D9B8337D3BE598A1B987B21F /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -390,6 +373,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Navara/Pods-Navara-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F1BAECE45D477E1884903C19 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Navara-NavaraTests/Pods-Navara-NavaraTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Navara-NavaraTests/Pods-Navara-NavaraTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Navara-NavaraTests/Pods-Navara-NavaraTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
@@ -445,7 +445,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 44818FBDF14DF7E439B4BDBC /* Pods-Navara-NavaraTests.debug.xcconfig */;
+			baseConfigurationReference = A5EACB44524671BA485360A9 /* Pods-Navara-NavaraTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -474,12 +474,13 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Navara.app/Navara";
+				CURRENT_PROJECT_VERSION = 0;
 			};
 			name = Debug;
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 728CCCF5F533D472080EE7FD /* Pods-Navara-NavaraTests.release.xcconfig */;
+			baseConfigurationReference = 7E0F3FA691478C1EAE4BA7CD /* Pods-Navara-NavaraTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -502,19 +503,20 @@
 				PROVISIONING_PROFILE = "81497ca5-a5e9-4f55-ae04-93392f233873";
 				PROVISIONING_PROFILE_SPECIFIER = "network.navara AppStore";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Navara.app/Navara";
+				CURRENT_PROJECT_VERSION = 0;
 			};
 			name = Release;
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 76F80FA0F6287C179F48E8DD /* Pods-Navara.debug.xcconfig */;
+			baseConfigurationReference = 5C5E766ACE45D28DD1386B3C /* Pods-Navara.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 0;
 				DEVELOPMENT_TEAM = DH4S26F9GS;
 				ENABLE_BITCODE = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
@@ -540,14 +542,14 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 963FE00CA95B31D84415EC78 /* Pods-Navara.release.xcconfig */;
+			baseConfigurationReference = 7C73E3061C7D7A2F7DE1CEE7 /* Pods-Navara.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 0;
 				DEVELOPMENT_TEAM = DH4S26F9GS;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = Navara/Info.plist;
@@ -638,6 +640,7 @@
 					"-DFOLLY_USE_LIBCPP=1",
 				);
 				SDKROOT = iphoneos;
+				CURRENT_PROJECT_VERSION = 0;
 			};
 			name = Debug;
 		};
@@ -702,6 +705,7 @@
 				);
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
+				CURRENT_PROJECT_VERSION = 0;
 			};
 			name = Release;
 		};

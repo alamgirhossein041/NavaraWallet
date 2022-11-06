@@ -1,6 +1,6 @@
 import {RpcProviderMethod, NETWORKS} from '../enum/bcEnum';
 
-export default {
+export const EVM_TESTNET_CONFIG = {
   [NETWORKS.ETHEREUM]: {
     name: 'ROPSTEN',
     provider: 'ropsten',
@@ -62,4 +62,12 @@ export default {
     chainId: 421611,
     rpc: 'https://rinkeby.arbitrum.io/rpc',
   },
+};
+
+export const NEAR_TESTNET_CONFIG = {
+  networkId: 'testnet',
+  walletUrl: 'https://wallet.testnet.near.org',
+  nodeUrl: 'https://rpc.testnet.near.org',
+  helperUrl: 'https://testnet-api.kitwallet.app',
+  explorerUrl: 'https://explorer.testnet.near.org',
 };

@@ -1,24 +1,22 @@
-import {Text, View} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {tw} from '../../utils/tailwind';
-import {useRecoilState, useRecoilValue} from 'recoil';
-import {priceTokenState} from '../../data/globalState/priceTokens';
-import {NETWORK_COINGEKO_IDS} from '../../configs/bcNetworks';
-import CurrencyFormat from '../../components/CurrencyFormat';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import {EyeIcon, EyeOffIcon} from 'react-native-heroicons/solid';
-import showTotalAssets from '../../data/globalState/showTotalAssets';
-import useDatabase from '../../data/database/useDatabase';
-import {Wallet} from '../../data/database/entities/wallet';
-import {reloadingWallets} from '../../data/globalState/listWallets';
-import {Skeleton, Spinner} from 'native-base';
+import React, { useEffect, useState } from "react";
+import { Pressable, View } from "react-native";
+import { EyeIcon, EyeOffIcon } from "react-native-heroicons/solid";
+import { useRecoilState, useRecoilValue } from "recoil";
+import CurrencyFormat from "../../components/UI/CurrencyFormat";
+import { NETWORK_COINGEKO_IDS } from "../../configs/bcNetworks";
+import { Wallet } from "../../data/database/entities/wallet";
+import useDatabase from "../../data/database/useDatabase";
+import { priceTokenState } from "../../data/globalState/priceTokens";
+import showTotalAssets from "../../data/globalState/showTotalAssets";
+import { tw } from "../../utils/tailwind";
 
 export default function TotalAssets(props) {
-  const {walletController} = useDatabase();
-  const {balanceChains, wallet} = props;
+  const { walletController } = useDatabase();
+  const { balanceChains, wallet } = props;
   const priceTokens = useRecoilValue(priceTokenState);
   const [inVisible, setInVisible] = useRecoilState(showTotalAssets);
   const [totalAssets, setTotalAssets] = useState(wallet.totalAssets);
+
   useEffect(() => {
     const _totalAssets =
       balanceChains.reduce((total, asset) => {
@@ -38,10 +36,10 @@ export default function TotalAssets(props) {
   };
 
   return (
-    <TouchableOpacity onPress={() => setInVisible(!inVisible)}>
+    <Pressable onPress={() => setInVisible(!inVisible)}>
       {inVisible ? (
         <View style={tw`flex-row items-center `}>
-          <EyeOffIcon fill={'white'} width={30} height={30} />
+          <EyeOffIcon fill={"white"} width={30} height={30} />
         </View>
       ) : (
         <View style={tw`flex-row items-center`}>
@@ -50,9 +48,9 @@ export default function TotalAssets(props) {
             value={+totalAssets}
             size="3xl"
           />
-          <EyeIcon fill={'white'} width={30} height={30} />
+          <EyeIcon fill={"white"} width={30} height={30} />
         </View>
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
 }

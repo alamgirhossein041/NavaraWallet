@@ -2,14 +2,12 @@ import {ethers} from 'ethers';
 import {useState, useEffect} from 'react';
 import {DEVIVERATION_PATH} from '../configs/bcNetworks';
 import {NETWORKS, NETWORK_ENVIRONMENT_ENUM} from '../enum/bcEnum';
-import {WalletInterface, WalletProps} from '../data/types';
+import {WalletInterface} from '../data/types';
 import {hdkey} from 'ethereumjs-wallet';
 import {getNetworkConfig, useBcNetworks} from './useBcNetworks';
-import mainnetConfig from '../configs/bcMainnets';
-import testnetConfig from '../configs/bcTestnets';
 /**
  * @dev Create Wallet from Mnemonic
- * @param mnemonic = Mnemonic phrase
+ * @param mnemonic = Mnemonic phraseQ
  * @param index  = Account index
  * @returns wallet
  */
@@ -25,6 +23,7 @@ export const createEthereumWallet = (seed: Buffer, accountIndex = 0) => {
     network: NETWORKS.ETHEREUM,
     publicKey: publicKey,
     address: address,
+    testnetAddress: address,
     privateKey: privateKey,
   };
 };
@@ -36,8 +35,6 @@ export const getEthereumBalance = async (
 ) => {
   const NETWORK_CONFIG = getNetworkConfig(env);
   const config = NETWORK_CONFIG[network];
-
-  console.log(config.chainId, 'config.chainId');
 
   let provider = new ethers.providers.JsonRpcProvider(config.rpc);
   if (provider) {

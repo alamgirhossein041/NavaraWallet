@@ -1,36 +1,40 @@
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { useNavigation } from '@react-navigation/native';
-import { cloneDeep } from 'lodash';
-import { Actionsheet, KeyboardAvoidingView, useDisclose } from 'native-base';
-import React, { useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import { Platform, Text, TouchableOpacity, View } from 'react-native';
-import { EyeIcon, PencilAltIcon } from 'react-native-heroicons/solid';
-import { useRecoilState } from 'recoil';
-import IconBackupCloud from '../../assets/icons/icon-backup-cloud.svg';
-import ExclamationIcon from '../../assets/icons/icon-exclamation.svg';
-import IconDelete from '../../assets/icons/icon-trash.svg';
-import Button from '../../components/Button';
-import MenuItem from '../../components/MenuItem';
-import TextField from '../../components/TextField';
-import { dangerColor, primaryColor } from '../../configs/theme';
-import { Wallet } from '../../data/database/entities/wallet';
-import useDatabase from '../../data/database/useDatabase';
-import { listWalletsState } from '../../data/globalState/listWallets';
-import usePopupResult from '../../hooks/usePopupResult';
-import { useWalletSelected } from '../../hooks/useWalletSelected';
-import { tw } from '../../utils/tailwind';
-import LoginToCloudModal from '../Backup/LoginToCloudModal';
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import { useNavigation } from "@react-navigation/native";
+import { cloneDeep } from "lodash";
+import { Actionsheet, KeyboardAvoidingView, useDisclose } from "native-base";
+import React, { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+
+import { Platform, Text, TouchableOpacity, View } from "react-native";
+import { EyeIcon, PencilAltIcon } from "react-native-heroicons/solid";
+import { useRecoilState } from "recoil";
+import IconBackupCloud from "../../assets/icons/icon-backup-cloud.svg";
+import ExclamationIcon from "../../assets/icons/icon-exclamation.svg";
+import IconDelete from "../../assets/icons/icon-trash.svg";
+import Button from "../../components/UI/Button";
+import MenuItem from "../../components/UI/MenuItem";
+import TextField from "../../components/UI/TextField";
+import { dangerColor, primaryColor } from "../../configs/theme";
+import { Wallet } from "../../data/database/entities/wallet";
+import useDatabase from "../../data/database/useDatabase";
+import { listWalletsState } from "../../data/globalState/listWallets";
+import useWalletsActions from "../../data/globalState/listWallets/listWallets.actions";
+import usePopupResult from "../../hooks/usePopupResult";
+import { tw } from "../../utils/tailwind";
+import toastr from "../../utils/toastr";
+import LoginToCloudModal from "../Backup/LoginToCloudModal";
 const DetailWallet = ({ route, navigation }) => {
   const [listWallets, setListWallets] = useRecoilState(listWalletsState);
   const { data, index } = route.params;
-  const [walletData, setWallet] = useState<Wallet>(data);
-  const [showModal, setShowModal] = useState(false);
+  const [walletData] = useState<Wallet>(data);
   const [isOpenLoginModal, setIsOpenModal] = useState(false);
+  const { t } = useTranslation();
 
   const [nameWallet, setNameWallet] = useState(
-    `${walletData?.name !== null ? `${walletData.name}` : `Wallet ${index + 1}`
-    }`,
+    `${
+      walletData?.name !== null ? `${walletData.name}` : `Wallet ${index + 1}`
+    }`
   );
   // const [nameChange, setNameChange] = useState(nameWallet);
 
@@ -57,21 +61,22 @@ const DetailWallet = ({ route, navigation }) => {
   const backupWallet = async () => {
     try {
       if (await GoogleSignin.isSignedIn()) {
-        navigation.navigate('BackupWallet', { indexSelected: index });
+        navigation.navigate("BackupWallet", { indexSelected: index });
         // await GoogleSignin.signOut();
       } else {
         setIsOpenModal(true);
         if (await GoogleSignin.isSignedIn()) {
-          navigation.navigate('BackupWallet', { indexSelected: index });
+          navigation.navigate("BackupWallet", { indexSelected: index });
         }
       }
-    } catch (error) { }
+    } catch (error) {}
   };
   const { isOpen, onOpen, onClose } = useDisclose();
+
   const actions = [
     {
       icon: <PencilAltIcon fill={primaryColor} />,
-      name: 'Wallet display name',
+      name: t("manage_wallets.wallet_dislay_name"),
       value: <></>,
       onPress: () => {
         onOpen();
@@ -79,7 +84,7 @@ const DetailWallet = ({ route, navigation }) => {
     },
     {
       icon: <IconBackupCloud fill={primaryColor} />,
-      name: 'Backup passphrase',
+      name: t("manage_wallets.backup_seedphrase"),
       value: (
         <View style={tw`w-4 h-4 `}>
           {walletData?.isBackedUp === false && (
@@ -92,31 +97,27 @@ const DetailWallet = ({ route, navigation }) => {
 
     {
       icon: <EyeIcon fill={primaryColor} />,
-      name: 'Show seedphrase',
+      name: t("manage_wallets.show_seedphrase"),
       value: <></>,
       onPress: () =>
-        navigation.navigate('PrivacySeedPhrase', walletData.seedPhrase),
+        navigation.navigate("PrivacySeedPhrase", walletData.seedPhrase),
     },
   ];
-  // function checkDuplicateNameWallet(array, walletName) {
-  //   return array.some(itemArray => walletName === itemArray.value);
-  // }
-  const walletSelected = useWalletSelected();
   const popupResult = usePopupResult();
 
   const {
     control,
     handleSubmit,
     formState: { errors },
-    reset,
     setValue,
   } = useForm({
     defaultValues: {
-      nameWallet: `${walletData?.name !== null ? `${walletData.name}` : `Wallet ${index + 1}`
-        }`,
+      nameWallet: `${
+        walletData?.name !== null ? `${walletData.name}` : `Wallet ${index + 1}`
+      }`,
     },
   });
-  const onSubmit = async data => {
+  const onSubmit = async (data) => {
     try {
       await walletController.updateWallet({
         ...walletData,
@@ -128,9 +129,9 @@ const DetailWallet = ({ route, navigation }) => {
       setNameWallet(data.nameWallet);
       setListWallets(_listWallet);
       popupResult({
-        title: 'Changed name',
+        title: t("manage_wallets.changed_name"),
         isOpen: true,
-        type: 'success',
+        type: "success",
       });
 
       onClose();
@@ -138,9 +139,9 @@ const DetailWallet = ({ route, navigation }) => {
     } catch (error) {
       onClose();
       popupResult({
-        title: 'Changed Name Failed',
+        title: t("manage_wallets.changed_name_failed"),
         isOpen: true,
-        type: 'error',
+        type: "error",
       });
     }
   };
@@ -149,12 +150,8 @@ const DetailWallet = ({ route, navigation }) => {
 
   //
 
-  //text darkmode
-
-  //grid, shadow darkmode
-
   const handleCloseEdit = () => {
-    setValue('nameWallet', nameWallet);
+    setValue("nameWallet", nameWallet);
     onClose();
   };
   return (
@@ -173,7 +170,8 @@ const DetailWallet = ({ route, navigation }) => {
           ))}
           <Actionsheet isOpen={isOpen} onClose={handleCloseEdit}>
             <KeyboardAvoidingView
-              behavior={Platform.OS === 'ios' ? 'padding' : null}>
+              behavior={Platform.OS === "ios" ? "padding" : null}
+            >
               <Actionsheet.Content style={tw``}>
                 <Controller
                   control={control}
@@ -186,7 +184,7 @@ const DetailWallet = ({ route, navigation }) => {
                       styleText={``}
                       type="text"
                       labelStyle={``}
-                      label="Name wallet"
+                      label={`${t("manage_wallets.name_wallet")}`}
                       onChangeText={onChange}
                       value={value}
                       onBlur={onBlur}
@@ -194,14 +192,16 @@ const DetailWallet = ({ route, navigation }) => {
                   )}
                   name="nameWallet"
                 />
-                {errors.nameWallet?.type === 'required' && (
+                {errors.nameWallet?.type === "required" && (
                   <Text style={tw`dark:text-white  text-red-500 py-1`}>
-                    Wallet name is required
+                    {t("manage_wallets.wallet_name_is_required")}
                   </Text>
                 )}
-                {errors.nameWallet?.type === 'maxLength' && (
+                {errors.nameWallet?.type === "maxLength" && (
                   <Text style={tw`dark:text-white  text-red-500 py-1`}>
-                    Wallet name reached a limit of 20 characters
+                    {t(
+                      "manage_wallets.wallet_name_reached_a_limit_of_20_characters"
+                    )}
                   </Text>
                 )}
 
@@ -209,9 +209,9 @@ const DetailWallet = ({ route, navigation }) => {
                   <Button
                     variant="primary"
                     onPress={handleSubmit(onSubmit)}
-                  //  onPress={handleChangeNameWallet}
+                    //  onPress={handleChangeNameWallet}
                   >
-                    Rename
+                    {t("manage_wallets.rename")}
                   </Button>
                 </TouchableOpacity>
               </Actionsheet.Content>
@@ -224,7 +224,7 @@ const DetailWallet = ({ route, navigation }) => {
         isOpenModal={isOpenLoginModal}
         onClose={async () => {
           if (await GoogleSignin.isSignedIn()) {
-            navigation.navigate('BackupWallet', { indexSelected: index });
+            navigation.navigate("BackupWallet", { indexSelected: index });
           }
           setIsOpenModal(false);
         }}
@@ -242,50 +242,50 @@ const RemoveWallet = ({
   item: any;
   index: any;
 }) => {
-  const { walletController } = useDatabase();
   const popupResult = usePopupResult();
-
   const navigation: any = useNavigation();
   const [listWallets, setListWallets] = useRecoilState(listWalletsState);
   const { isOpen, onOpen, onClose } = useDisclose();
-  const [isDelete, setIsDelete] = useState({ value: '', error: null });
-  const onChangeValue = value => {
+  const [isDelete, setIsDelete] = useState({ value: "", error: null });
+  const onChangeValue = (value) => {
     //
     setIsDelete({ error: null, value: value });
   };
+
+  const walletActions = useWalletsActions();
+  const { t } = useTranslation();
+
   const handleRemoveWallet = async () => {
     try {
-      await walletController.removeWallet(id);
-      const _listWallet = cloneDeep(listWallets);
-      // console.log(index,"_listWallet[index]")
-      const removedWallet = _listWallet.filter(wallet => wallet.id !== item.id);
-      setListWallets(removedWallet);
-      popupResult({
-        title: 'Deleted',
-        isOpen: true,
-        type: 'success',
-      });
+      await walletActions.remove(id);
+      toastr.info(t("manage_wallets.deleted"));
+      // popupResult({
+      //   title: ,
+      //   isOpen: true,
+      //   type: "success",
+      // });
       onClose();
-
       navigation.goBack();
     } catch (error) {
       onClose();
       popupResult({
-        title: 'Deleted Failed',
+        title: t("manage_wallets.deleted_failed"),
         isOpen: true,
-        type: 'error',
+        type: "error",
       });
     }
   };
 
-  const validateDeleteWallet = `${item?.name !== null ? `${item.name}` : `Wallet ${index}`
-    }`;
+  const validateDeleteWallet = `${
+    item?.name !== null ? `${item.name}` : `Wallet ${index}`
+  }`;
 
   return (
     <View style={tw``}>
       <TouchableOpacity
         style={tw` h-10 w-10 rounded-full items-center pt-2`}
-        onPress={onOpen}>
+        onPress={onOpen}
+      >
         <IconDelete />
         {/* <Button
           variant="danger"
@@ -302,29 +302,29 @@ const RemoveWallet = ({
         <Actionsheet isOpen={isOpen} onClose={onClose}>
           <KeyboardAvoidingView
             // ref={focusRef}
-            behavior={Platform.OS === 'ios' ? 'padding' : null}
-            style={tw`flex flex-col items-center justify-around flex-1 w-full`}>
-            <Actionsheet.Content>
+            behavior={Platform.OS === "ios" ? "padding" : null}
+            style={tw`flex flex-col items-center justify-around flex-1 w-full`}
+          >
+            <Actionsheet.Content style={tw`bg-white dark:bg-[#18191A]`}>
               <Actionsheet.Item
                 style={tw`items-center justify-content-between`}
-              // onPress={handleRemoveWallet}
+                // onPress={handleRemoveWallet}
               >
                 <Text style={tw`dark:text-white  text-center py-2`}>
-                  Delete wallet?
+                  {t("manage_wallets.delete_wallet")}
                 </Text>
                 <Text style={tw`dark:text-white  py-2 mx-3`}>
-                  If you have any tokens left on this wallet, you should
-                  memorize the seed phrase or your asset could be lost
-                  permanently!
+                  {t("manage_wallets.description_delete_wallet")}
                 </Text>
                 <Text style={tw`dark:text-white  py-2 mx-3`}>
-                  Input "{validateDeleteWallet}" to Confirm action
+                  {t("manage_wallets.input")} "{validateDeleteWallet}"{" "}
+                  {t("manage_wallets.to_confirm_action")}
                 </Text>
                 <TextField
                   type="text"
                   value={isDelete.value}
                   onChangeText={onChangeValue}
-                  label="Name wallet"
+                  label={t("manage_wallets.name_wallet")}
                   err={isDelete.error}
                 />
                 <Button
@@ -340,11 +340,12 @@ const RemoveWallet = ({
                     item?.name !== null
                       ? item?.name !== isDelete.value
                       : `Wallet ${index}` !== isDelete.value
-                  }>
-                  Delete
+                  }
+                >
+                  {t("manage_wallets.delete")}
                 </Button>
                 <Button fullWidth variant="outlined" onPress={onClose}>
-                  Cancel
+                  {t("manage_wallets.cancel")}
                 </Button>
               </Actionsheet.Item>
             </Actionsheet.Content>

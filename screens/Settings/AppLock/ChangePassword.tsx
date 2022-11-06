@@ -1,13 +1,12 @@
-import React, {useState} from 'react';
-import {View, Text, Vibration, ScrollView} from 'react-native';
+import React, { useState } from "react";
+import { ScrollView, View } from "react-native";
 
-import PinCodeInput from '../../../components/PinCodeInput';
-import {tw} from '../../../utils/tailwind';
-import Button from '../../../components/Button';
-import checkPinCode from '../../../utils/checkPinCode';
-import {useRecoilState} from 'recoil';
-import {appLockState} from '../../../data/globalState/appLock';
-import * as CryptoJS from 'crypto-js';
+import { useTranslation } from "react-i18next";
+import { useRecoilState } from "recoil";
+import Button from "../../../components/UI/Button";
+import PinCodeInput from "../../../components/UI/PinCodeInput";
+import { appLockState } from "../../../data/globalState/appLock";
+import { tw } from "../../../utils/tailwind";
 const ONE_SECOND_IN_MS = 100;
 
 const PATTERN = [
@@ -16,8 +15,8 @@ const PATTERN = [
   1 * ONE_SECOND_IN_MS,
 ];
 
-const ChangePassword = ({onSuccess}) => {
-  const [pinCode, setPinCode] = useState<any>('');
+const ChangePassword = ({ onSuccess }) => {
+  const [pinCode, setPinCode] = useState<any>("");
   const [appLock, setAppLock] = useRecoilState(appLockState);
   const [step, setStep] = useState(0);
 
@@ -27,17 +26,19 @@ const ChangePassword = ({onSuccess}) => {
         ...appLock,
         updatedAt: new Date(),
       });
-      setPinCode('');
+      setPinCode("");
       onSuccess();
     } catch (e) {}
   };
+  const { t } = useTranslation();
+
   return (
     <ScrollView scrollEnabled={false}>
       <View style={tw`items-center justify-center min-h-full p-3`}>
         {step === 0 && (
           <View style={tw`flex-col items-center justify-center`}>
             <PinCodeInput
-              label=" Enter Current Password"
+              label={`${t("setting.apps_lock.enter_current_password")}`}
               type="required"
               biometric={false}
               hide
@@ -49,15 +50,16 @@ const ChangePassword = ({onSuccess}) => {
           <View style={tw`flex-col items-center justify-center`}>
             <PinCodeInput
               biometric={false}
-              label=" Enter New Password"
+              label={`${t("setting.apps_lock.enter_new_password")}`}
               type="new"
-              onSuccess={value => setPinCode(value)}
+              onSuccess={(value) => setPinCode(value)}
             />
             <View style={tw`bottom-0 w-full my-5`}>
               <Button
                 disabled={pinCode.length < 6}
-                onPress={handleSettingPinCode}>
-                Change Password
+                onPress={handleSettingPinCode}
+              >
+                {t("setting.apps_lock.change_password")}
               </Button>
             </View>
           </View>

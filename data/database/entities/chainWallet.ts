@@ -20,6 +20,9 @@ export class ChainWallet {
   address: string;
 
   @Column()
+  testnetAddress: string;
+
+  @Column()
   privateKey?: string;
 
   @Column()

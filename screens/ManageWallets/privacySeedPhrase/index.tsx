@@ -1,20 +1,19 @@
-import Clipboard from '@react-native-clipboard/clipboard';
-import React, { useCallback, useEffect, useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
-import QRCode from 'react-qr-code';
-import IconSeedPhraseWallet from '../../../assets/icons/icon-wallet-seedphrase.svg';
-import Button from '../../../components/Button';
-import CheckBox from '../../../components/CheckBox';
-import SignPinCode from '../../../components/SignPinCode';
-import { primaryColor } from '../../../configs/theme';
-import {
-  decryptAESWithKeychain
-} from '../../../utils/keychain';
-import { tw } from '../../../utils/tailwind';
-import toastr from '../../../utils/toastr';
+import Clipboard from "@react-native-clipboard/clipboard";
+import React, { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { ScrollView, Text, View } from "react-native";
+import QRCode from "react-qr-code";
+import IconSeedPhraseWallet from "../../../assets/icons/icon-wallet-seedphrase.svg";
+import Button from "../../../components/UI/Button";
+import CheckBox from "../../../components/UI/CheckBox";
+import SignPinCode from "../../../components/UI/SignPinCode";
+import { primaryColor } from "../../../configs/theme";
+import { decryptAESWithKeychain } from "../../../utils/keychain";
+import { tw } from "../../../utils/tailwind";
+import toastr from "../../../utils/toastr";
 const PrivacySeedPhrase = ({ route, navigation }) => {
   const mnemonicWallet = route.params;
-  const [seedPhraseDecrypt, setSeedPhraseDecrypt] = useState('');
+  const [seedPhraseDecrypt, setSeedPhraseDecrypt] = useState("");
 
   useEffect(() => {
     (async function () {
@@ -36,29 +35,25 @@ const PrivacySeedPhrase = ({ route, navigation }) => {
     theSecond: false,
     theThird: false,
   });
-  const handleConfirm = value => {
+  const handleConfirm = (value) => {
     setConfirmStep({ ...confirmStep, [value]: !confirmStep[value] });
   };
   //
-
+  const { t } = useTranslation();
   const [isDisplay, setIsDisplay] = useState(false);
   navigation.setOptions({
-    title: 'Secret Seed Phrase',
+    title: `${t("import_seedphrase.secret_seed_phrase")}`,
   });
-
-  //text darkmode
-
-  //grid, shadow darkmode
 
   const FirstStep = () => {
     return (
       <ScrollView style={tw``}>
         <View
-          style={tw`android:py-1 ios:py-3 h-full px-4 flex flex-col justify-between `}>
+          style={tw`android:py-1 ios:py-3 h-full px-4 flex flex-col justify-between `}
+        >
           <View>
-            <Text style={tw`dark:text-white  text-justify text-center `}>
-              Next step, you will see the secret phrase (12 words) that will
-              help you to recover your wallet
+            <Text style={tw`dark:text-white  text-center `}>
+              {t("import_seedphrase.description_secret_seedphrase")}
             </Text>
           </View>
           <View style={tw`mx-auto`}>
@@ -69,25 +64,23 @@ const PrivacySeedPhrase = ({ route, navigation }) => {
             <CheckBox
               check={confirmStep.theFirst}
               onPress={() => {
-                handleConfirm('theFirst');
+                handleConfirm("theFirst");
               }}
-              label="I understand that if I lose or reveal my secret phrase, my cryptocurrency will be lost forever"
+              label={t("import_seedphrase.label_secret_seedphrase_first")}
             />
             <CheckBox
               check={confirmStep.theSecond}
               onPress={() => {
-                handleConfirm('theSecond');
+                handleConfirm("theSecond");
               }}
-              label="I understand that if I disclose or share my secret phrase, my cryptocurrency may be stolen
-              "
+              label={t("import_seedphrase.label_secret_seedphrase_second")}
             />
             <CheckBox
               check={confirmStep.theThird}
               onPress={() => {
-                handleConfirm('theThird');
+                handleConfirm("theThird");
               }}
-              label="I understand that I am solely responsible for ensuring the safety and confidentiality of my secret phrase
-              "
+              label={t("import_seedphrase.label_secret_seedphrase_third")}
             />
           </View>
           <View style={tw`w-full mt-10`}>
@@ -97,8 +90,9 @@ const PrivacySeedPhrase = ({ route, navigation }) => {
                 !confirmStep.theSecond ||
                 !confirmStep.theThird
               }
-              onPress={() => setSelectedStep(1)}>
-              Continue
+              onPress={() => setSelectedStep(1)}
+            >
+              {t("import_seedphrase.continue")}
             </Button>
           </View>
         </View>
@@ -108,7 +102,7 @@ const PrivacySeedPhrase = ({ route, navigation }) => {
   const SecondStep = () => {
     const copyToClipboard = () => {
       Clipboard.setString(seedPhraseDecrypt);
-      toastr.success('Copied');
+      toastr.success("Copied");
     };
     const ScanQRMnemocnic = () => {
       setIsDisplay(!isDisplay);
@@ -122,15 +116,17 @@ const PrivacySeedPhrase = ({ route, navigation }) => {
           </Text>
         </View>
         <View style={tw`flex flex-row flex-wrap items-center`}>
-          {seedPhraseDecrypt.split(' ').map((item, index) => {
+          {seedPhraseDecrypt.split(" ").map((item, index) => {
             const numberText = index < 9 ? `0${index + 1}` : `${index + 1}`;
             return (
               <View
                 activeOpacity={0.6}
                 key={index}
-                style={tw`flex flex-row items-center p-2 py-2 mx-auto my-2 bg-gray-800  rounded-full shadow-sm w-26`}>
+                style={tw`flex flex-row items-center p-2 py-2 mx-auto my-2 dark:bg-gray-800 bg-gray-100  rounded-full shadow-sm w-26`}
+              >
                 <View
-                  style={tw`w-6 h-6 rounded-full flex justify-center items-center bg-[${primaryColor}]  mr-auto `}>
+                  style={tw`w-6 h-6 rounded-full flex justify-center items-center bg-[${primaryColor}]  mr-auto `}
+                >
                   <Text style={tw`dark:text-white  font-bold text-white `}>
                     {numberText}
                   </Text>
@@ -146,7 +142,8 @@ const PrivacySeedPhrase = ({ route, navigation }) => {
             <Button
               variant="secondary"
               style={tw`rounded-full w-20 mr-2 my-2`}
-              onPress={copyToClipboard}>
+              onPress={copyToClipboard}
+            >
               <Text>Copy</Text>
             </Button>
           </View>
@@ -155,7 +152,7 @@ const PrivacySeedPhrase = ({ route, navigation }) => {
           </Button>
         </View>
         {isDisplay && mnemonicWallet ? (
-          <View style={tw`mx-auto p-2 `}>
+          <View style={tw`mx-auto p-2 bg-white mb-3 `}>
             <QRCode value={seedPhraseDecrypt} size={150} />
           </View>
         ) : (
@@ -163,7 +160,8 @@ const PrivacySeedPhrase = ({ route, navigation }) => {
         )}
         <View style={tw`rounded-lg bg-red-100 p-2`}>
           <Text
-            style={tw`uppercase text-center text-[15px] px-4 font-bold text-red-600`}>
+            style={tw`uppercase text-center text-[15px] px-4 font-bold text-red-600`}
+          >
             Do not reveal 12 words from your wallet backup! Keep them safe and
             secret
           </Text>

@@ -1,39 +1,34 @@
+import { cloneDeep } from "lodash";
+import React, { useEffect } from "react";
 import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
   ImageBackground,
   SafeAreaView,
-} from 'react-native';
-import React, {useEffect, useMemo} from 'react';
-import {tw} from '../../utils/tailwind';
-import {useRecoilState} from 'recoil';
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { CheckIcon, PlusIcon, XIcon } from "react-native-heroicons/solid";
+import { useRecoilState } from "recoil";
+import PressableAnimated from "../../components/UI/PressableAnimated";
+import { primaryColor } from "../../configs/theme";
 import {
   browserState,
   currentTabState,
   newTabDefaultData,
   NEW_TAB,
-} from '../../data/globalState/browser';
-import {ITab} from '../../data/types';
-import {
-  CheckIcon,
-  PlusIcon,
-  TrashIcon,
-  XIcon,
-} from 'react-native-heroicons/solid';
-import {cloneDeep} from 'lodash';
-import Favicon from './Favicon';
-import PressableAnimated from '../../components/PressableAnimated';
-import {primaryColor} from '../../configs/theme';
-import {useTabBrowser} from './useTabBrowser';
+} from "../../data/globalState/browser";
+import { useBrowserActions } from "../../data/globalState/browser/browser.actions";
+import { ITab } from "../../data/types";
+import { tw } from "../../utils/tailwind";
+import Favicon from "./Favicon";
 
-const ManageTabs = ({navigation, route}) => {
-  const {createTabBrowser, closeTabBrowser, closeAllTabsBrowser} =
-    useTabBrowser();
+const ManageTabs = ({ navigation, route }) => {
+  const { createTabBrowser, closeTabBrowser, closeAllTabsBrowser } =
+    useBrowserActions();
   const [browser, setBrowser] = useRecoilState(browserState);
   const [currentTab, setCurrentTab] = useRecoilState(currentTabState);
-  const {imageURI} = route.params;
+  const { imageURI } = route.params;
 
   useEffect(() => {
     if (imageURI) {
@@ -43,7 +38,7 @@ const ManageTabs = ({navigation, route}) => {
     }
   }, []);
 
-  const handleSetCurrentTabId = id => {
+  const handleSetCurrentTabId = (id) => {
     navigation.goBack();
     setCurrentTab(id);
   };
@@ -69,9 +64,9 @@ const ManageTabs = ({navigation, route}) => {
           <View style={tw`flex-row flex-wrap `}>
             {browser.map((tab: ITab, index) => {
               const url =
-                tab.url === NEW_TAB ? {hostname: NEW_TAB} : new URL(tab.url);
+                tab.url === NEW_TAB ? { hostname: NEW_TAB } : new URL(tab.url);
               return (
-                <View style={tw`w-1/2 p-1`}>
+                <View style={tw`w-1/2 p-1`} key={tab.id}>
                   <PressableAnimated
                     key={index}
                     onPress={() => handleSetCurrentTabId(index)}
@@ -79,25 +74,30 @@ const ManageTabs = ({navigation, route}) => {
                       tw`relative border-4 rounded-2xl h-60 z-2`,
                       tw`${
                         currentTab === index
-                          ? 'border-blue-500'
-                          : 'border-gray-100 dark:border-gray-800'
+                          ? "border-blue-500"
+                          : "border-gray-100 dark:border-gray-800"
                       }`,
-                    ]}>
+                    ]}
+                  >
                     <View
                       style={[
                         tw`flex-row items-center justify-between px-1 rounded-t`,
                         tw`${
-                          currentTab === index ? 'bg-blue-500' : 'bg-gray-800  '
+                          currentTab === index
+                            ? "bg-blue-500"
+                            : "dark:bg-gray-800 bg-gray-100   "
                         }`,
-                      ]}>
-                      <Favicon domain={url?.hostname} size={5} />
+                      ]}
+                    >
+                      <Favicon url={tab.icon} size={5} />
                       <TouchableOpacity
                         activeOpacity={0.6}
-                        onPress={event => handleCloseTab(event, tab.id)}
-                        style={tw`items-center justify-center rounded-full w-9 h-9`}>
+                        onPress={(event) => handleCloseTab(event, tab.id)}
+                        style={tw`items-center justify-center rounded-full w-9 h-9`}
+                      >
                         <XIcon
                           size={25}
-                          color={currentTab === index ? 'white' : 'gray'}
+                          color={currentTab === index ? "white" : "gray"}
                         />
                       </TouchableOpacity>
                     </View>
@@ -105,8 +105,9 @@ const ManageTabs = ({navigation, route}) => {
                       borderBottomLeftRadius={11}
                       borderBottomRightRadius={11}
                       style={tw`flex-1 w-full z-1`}
-                      source={{uri: tab.screenShot}}
-                      resizeMode="cover"></ImageBackground>
+                      source={{ uri: tab.screenShot }}
+                      resizeMode="cover"
+                    ></ImageBackground>
                   </PressableAnimated>
                 </View>
               );
@@ -114,24 +115,29 @@ const ManageTabs = ({navigation, route}) => {
           </View>
         </ScrollView>
         <View
-          style={tw`flex-row justify-between bg-white dark:bg-[#18191A]  rounded-t-xl`}>
+          style={tw`flex-row justify-between bg-white dark:bg-[#18191A]  rounded-t-xl`}
+        >
           <TouchableOpacity
             onPress={handleCloseAllTabs}
-            style={tw`flex-row items-center justify-center w-1/3 px-3`}>
-            <XIcon style={tw`mx-1`} fill={'red'} />
+            style={tw`flex-row items-center justify-center w-1/3 px-3`}
+          >
+            <XIcon style={tw`mx-1`} fill={"red"} />
             <Text style={tw`text-red-500 dark:text-white`}>Close all</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={handleAddNewTab}
-            style={tw`flex-row items-center justify-center w-1/3 px-3 `}>
+            style={tw`flex-row items-center justify-center w-1/3 px-3 `}
+          >
             <View
-              style={tw`items-center justify-center w-10 h-10 bg-gray-800 rounded-full`}>
-              <PlusIcon style={tw`mx-1`} fill={'gray'} />
+              style={tw`items-center justify-center w-10 h-10 bg-gray-100 rounded-full dark:bg-gray-700`}
+            >
+              <PlusIcon style={tw`mx-1`} fill={"gray"} />
             </View>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
-            style={tw`flex-row items-center justify-center w-1/3 px-3`}>
+            style={tw`flex-row items-center justify-center w-1/3 px-3`}
+          >
             <CheckIcon style={tw`mx-1`} fill={primaryColor} />
             <Text style={tw`dark:text-white  text-[${primaryColor}] font-bold`}>
               Done

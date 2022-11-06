@@ -4,13 +4,13 @@ import {createEthereumWallet} from '../hooks/useEvm';
 import {createNearWallet} from '../hooks/useNEAR';
 import {mnemonicToSeed} from './mnemonic';
 
-const createWalletsByNetworks = async (mnemonic: string, helperUrl: string) => {
+const createWalletsByNetworks = async (mnemonic: string) => {
   if (mnemonic) {
     const seed = await mnemonicToSeed(mnemonic);
 
     const ethereumWallet = createEthereumWallet(seed);
     const solanaWallet = createSolanaWallet(seed);
-    const nearWallet = createNearWallet(seed, 0, helperUrl);
+    const nearWallet = createNearWallet(seed);
 
     const result = await Promise.all([
       ethereumWallet,
@@ -20,6 +20,7 @@ const createWalletsByNetworks = async (mnemonic: string, helperUrl: string) => {
     const walletsByNetwork = result.map(keyPair => {
       return {
         address: keyPair.address,
+        testnetAddress: keyPair.testnetAddress,
         privateKey: keyPair.privateKey,
         publicKey: keyPair.publicKey,
         symbol: TOKEN_SYMBOLS[keyPair.network],

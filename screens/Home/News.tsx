@@ -1,95 +1,163 @@
-import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { useQuery } from 'react-query';
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import NewsSkeleton from '../../components/skeleton/NewsSkeleton';
-import TryAgainButton from '../../components/TryAgainButton';
-import { primaryColor } from '../../configs/theme';
-import API from '../../data/api';
-import {
-  browserState,
-  currentTabState
-} from '../../data/globalState/browser';
-import { tw } from '../../utils/tailwind';
-import { useTabBrowser } from '../Browser/useTabBrowser';
-const News = () => {
-  const { isLoading, data, isError, refetch } = useQuery(
-    ['news'],
-    async (): Promise<any> => {
-      return await API.get(`/news/all`);
-    },
-  );
+import { useNavigation } from "@react-navigation/native";
+import dayjs from "dayjs";
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import uuid from "react-native-uuid";
+import NewsSkeleton from "../../components/Skeleton/NewsSkeleton";
+import TryAgainButton from "../../components/UI/TryAgainButton";
+import { primaryColor } from "../../configs/theme";
+import API from "../../data/api";
+import { tw } from "../../utils/tailwind";
+const dateFormat: any = dayjs;
+interface INewsProps {
+  keyword: string | "blockchain";
+}
+const News = (props: INewsProps) => {
+  const { keyword } = props;
+  const { t } = useTranslation();
 
-  const dataNew: any = data || [];
-  const [browser, setBrowser] = useRecoilState(browserState);
-  const setCurrentTab = useSetRecoilState(currentTabState);
+  const limit = 10;
+  const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setError] = useState(false);
+  const [data, setData] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+  const fetchNews = async () => {
+    try {
+      setIsLoading(true);
+      const dataNews: any[] = await API.get(`news/chain`, {
+        params: {
+          keyword,
+          page,
+          limit,
+        },
+      });
+
+      if (dataNews.length < limit) {
+        setHasMore(false);
+      }
+      setData([...data, ...dataNews]);
+      setError(false);
+    } catch (e) {
+      setError(true);
+    }
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    (async () => {
+      await fetchNews();
+    })();
+  }, [page]);
+
   const navigation = useNavigation();
-  const { createTabBrowser } = useTabBrowser();
   const goDetail = (item: any) => {
     navigation.navigate(
-      'Browser' as never,
+      "Browser" as never,
       {
-        screen: 'MainBrowser',
+        screen: "MainBrowser",
         params: {
-          url: item.link,
+          url: item.url,
         },
-      } as never,
+      } as never
     );
     // createTabBrowser({url: item.link, title: NEW_TAB});
   };
 
-  const [expanded, setExpanded] = useState(false);
-  const dataForDisplay = expanded ? dataNew : dataNew.slice(0, 5);
-
-  if (isLoading) {
-    return <NewsSkeleton />;
+  if (isError) {
+    return;
   }
 
-  if (isError) {
-    return <TryAgainButton onPress={refetch} />;
+  const isCloseToBottom = ({
+    layoutMeasurement,
+    contentOffset,
+    contentSize,
+  }) => {
+    const paddingToBottom = 20;
+    return (
+      layoutMeasurement.height + contentOffset.y >=
+      contentSize.height - paddingToBottom
+    );
+  };
+  const fetchMore = () => setPage(page + 1);
+
+  if (!isLoading && data.length === 0) {
+    return <></>;
   }
   return (
-    <View style={tw`dark:text-white`}>
-      <ScrollView style={tw`mb-25`}>
+    <ScrollView
+      onScroll={({ nativeEvent }) => {
+        if (isCloseToBottom(nativeEvent)) {
+        }
+      }}
+      scrollEventThrottle={400}
+      style={tw`dark:text-white mb-25`}
+    >
+      <Text
+        style={tw`mx-3 mt-5 text-xl font-semibold text-black dark:text-white`}
+      >
+        {t("home.news")}
+      </Text>
+      {data.length === 0 && !isLoading && (
         <View>
-          {dataForDisplay.map((item, index) => (
-            <TouchableOpacity
-              style={tw`flex flex-row justify-between w-full px-3 py-1 mb-3 border-b border-gray-100 dark:border-stone-800`}
-              onPress={() => goDetail(item)}
-              key={index}>
-              <View style={tw`flex-col flex-1 mr-1`}>
-                <Text
-                  numberOfLines={3}
-                  style={tw`font-bold text-[15px] text-black dark:text-white`}>
-                  {item.title}
-                </Text>
-                <View style={tw`flex flex-row w-full `}>
-                  <Text numberOfLines={1} style={tw`text-gray-400 text-light`}>
-                    {item.time}
-                  </Text>
-                </View>
-              </View>
-
-              <Image
-                source={
-                  item.picture === ''
-                    ? require('../../assets/news/imagenotfound.png')
-                    : { uri: item.picture }
-                }
-                style={tw`rounded-lg w-25 h-25`}
-              />
-            </TouchableOpacity>
-          ))}
-          <TouchableOpacity onPress={() => setExpanded(!expanded)}>
-            <Text
-              style={tw`dark:text-white  text-center mb-5 text-[${primaryColor}]`}>
-              {expanded ? 'View Less' : 'View More'}
-            </Text>
-          </TouchableOpacity>
+          <Text style={tw`text-lg text-center text-gray-500`}>No news yet</Text>
         </View>
-      </ScrollView>
-    </View>
+      )}
+      {isError && <TryAgainButton onPress={fetchNews} />}
+      {data.map((item) => (
+        <TouchableOpacity
+          style={tw`flex flex-row justify-between w-full px-3 py-1 mb-3 border-b border-gray-100 dark:border-stone-800`}
+          onPress={() => goDetail(item)}
+          key={uuid.v4() as string}
+        >
+          <View style={tw`flex-col flex-1 mr-3`}>
+            <Text
+              numberOfLines={3}
+              style={tw`font-bold text-[15px]  text-black dark:text-white`}
+            >
+              {item.title}
+            </Text>
+            <View style={tw`flex flex-row justify-between w-full `}>
+              <Text style={tw`font-bold text-gray-500`}>
+                {item?.source?.name}
+              </Text>
+              <Text numberOfLines={1} style={tw`font-bold text-gray-400 `}>
+                {dateFormat(item.publishedAt).fromNow(true)} ago
+              </Text>
+            </View>
+          </View>
+
+          <Image
+            source={
+              item.picture === ""
+                ? require("../../assets/news/imagenotfound.png")
+                : { uri: item.urlToImage }
+            }
+            style={tw`rounded-lg w-23 h-23`}
+          />
+        </TouchableOpacity>
+      ))}
+
+      {isLoading ? (
+        <NewsSkeleton limit={limit} />
+      ) : (
+        <View style={tw`flex-row items-center justify-center w-full`}>
+          {hasMore ? (
+            <View style={tw`w-1/3`}>
+              <TouchableOpacity
+                style={tw`bg-[${primaryColor}] p-3 rounded-full `}
+                onPress={fetchMore}
+              >
+                <Text style={tw`text-center text-white`}>Load more</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={tw`w-5 h-5 bg-gray-200 rounded-full`}></View>
+          )}
+        </View>
+      )}
+    </ScrollView>
   );
 };
 

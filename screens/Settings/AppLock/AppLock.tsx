@@ -1,32 +1,23 @@
-import React, {useEffect, useMemo, useState} from 'react';
-import {View, TouchableOpacity} from 'react-native';
-import {tw} from '../../../utils/tailwind';
-import MenuItem from '../../../components/MenuItem';
-import {primaryColor} from '../../../configs/theme';
-import {
-  LockClosedIcon,
-  LockOpenIcon,
-  PencilAltIcon,
-  XIcon,
-} from 'react-native-heroicons/solid';
-import {KeyboardAvoidingView, Modal} from 'native-base';
-import EnableAppLock from './EnableAppLock';
-import DisableAppLock from './DisableAppLock';
-import toastr from '../../../utils/toastr';
-import ChangePassword from './ChangePassword';
-import {PinRequiredEnum} from '../../../enum';
-import FingerPrint from './FingerPrintScan';
-import AutoLock from './AutoLock';
-import {useRecoilState, useRecoilValue} from 'recoil';
-import {appLockState} from '../../../data/globalState/appLock';
-import {useDarkMode} from '../../../hooks/useModeDarkMode';
-import SignPinCode from '../../../components/SignPinCode';
-import FaceId from './FaceId';
-import {localStorage, STORAGE_APP_LOCK} from '../../../utils/storage';
-import {getFromKeychain} from '../../../utils/keychain';
-import IconKeyPassword from '../../../assets/icons/icon-key.svg';
+import { KeyboardAvoidingView, Modal } from "native-base";
+import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { TouchableOpacity, View } from "react-native";
+import { LockClosedIcon, XIcon } from "react-native-heroicons/solid";
+import MenuItem from "../../../components/UI/MenuItem";
+import SignPinCode from "../../../components/UI/SignPinCode";
+import { primaryColor } from "../../../configs/theme";
+import { PinRequiredEnum } from "../../../enum";
+import { getFromKeychain } from "../../../utils/keychain";
+import { tw } from "../../../utils/tailwind";
+import toastr from "../../../utils/toastr";
+import AutoLock from "./AutoLock";
+import ChangePassword from "./ChangePassword";
+import DisableAppLock from "./DisableAppLock";
+import EnableAppLock from "./EnableAppLock";
+import FaceId from "./FaceId";
+import FingerPrint from "./FingerPrintScan";
 
-const AppLock = ({navigation}) => {
+const AppLock = () => {
   const password = useMemo(async () => {
     return await getFromKeychain();
   }, []);
@@ -71,12 +62,13 @@ const AppLock = ({navigation}) => {
     //     next: false,
     // },
   ];
+  const { t } = useTranslation();
 
   const menuDefault = [
     {
       icon: <LockClosedIcon width="100%" height="100%" fill={primaryColor} />,
-      name: 'Enable App Lock',
-      value: '',
+      name: t("setting.apps_lock.enable_app_lock"),
+      value: "",
       onPress: () =>
         setShowModalPincode({
           show: true,
@@ -88,7 +80,7 @@ const AppLock = ({navigation}) => {
 
   const handleOnSuccess = () => {
     setShowModalPincode(defaultModalPinCode);
-    toastr.success('Success');
+    toastr.success("Success");
   };
 
   return (
@@ -135,18 +127,22 @@ const AppLock = ({navigation}) => {
         <Modal
           style={tw`w-full h-full `}
           isOpen={modalPincode.show}
-          onClose={() => setShowModalPincode(defaultModalPinCode)}>
+          onClose={() => setShowModalPincode(defaultModalPinCode)}
+        >
           <KeyboardAvoidingView
             behavior="padding"
-            style={tw`flex-row items-center justify-center w-full h-full `}>
+            style={tw`flex-row items-center justify-center w-full h-full `}
+          >
             <TouchableOpacity
               activeOpacity={0.6}
               onPress={() => setShowModalPincode(defaultModalPinCode)}
-              style={tw`absolute items-center justify-center w-8 h-8 p-1 bg-gray-200 rounded-full w-left-5 ios:top-10 android:top-1 `}>
+              style={tw`absolute items-center justify-center w-8 h-8 p-1 bg-gray-200 rounded-full w-left-5 ios:top-10 android:top-1 `}
+            >
               <XIcon size={25} color="black" />
             </TouchableOpacity>
             <Modal.Content
-              style={tw`flex items-center justify-center w-full h-full`}>
+              style={tw`flex items-center justify-center w-full h-full`}
+            >
               {modalPincode.type === PinRequiredEnum.ENABLE_PIN_CODE && (
                 <EnableAppLock onSuccess={handleOnSuccess} />
               )}

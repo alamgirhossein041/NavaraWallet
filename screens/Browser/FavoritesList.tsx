@@ -1,19 +1,13 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
 import {StarIcon} from 'react-native-heroicons/outline';
 import {useRecoilState, useSetRecoilState} from 'recoil';
 import {warningColor} from '../../configs/theme';
 import {BrowserFavorites} from '../../data/database/entities/favoritesBrowser';
 import useDatabase from '../../data/database/useDatabase';
 import {browserState, currentTabState} from '../../data/globalState/browser';
-import {
-  useDarkMode,
-  useGridDarkMode,
-  useTextDarkMode,
-} from '../../hooks/useModeDarkMode';
-import {getHostname, shortenAddress} from '../../utils/stringsFunction';
+import {getHostname} from '../../utils/stringsFunction';
 import {tw} from '../../utils/tailwind';
 import Favicon from './Favicon';
 
@@ -31,8 +25,6 @@ const FavoritesList = ({callback}) => {
     })();
   }, []);
 
-  //grid, shadow darkmode
-
   const handleOpenUrl = (items: BrowserFavorites) => {
     setBrowser([...browser, items]);
     setCurrentTab(browser.length);
@@ -48,7 +40,7 @@ const FavoritesList = ({callback}) => {
     return (
       <View
         style={tw`flex-row items-center justify-center flex-1 bg-white dark:bg-[#18191A] `}>
-        <Text style={tw`dark:text-white  text-xl font-bold`}>No favorite</Text>
+        <Text style={tw`text-xl font-bold dark:text-white`}>No favorite</Text>
       </View>
     );
   }
@@ -94,10 +86,10 @@ const FavoriteItem = ({
         onPress={handleOnPress}
         style={tw`flex-row items-center flex-1 `}>
         <View style={tw`justify-center mr-2`}>
-          <Favicon domain={getHostname(item.url)} size={7} />
+          <Favicon url={item.icon} size={7} />
         </View>
         <View style={tw`flex-1 mr-2`}>
-          <Text style={tw`dark:text-white  font-bold`} numberOfLines={1}>
+          <Text style={tw`font-bold dark:text-white`} numberOfLines={1}>
             {item.title}
           </Text>
           <Text>{getHostname(item.url)}</Text>

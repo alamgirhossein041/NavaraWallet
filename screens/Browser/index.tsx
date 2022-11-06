@@ -1,39 +1,60 @@
-import React, {useEffect, useRef} from 'react';
-import {tw} from '../../utils/tailwind';
 import {
   CardStyleInterpolators,
   createStackNavigator,
-} from '@react-navigation/stack';
+} from "@react-navigation/stack";
+import { cloneDeep } from "lodash";
+import { View } from "native-base";
+import React, { useEffect, useMemo, useRef } from "react";
+import { StatusBar, useColorScheme } from "react-native";
+import PagerView from "react-native-pager-view";
+import { SafeAreaView } from "react-native-safe-area-context";
+import uuid from "react-native-uuid";
+import { useRecoilState, useRecoilValue } from "recoil";
+import BackButton from "../../components/UI/BackButton";
+import useDatabase from "../../data/database/useDatabase";
 import {
   browserState,
   currentTabState,
-  newTabDefaultData,
-} from '../../data/globalState/browser';
-import {useRecoilState, useRecoilValue} from 'recoil';
-import PagerView from 'react-native-pager-view';
-import ManageTabs from './ManageTabs';
-import {cloneDeep, uniqueId} from 'lodash';
-import useDatabase from '../../data/database/useDatabase';
-import BrowserHistory from './BrowserHistory';
-import SettingsMenu from './Settings/SettingsMenu';
-import SearchEngine from './Settings/SearchEngine';
-import BackButton from '../../components/BackButton';
-import {Spinner, View} from 'native-base';
-import FavoritesList from './FavoritesList';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {BROWSER_TABS, localStorage} from '../../utils/storage';
-import {primaryColor} from '../../configs/theme';
-import {useTabBrowser} from './useTabBrowser';
-import BrowserTab from './BrowserTab';
-const MainBrowser = ({route}) => {
-  const {params} = route;
-  const {historyBrowserController} = useDatabase();
-  const {createTabBrowser} = useTabBrowser();
+  NEW_TAB,
+} from "../../data/globalState/browser";
+import { useBrowserActions } from "../../data/globalState/browser/browser.actions";
+import useNearInstanceAction from "../../data/globalState/nearInstance/nearInstance.actions";
+import { NETWORKS } from "../../enum/bcEnum";
+import { useWalletSelected } from "../../hooks/useWalletSelected";
+import { SPA_urlChangeListener } from "../../utils/browserScripts";
+import { BROWSER_TABS, localStorage } from "../../utils/storage";
+import { tw } from "../../utils/tailwind";
+import BrowserHistory from "./BrowserHistory";
+import BrowserTab from "./BrowserTab";
+import InpageBridgeWeb3 from "./core/InpageBridgeWeb3";
+import FavoritesList from "./FavoritesList";
+import ManageTabs from "./ManageTabs";
+import SearchEngine from "./Settings/SearchEngine";
+import SettingsMenu from "./Settings/SettingsMenu";
+
+const InPageScript = InpageBridgeWeb3 + SPA_urlChangeListener;
+
+const MainBrowser = ({ route }) => {
+  const { params } = route;
+  const { historyBrowserController } = useDatabase();
+  const { createTabBrowser } = useBrowserActions();
   const tabsRef = useRef(null);
   const [browser, setBrowser] = useRecoilState(browserState);
   const currentTab = useRecoilValue(currentTabState);
-  const setToPage = index => {
-    const {current} = tabsRef;
+
+  const { data: selectedWallet } = useWalletSelected();
+
+  const { setInstance } = useNearInstanceAction();
+
+  useEffect(() => {
+    const { chains } = selectedWallet;
+    const nearWallet = chains.find((chain) => chain.network === NETWORKS.NEAR);
+    setInstance(nearWallet);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedWallet]);
+
+  const setToPage = (index) => {
+    const { current } = tabsRef;
     if (!!current) {
       current.setPageWithoutAnimation(index);
     }
@@ -45,28 +66,21 @@ const MainBrowser = ({route}) => {
 
   const updateTabData = (data, index, isReloading) => {
     const dataUpdate = cloneDeep(browser);
-    dataUpdate[index] = {...dataUpdate[index], ...data};
+    dataUpdate[index] = { ...dataUpdate[index], ...data };
     setBrowser(dataUpdate);
-    if (isReloading) return;
+    if (isReloading || data.url === NEW_TAB) return;
 
     //update to history browser if not reloading
-    historyBrowserController.createHistoryBrowser(data.url, data.title);
+    historyBrowserController.createHistoryBrowser(data);
   };
-  const [initBrowser, setInitBrowser] = React.useState(true);
+
   useEffect(() => {
-    localStorage
-      .get(BROWSER_TABS)
-      .then((data: any) => {
-        if (data.length > 0) {
-          setBrowser(data);
-          createTabBrowser({url: params.url, id: uniqueId()});
-        } else {
-          setBrowser([newTabDefaultData]);
-        }
-      })
-      .finally(() => {
-        setInitBrowser(false);
-      });
+    if (!!params?.url) {
+      setBrowser([
+        { url: params.url, id: uuid.v4() as string, title: "New tab" },
+      ]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -74,25 +88,46 @@ const MainBrowser = ({route}) => {
       localStorage.set(BROWSER_TABS, browser);
     }
   }, [browser]);
-
-  if (initBrowser) {
-    return (
-      <View
-        style={tw`items-center justify-center flex-1 bg-white dark:bg-[#18191A]  `}>
-        <Spinner color={primaryColor} size={50} />
-      </View>
-    );
-  }
+  const scheme = useColorScheme();
+  const statusBarStyle = useMemo(() => {
+    let backgroundColor = "white";
+    let barStyle = "dark-content";
+    // black
+    if (
+      browser[currentTab].colorTheme === "#000000" ||
+      browser[currentTab].url === NEW_TAB
+    ) {
+      backgroundColor = "white";
+    }
+    // Default or white
+    else if (
+      browser[currentTab].colorTheme === null ||
+      browser[currentTab].colorTheme === "#ffffff"
+    ) {
+      barStyle = "dark-content";
+      // set background with web color
+    } else {
+      backgroundColor = browser[currentTab].colorTheme;
+      barStyle = "light-content";
+    }
+    return {
+      backgroundColor,
+      barStyle,
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [browser[currentTab]]);
   return (
     <View style={tw`flex-1 bg-white dark:bg-[#18191A] `}>
-      <SafeAreaView style={tw`flex-1`} edges={['top']}>
+      {scheme === "light" && <StatusBar {...(statusBarStyle as any)} />}
+      <SafeAreaView style={tw`flex-1`} edges={["top"]}>
         <PagerView
           testID="pager-view"
           ref={tabsRef}
           scrollEnabled={false}
           style={tw`flex-1`}
           overdrag
-          initialPage={currentTab}>
+          initialPage={currentTab}
+        >
           {browser.map((tab, index) => (
             <BrowserTab
               key={tab.id}
@@ -100,8 +135,10 @@ const MainBrowser = ({route}) => {
               updateTabData={(data, isReloading) =>
                 updateTabData(data, index, isReloading)
               }
-              scrollEnabled={state => {}}
+              InPageScript={InPageScript}
+              scrollEnabled={() => {}}
               tabId={tab.id}
+              {...tab}
             />
           ))}
         </PagerView>
@@ -116,8 +153,8 @@ const StackBrowser = () => {
     <Stack.Navigator
       screenOptions={{
         gestureEnabled: true,
-        gestureDirection: 'horizontal',
-        headerTitleAlign: 'center',
+        gestureDirection: "horizontal",
+        headerTitleAlign: "center",
         headerShadowVisible: false,
         cardStyleInterpolator: CardStyleInterpolators.forNoAnimation,
         headerLeft: () => (
@@ -125,7 +162,8 @@ const StackBrowser = () => {
             <BackButton />
           </View>
         ),
-      }}>
+      }}
+    >
       <Stack.Screen
         options={{
           headerShown: false,
@@ -135,21 +173,21 @@ const StackBrowser = () => {
       />
       <Stack.Screen
         options={{
-          title: 'History',
+          title: "History",
         }}
         name="BrowserHistory"
         component={BrowserHistory}
       />
       <Stack.Screen
         options={{
-          title: 'Favorites List',
+          title: "Favorites List",
         }}
         name="FavoritesList"
         component={FavoritesList}
       />
       <Stack.Screen
         options={{
-          title: '',
+          title: "",
           headerShown: false,
         }}
         name="ManageTabs"
@@ -158,19 +196,19 @@ const StackBrowser = () => {
       <Stack.Screen
         name="SettingsBrowser"
         options={{
-          title: 'Browser settings',
+          title: "Browser settings",
         }}
         component={SettingsMenu}
       />
       <Stack.Screen
         name="SearchEngine"
         options={{
-          title: 'Default search engine',
+          title: "Default search engine",
         }}
         component={SearchEngine}
       />
     </Stack.Navigator>
   );
 };
-export {MainBrowser};
+export { MainBrowser };
 export default React.memo(StackBrowser);

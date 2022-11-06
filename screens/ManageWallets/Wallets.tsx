@@ -1,23 +1,24 @@
-import { Actionsheet, useDisclose } from 'native-base';
-import React from 'react';
+import { Actionsheet, useDisclose } from "native-base";
+import React from "react";
+import { useTranslation } from "react-i18next";
 import {
+  Pressable,
   ScrollView,
   Text,
   TouchableOpacity,
-  View
-} from 'react-native';
-import { PlusIcon } from 'react-native-heroicons/outline';
-import { DotsHorizontalIcon } from 'react-native-heroicons/solid';
-import { useRecoilState } from 'recoil';
-import IconImport from '../../assets/icons/icon-folder-add.svg';
-import IconCloudRestore from '../../assets/icons/icon-folder-cloud.svg';
-import WalletAdd from '../../assets/icons/icon-wallet-add.svg';
-import ActionSheetItem from '../../components/ActionSheetItem';
-import { primaryColor } from '../../configs/theme';
-import useDatabase from '../../data/database/useDatabase';
-import { listWalletsState } from '../../data/globalState/listWallets';
-import { tw } from '../../utils/tailwind';
-import CardWallet from '../Home/CardWallet';
+  View,
+} from "react-native";
+import { PlusIcon } from "react-native-heroicons/outline";
+import { DotsHorizontalIcon } from "react-native-heroicons/solid";
+import { useRecoilState } from "recoil";
+import IconImport from "../../assets/icons/icon-folder-add.svg";
+import IconCloudRestore from "../../assets/icons/icon-folder-cloud.svg";
+import WalletAdd from "../../assets/icons/icon-wallet-add.svg";
+import ActionSheetItem from "../../components/UI/ActionSheetItem";
+import { primaryColor } from "../../configs/theme";
+import { listWalletsState } from "../../data/globalState/listWallets";
+import { tw } from "../../utils/tailwind";
+import CardWallet from "../Home/CardWallet";
 
 const Wallets = ({ navigation }) => {
   const { isOpen, onOpen, onClose } = useDisclose();
@@ -28,31 +29,32 @@ const Wallets = ({ navigation }) => {
       </TouchableOpacity>
     ),
   });
-  const onWalletPress = index => {
+  const onWalletPress = (index) => {
     if (listWallets && listWallets.length > 0) {
-      navigation.navigate('DetailWallet', {
+      navigation.navigate("DetailWallet", {
         index,
         data: listWallets[index],
       });
     }
     // onOpen()
   };
-  const { walletController } = useDatabase();
 
-  const [listWallets, setListWallets] = useRecoilState(listWalletsState);
+  const [listWallets] = useRecoilState(listWalletsState);
 
   // const handleOpenCreateWallet=()=>{
   //   isOpen()
   // }
+  const { t } = useTranslation();
 
   const actionSheetCreateWallet = (
     <Actionsheet isOpen={isOpen} onClose={onClose}>
-      <Actionsheet.Content>
+      <Actionsheet.Content style={tw`bg-white text-black  dark:bg-[#18191A]`}>
         <ActionSheetItem
           onPress={() => {
-            navigation.navigate('CreateWallet');
+            navigation.navigate("CreateWallet");
             onClose();
-          }}>
+          }}
+        >
           <View style={tw`flex-row items-center`}>
             <PlusIcon
               width={25}
@@ -60,16 +62,17 @@ const Wallets = ({ navigation }) => {
               stroke={primaryColor}
               style={tw`mr-2`}
             />
-            <Text style={tw`dark:text-white   font-bold`}>
-              Create a new wallet
+            <Text style={tw`dark:text-white text-black    font-bold`}>
+              {t("manage_wallets.create_a_new_wallet")}
             </Text>
           </View>
         </ActionSheetItem>
         <ActionSheetItem
           onPress={() => {
-            navigation.navigate('ImportWallet');
+            navigation.navigate("ImportWallet");
             onClose();
-          }}>
+          }}
+        >
           <View style={tw`flex-row items-center`}>
             <IconImport
               width={25}
@@ -77,14 +80,17 @@ const Wallets = ({ navigation }) => {
               stroke={primaryColor}
               style={tw`mr-2`}
             />
-            <Text style={tw`dark:text-white   font-bold`}>Import wallet</Text>
+            <Text style={tw`dark:text-white text-black   font-bold`}>
+              {t("manage_wallets.import_wallet")}
+            </Text>
           </View>
         </ActionSheetItem>
         <ActionSheetItem
           onPress={() => {
-            navigation.navigate('SelectFile');
+            navigation.navigate("SelectFile");
             onClose();
-          }}>
+          }}
+        >
           <View style={tw`flex-row items-center`}>
             <IconCloudRestore
               width={25}
@@ -92,8 +98,8 @@ const Wallets = ({ navigation }) => {
               stroke={primaryColor}
               style={tw`mr-2`}
             />
-            <Text style={tw`dark:text-white   font-bold`}>
-              Restore wallet from cloud
+            <Text style={tw`dark:text-white  text-black   font-bold`}>
+              {t("manage_wallets.restore_wallet_from_cloud")}
             </Text>
           </View>
         </ActionSheetItem>
@@ -105,15 +111,18 @@ const Wallets = ({ navigation }) => {
     <ScrollView style={tw`bg-white dark:bg-[#18191A] px-4 py-1`}>
       <View style={tw` flex flex-col justify-between`}>
         <View>
-          {/* <HeaderScreen title="Manage Wallets" showBack /> */}
-          {/*  <Text style={tw`dark:text-white  text-base mt-10`}>Choose network (${enabledNetwork.length}/${networks.length})</Text> */}
           <View style={tw``}>
             {listWallets &&
               listWallets.map((wallet, index) => (
                 //
-                <View key={wallet.id} style={tw`mb-3`}>
+                <Pressable
+                  onPress={() => onWalletPress(index)}
+                  key={wallet.id}
+                  style={tw`mb-3`}
+                >
                   <View
-                    style={tw`flex flex-row mx-5 justify-between items-center mb-1`}>
+                    style={tw`flex flex-row mx-5 justify-between items-center mb-1`}
+                  >
                     <Text style={tw`dark:text-white  font-bold `}>
                       {wallet.name === null
                         ? `Wallet ${index + 1}`
@@ -127,7 +136,7 @@ const Wallets = ({ navigation }) => {
                   <View style={tw``}>
                     <CardWallet wallet={wallet} index={index} />
                   </View>
-                </View>
+                </Pressable>
               ))}
           </View>
         </View>

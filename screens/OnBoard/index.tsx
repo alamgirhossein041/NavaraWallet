@@ -1,17 +1,17 @@
-import React from 'react';
+import React from "react";
 
-import {createStackNavigator} from '@react-navigation/stack';
-import VerifyPassPhrase from './VerifyPassPhrase';
-import EnableCloudBackup from './EnableCloudBackup';
-import BackupWallet from '../Backup/BackupWallet';
-import {tw} from '../../utils/tailwind';
-import EnableAppLockOnBoard from '../Settings/AppLock/EnableAppLockOnBoard';
-import SlideOnBoard from './SlideOnBoard';
-import CreateWallet from './CreateWallet';
-import ImportWallet from './ImportWallet';
-import BackButton from '../../components/BackButton';
-import EnableBiometric from './EnableBiometric';
-import {View} from 'react-native';
+import { createStackNavigator } from "@react-navigation/stack";
+import { View } from "react-native";
+import BackButton from "../../components/UI/BackButton";
+import { tw } from "../../utils/tailwind";
+import BackupWallet from "../Backup/BackupWallet";
+import EnableAppLockOnBoard from "../Settings/AppLock/EnableAppLockOnBoard";
+import CreateWallet from "./CreateWallet";
+import EnableBiometric from "./EnableBiometric";
+import EnableCloudBackup from "./EnableCloudBackup";
+import ImportWallet from "./ImportWallet";
+import SlideOnBoard from "./SlideOnBoard";
+import VerifyPassPhrase from "./VerifyPassPhrase";
 const Stack = createStackNavigator();
 
 const OnBoard = () => {
@@ -25,7 +25,8 @@ const OnBoard = () => {
             <BackButton />
           </View>
         ),
-      }}>
+      }}
+    >
       <Stack.Screen name="SlideOnBoard" component={SlideOnBoard} />
       <Stack.Screen
         name="EnableAppLockOnBoard"
@@ -35,7 +36,7 @@ const OnBoard = () => {
         name="ImportWallet"
         options={{
           headerShown: true,
-          title: '',
+          title: "",
           // headerLeft: () => <></>,
         }}
         component={ImportWallet}

@@ -30,12 +30,30 @@ const getWebviewUrl = `
     }
     return favicon && favicon.href
   }
+
+  const __getColorTheme = () => {
+    const node = document.querySelector("meta[name='theme-color']")
+    if(!node){
+      return null
+    }
+    else{
+      return node.getAttribute("content") || null
+    }
+  }
+ 
+  const __getTitle = () =>{
+    const node = document.getElementsByTagName("title")[0]
+    return node.innerText
+  }
+
   window.ReactNativeWebView && window.ReactNativeWebView.postMessage(JSON.stringify(
     {
       type: 'GET_WEBVIEW_URL',
       payload: {
         url: location.href,
-        icon: __getFavicon()
+        icon: __getFavicon(),
+        colorTheme:  __getColorTheme(),
+        title: __getTitle()
       }
     }
   ))
@@ -132,3 +150,5 @@ export const JS_IFRAME_POST_MESSAGE_TO_PROVIDER = (message, origin) =>
   }
 })()`;
  */
+
+export const JS_DO_NOTHING = "(function() {})()";

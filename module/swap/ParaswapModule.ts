@@ -1,11 +1,10 @@
-import axios from 'axios';
-import BigNumber from 'bignumber.js';
-import {ethers} from 'ethers';
-import {OptimalRate, SwapSide} from 'paraswap-core';
-import {IToken} from '../../data/types';
-import {ParaswapEnum} from '../../enum';
-
-const API_URL = 'https://apiv5.paraswap.io';
+import axios from "axios";
+import BigNumber from "bignumber.js";
+import { ethers } from "ethers";
+import { OptimalRate, SwapSide } from "paraswap-core";
+import { URL_SWAP } from "../../data/api";
+import { IToken } from "../../data/types";
+import { ParaswapEnum } from "../../enum";
 
 interface MinTokenData {
   decimals: number;
@@ -28,14 +27,14 @@ interface TransactionParams {
 
 interface Swapper {
   getRate(params: {
-    srcToken: Pick<MinTokenData, 'address' | 'decimals'>;
-    destToken: Pick<MinTokenData, 'address' | 'decimals'>;
+    srcToken: Pick<MinTokenData, "address" | "decimals">;
+    destToken: Pick<MinTokenData, "address" | "decimals">;
     srcAmount: NumberAsString;
     partner?: string;
   }): Promise<OptimalRate>;
   buildSwap(params: {
-    srcToken: Pick<MinTokenData, 'address' | 'decimals'>;
-    destToken: Pick<MinTokenData, 'address' | 'decimals'>;
+    srcToken: Pick<MinTokenData, "address" | "decimals">;
+    destToken: Pick<MinTokenData, "address" | "decimals">;
     srcAmount: NumberAsString;
     minAmount: NumberAsString;
     priceRoute: OptimalRate;
@@ -82,7 +81,7 @@ function createSwapper(networkID: number, apiURL: string): Swapper {
     partner?: string;
   };
 
-  const getRate: Swapper['getRate'] = async ({
+  const getRate: Swapper["getRate"] = async ({
     srcToken,
     destToken,
     srcAmount,
@@ -105,8 +104,8 @@ function createSwapper(networkID: number, apiURL: string): Swapper {
       const pricesURL = `${apiURL}/prices/?${searchString}`;
 
       const {
-        data: {priceRoute},
-      } = await axios.get<{priceRoute: OptimalRate}>(pricesURL);
+        data: { priceRoute },
+      } = await axios.get<{ priceRoute: OptimalRate }>(pricesURL);
 
       return priceRoute;
     } catch (error) {
@@ -114,7 +113,7 @@ function createSwapper(networkID: number, apiURL: string): Swapper {
     }
   };
 
-  const buildSwap: Swapper['buildSwap'] = async ({
+  const buildSwap: Swapper["buildSwap"] = async ({
     srcToken,
     destToken,
     srcAmount,
@@ -142,11 +141,11 @@ function createSwapper(networkID: number, apiURL: string): Swapper {
       receiver,
     };
 
-    const {data} = await axios.post<TransactionParams>(txURL, txConfig);
+    const { data } = await axios.post<TransactionParams>(txURL, txConfig);
     return data;
   };
 
-  return {getRate, buildSwap};
+  return { getRate, buildSwap };
 }
 
 export async function getSwapTransaction({
@@ -162,7 +161,7 @@ export async function getSwapTransaction({
       .times(10 ** srcToken.decimals)
       .toFixed(0);
 
-    const swapper = createSwapper(networkID, API_URL);
+    const swapper = createSwapper(networkID, URL_SWAP);
 
     const priceRoute = await swapper.getRate({
       srcToken,
@@ -206,7 +205,7 @@ export async function getSwapRate({
       .times(10 ** srcToken.decimals)
       .toFixed(0);
 
-    const swapper = createSwapper(networkID, API_URL);
+    const swapper = createSwapper(networkID, URL_SWAP);
 
     const priceRoute = await swapper.getRate({
       srcToken,
@@ -226,16 +225,16 @@ export const getTokenBalance = async (
   provider: any,
   walletAddress: any,
   tokenAddress: string,
-  decimal: number,
+  decimal: number
 ) => {
   try {
-    const ERC20ABI = require('./abi.json');
+    const ERC20ABI = require("./abi.json");
     const contract = new ethers.Contract(tokenAddress, ERC20ABI, provider);
     const balance = await contract.balanceOf(walletAddress);
 
     return ethers.utils.formatUnits(balance, decimal);
   } catch (err) {
     console.error(err);
-    return '0';
+    return "0";
   }
 };

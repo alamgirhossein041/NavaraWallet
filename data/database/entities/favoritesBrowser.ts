@@ -5,6 +5,8 @@ export class BrowserFavorites {
   id: string;
   @Column({unique: true})
   url: string;
+  @Column({nullable: true})
+  icon: string;
   @Column()
   title: string;
   @Column({type: 'date', default: () => 'CURRENT_TIMESTAMP'})

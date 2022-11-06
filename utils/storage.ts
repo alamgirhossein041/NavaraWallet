@@ -27,6 +27,7 @@ export const localStorage: ILocalStorage = {
   remove: async key => await AsyncStorage.removeItem(key),
 };
 
+export const APPROVED_HOSTS = 'APPROVED_HOSTS'
 export const STORAGE_APP_LOCK = 'STORAGE_APP_LOCK';
 export const STORAGE_TYPE_BIOMETRIC = 'STORAGE_TYPE_BIOMETRIC';
 export const ALLOW_ENTER_PINCODE = 'ALLOW_ENTER_PINCODE';
@@ -50,3 +51,4 @@ export const COLOR_MODE = 'COLOR_MODE';
 export const SELECTED_WALLET = 'SELECTED_WALLET';
 export const NETWORKS_ENVIRONMENT = 'NETWORKS_ENVIRONMENT';
 export const TYPE_LANGUAGE = 'TYPE_LANGUAGE';
+export const SELECTED_LANGUAGE='SELECTED_LANGUAGE'

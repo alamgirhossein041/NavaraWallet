@@ -1,23 +1,11 @@
-import React, {useState, useEffect} from 'react';
-import IconScanInput from '../../assets/icons/icon-scanner.svg';
-import {RNCamera} from 'react-native-camera';
-import {
-  Text,
-  View,
-  StyleSheet,
-  Button,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
-import {tw} from '../../utils/tailwind';
-import {Modal, useDisclose} from 'native-base';
-import QRCodeScanner from 'react-native-qrcode-scanner';
-import {primaryColor} from '../../configs/theme';
-import {XIcon} from 'react-native-heroicons/solid';
-import {useTextDarkMode} from '../../hooks/useModeDarkMode';
-import {useGridDarkMode} from '../../hooks/useModeDarkMode';
-import {useDarkMode} from '../../hooks/useModeDarkMode';
 import {useNavigation} from '@react-navigation/native';
+import {Modal, useDisclose} from 'native-base';
+import React, {useState} from 'react';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import {XIcon} from 'react-native-heroicons/solid';
+import QRCodeScanner from 'react-native-qrcode-scanner';
+import IconScanInput from '../../assets/icons/icon-scanner.svg';
+import {tw} from '../../utils/tailwind';
 const ScanHomeQR = ({onValueScaned}: any) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
@@ -40,9 +28,6 @@ const ScanHomeQR = ({onValueScaned}: any) => {
     // navigation.navigate("SendingToken",e.data)
     handleBarCodeScanned(e.data);
   };
-  //text darkmode
-
-  //grid, shadow darkmode
 
   return (
     <View>

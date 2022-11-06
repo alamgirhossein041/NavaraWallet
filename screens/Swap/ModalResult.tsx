@@ -1,14 +1,14 @@
-import {Modal, Spinner} from 'native-base';
-import React from 'react';
-import {Text, View} from 'react-native';
+import { Modal, Spinner } from "native-base";
+import React from "react";
+import { useTranslation } from "react-i18next";
+import { Text, View } from "react-native";
 import {
   CheckCircleIcon,
   ExclamationCircleIcon,
-} from 'react-native-heroicons/solid';
-import Button from '../../components/Button';
-import {primaryColor, primaryGray} from '../../configs/theme';
-import {useDarkMode} from '../../hooks/useModeDarkMode';
-import {tw} from '../../utils/tailwind';
+} from "react-native-heroicons/solid";
+import Button from "../../components/UI/Button";
+import { primaryColor, primaryGray } from "../../configs/theme";
+import { tw } from "../../utils/tailwind";
 
 interface IModalProps {
   showingModal: string;
@@ -29,20 +29,24 @@ const ModalResult = ({
   fromSymbol,
   toSymbol,
 }: IModalProps) => {
-  //text darkmode
   //
-  //grid, shadow darkmode
+
   //
+  const { t } = useTranslation();
+
   return (
     <>
-      <Modal isOpen={showingModal === 'confirmation'}>
+      <Modal isOpen={showingModal === "confirmation"}>
         <Modal.Content
-          style={tw`p-6 flex flex-col items-center justify-center rounded-3xl `}>
+          style={tw`p-6 flex flex-col items-center justify-center rounded-3xl `}
+        >
           {loading ? (
             <View style={tw`flex items-center`}>
               <Spinner color={primaryColor} size="lg" />
               <Text style={tw`dark:text-white  text-center text-gray-700 mt-3`}>
-                {`Swapping ${fromSymbol} for ${toSymbol}...`}
+                {`${t("swap.swapping")} ${fromSymbol} ${t(
+                  "swap.for"
+                )} ${toSymbol}...`}
               </Text>
             </View>
           ) : (
@@ -61,22 +65,24 @@ const ModalResult = ({
                   <Button
                     variant="secondary"
                     buttonStyle={`rounded-2xl bg-[${primaryGray}]`}
-                    stringStyle={'font-semibold'}
+                    stringStyle={"font-semibold"}
                     onPress={() => {
-                      setShowingModal('');
-                    }}>
-                    Cancel
+                      setShowingModal("");
+                    }}
+                  >
+                    {t("swap.cancel")}
                   </Button>
                 </View>
                 <View style={tw`w-1/2 px-1`}>
                   <Button
-                    buttonStyle={'rounded-2xl'}
-                    stringStyle={'font-semibold'}
-                    loading={loading === 'swap'}
+                    buttonStyle={"rounded-2xl"}
+                    stringStyle={"font-semibold"}
+                    loading={loading === "swap"}
                     onPress={async () => {
                       await onConfirm();
-                    }}>
-                    Confirm
+                    }}
+                  >
+                    {t("swap.confirm")}
                   </Button>
                 </View>
               </View>
@@ -85,32 +91,34 @@ const ModalResult = ({
         </Modal.Content>
       </Modal>
 
-      <Modal isOpen={showingModal === 'success' || showingModal === 'failed'}>
+      <Modal isOpen={showingModal === "success" || showingModal === "failed"}>
         <Modal.Content
-          style={tw`p-6 flex flex-col items-center justify-center rounded-3xl bg-white dark:bg-[#18191A] `}>
+          style={tw`p-6 flex flex-col items-center justify-center rounded-3xl bg-white dark:bg-[#18191A] `}
+        >
           <View style={tw` w-1/4 h-20`}>
-            {showingModal === 'success' && (
+            {showingModal === "success" && (
               <CheckCircleIcon width="100%" height="100%" fill={primaryColor} />
             )}
-            {showingModal === 'failed' && (
+            {showingModal === "failed" && (
               <ExclamationCircleIcon width="100%" height="100%" fill="red" />
             )}
           </View>
           <Text style={tw`dark:text-white  text-base`}>
-            {showingModal === 'success' && 'Swap successful!'}
-            {showingModal === 'failed' && 'Swap failed!'}
+            {showingModal === "success" && t("swap.swap_successful")}
+            {showingModal === "failed" && t("swap.swap_failed")}
           </Text>
 
           <View style={tw`flex flex-row justify-between mt-4`} />
           <View style={tw`w-full flex flex-row `}>
             <Button
               fullWidth
-              buttonStyle={'rounded-2xl'}
-              stringStyle={'font-semibold'}
+              buttonStyle={"rounded-2xl"}
+              stringStyle={"font-semibold"}
               onPress={() => {
-                setShowingModal('');
-              }}>
-              Done
+                setShowingModal("");
+              }}
+            >
+              {t("swap.done")}
             </Button>
           </View>
         </Modal.Content>

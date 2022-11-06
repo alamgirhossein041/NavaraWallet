@@ -1,30 +1,35 @@
-import React, {useRef} from 'react';
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
-import {tw} from '../../utils/tailwind';
-import {useDarkMode} from '../../hooks/useModeDarkMode';
-import QRCode from 'react-qr-code';
-import Clipboard from '@react-native-clipboard/clipboard';
-import toastr from '../../utils/toastr';
-import {CHAIN_ICONS} from '../../configs/bcNetworks';
-import {useWalletSelected} from '../../hooks/useWalletSelected';
-import {primaryColor} from '../../configs/theme';
-import {useTextDarkMode} from '../../hooks/useModeDarkMode';
-import IconCopy from '../../assets/icons/icon-copy.svg';
-import IconShare from '../../assets/icons/icon-share.svg';
-import IconDomain from '../../assets/icons/icon-domain.svg';
-import ViewShot, {captureScreen} from 'react-native-view-shot';
-import Share from 'react-native-share';
-import {shortenAddress} from '../../utils/stringsFunction';
-import {useLinkTo} from '@react-navigation/native';
-const ReceiveSpecificToken = ({route, navigation}) => {
-  const {token} = route.params;
+import Clipboard from "@react-native-clipboard/clipboard";
+import { useLinkTo } from "@react-navigation/native";
+import React, { useRef } from "react";
+import { useTranslation } from "react-i18next";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import Share from "react-native-share";
+import ViewShot from "react-native-view-shot";
+import QRCode from "react-qr-code";
+import IconCopy from "../../assets/icons/icon-copy.svg";
+import IconShare from "../../assets/icons/icon-share.svg";
+import { SelectListChains } from "../../components/UI/SelectListChains";
+import { CHAIN_ICONS } from "../../configs/bcNetworks";
+import { primaryColor } from "../../configs/theme";
+import { useWalletSelected } from "../../hooks/useWalletSelected";
+import { shortenAddress } from "../../utils/stringsFunction";
+import { tw } from "../../utils/tailwind";
+import toastr from "../../utils/toastr";
+const ReceiveSpecificToken = ({ route, navigation }) => {
+  const { token } = route.params;
   const walletSelected = useWalletSelected();
+
   //background Darkmode
+  const { t } = useTranslation();
+  const Icon = CHAIN_ICONS[token.network];
+  // const { isOpen, onOpen, onClose } = useDisclose();
 
   navigation.setOptions({
-    title: `Receive ${token.symbol}`,
+    title: `${t("stack_screen.receive")} ${token.symbol}`,
+    headerRight: () => (
+      <SelectListChains token={token} next="ReceiveSpecificToken" />
+    ),
   });
-  const Icon = CHAIN_ICONS[token.network];
 
   const viewShotRef: any = useRef();
   const captureViewShot = async () => {
@@ -51,7 +56,8 @@ const ReceiveSpecificToken = ({route, navigation}) => {
       <ViewShot
         captureMode="mount"
         ref={viewShotRef}
-        options={{format: 'jpg', quality: 1.0}}>
+        options={{ format: "jpg", quality: 1.0 }}
+      >
         <View style={tw`flex-1 w-full `}>
           <View style={tw`items-center mb-5 `}>
             <Icon width={80} height={80} />
@@ -62,12 +68,13 @@ const ReceiveSpecificToken = ({route, navigation}) => {
               style={tw`flex flex-row p-2 mx-auto mb-3 rounded-lg `}
               activeOpacity={0.6}
               onPress={async () => {
-                await Clipboard.setString(token.address);
-                toastr.info('Copied');
-              }}>
-              <IconDomain />
+                await Clipboard.setString(walletSelected.data.domain);
+                toastr.info("Copied");
+              }}
+            >
               <Text
-                style={tw`mx-2 text-sm font-bold text-center dark:text-white `}>
+                style={tw`mx-2 text-sm font-bold text-center dark:text-white `}
+              >
                 {walletSelected.data.domain}
               </Text>
             </TouchableOpacity>
@@ -75,11 +82,13 @@ const ReceiveSpecificToken = ({route, navigation}) => {
             <>
               <TouchableOpacity
                 activeOpacity={0.6}
-                onPress={() => linkTo('/GetYourDomain')}
-                style={tw`bg-[${primaryColor}] mx-10 rounded-full my-3 `}>
+                onPress={() => linkTo("/GetYourDomain")}
+                style={tw`bg-[${primaryColor}] mx-10 rounded-full my-3 `}
+              >
                 <Text
-                  style={tw`px-2 py-2 font-bold text-center text-white dark:text-white `}>
-                  Get your domain
+                  style={tw`px-2 py-2 font-bold text-center text-white dark:text-white `}
+                >
+                  {t("receive.get_your_domain")}
                 </Text>
               </TouchableOpacity>
             </>
@@ -87,7 +96,8 @@ const ReceiveSpecificToken = ({route, navigation}) => {
 
           <View style={tw`flex items-center justify-center w-full my-5`}>
             <View
-              style={tw`relative items-center justify-center w-2/3 p-5 bg-white border-2 border-gray-100 dark:border-gray-600/60 rounded-3xl`}>
+              style={tw`relative items-center justify-center w-2/3 p-5 bg-white border-2 border-gray-100 dark:border-gray-600/60 rounded-3xl`}
+            >
               <QRCode value={`${token.address}`} size={200} />
             </View>
           </View>
@@ -97,8 +107,9 @@ const ReceiveSpecificToken = ({route, navigation}) => {
             activeOpacity={0.6}
             onPress={async () => {
               await Clipboard.setString(token.address);
-              toastr.info('Copied');
-            }}>
+              toastr.info("Copied");
+            }}
+          >
             <Text style={tw`px-5 text-sm text-center dark:text-white `}>
               {shortenAddress(token.address)}
             </Text>
@@ -109,27 +120,45 @@ const ReceiveSpecificToken = ({route, navigation}) => {
         <TouchableOpacity
           onPress={async () => {
             await Clipboard.setString(token.address);
-            toastr.info('Copied');
+            toastr.info("Copied");
           }}
-          style={tw`items-center justify-center w-20 text-center `}>
+          style={tw`items-center justify-center w-20 text-center `}
+        >
           <IconCopy />
           <Text style={tw`text-lg font-bold text-center dark:text-white `}>
-            Copy
+            {t("receive.copy")}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={captureViewShot}
-          style={tw`items-center justify-center w-20 text-center `}>
+          style={tw`items-center justify-center w-20 text-center `}
+        >
           <IconShare />
           <Text style={tw`text-lg font-bold text-center dark:text-white `}>
-            Share
+            {t("receive.share")}
           </Text>
         </TouchableOpacity>
       </View>
       <Text style={tw`dark:text-white  mx-auto text-[10px]`}>
-        Accept payment from other Navara{' '}
+        {t("receive.accept_payment_from_other_navara")}
       </Text>
-      <Text style={tw`dark:text-white  mx-auto text-[10px]`}>Wallet users</Text>
+      <Text style={tw`dark:text-white  mx-auto text-[10px]`}>
+        {t("receive.wallet_users")}
+      </Text>
+      {/* <Actionsheet isOpen={isOpen} onClose={onClose}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : null}
+        >
+          <Actionsheet.Content style={tw``}>
+            <Text
+              style={tw`text-center dark:text-white font-bold text-xl py-2`}
+            >
+              Networks
+            </Text>
+            <ListChainSelect next="ReceiveSpecificToken" caching />
+          </Actionsheet.Content>
+        </KeyboardAvoidingView>
+      </Actionsheet> */}
     </ScrollView>
   );
 };

@@ -1,13 +1,12 @@
-import React from 'react';
-import {Text, View} from 'react-native';
-import {CheckIcon} from 'react-native-heroicons/solid';
-import PressableAnimated from '../../../components/PressableAnimated';
-import {searchDefault} from '../../../configs/browser';
-import {primaryColor} from '../../../configs/theme';
-import {useLocalStorage} from '../../../hooks/useLocalStorage';
-import {BROWSER_SETTINGS} from '../../../utils/storage';
-import {tw} from '../../../utils/tailwind';
-import Favicon from '../Favicon';
+import React from "react";
+import { Text, View } from "react-native";
+import { CheckIcon } from "react-native-heroicons/solid";
+import PressableAnimated from "../../../components/UI/PressableAnimated";
+import { searchDefault } from "../../../configs/browser";
+import { primaryColor } from "../../../configs/theme";
+import { useLocalStorage } from "../../../hooks/useLocalStorage";
+import { BROWSER_SETTINGS } from "../../../utils/storage";
+import { tw } from "../../../utils/tailwind";
 
 const SearchEngine = () => {
   const [browserSettings, setBrowserSettings] =
@@ -18,13 +17,14 @@ const SearchEngine = () => {
 
   return (
     <View style={tw`flex-1 bg-white dark:bg-[#18191A] `}>
-      <View style={tw`m-4 bg-gray-800  rounded-lg`}>
+      <View style={tw`m-4 bg-gray-100 rounded-lg dark:bg-gray-800`}>
         {searchEngines.map(([key, value], index) => {
           const hostname = new URL(value.url).hostname;
           return (
             <View
               key={index}
-              style={tw`${index > 0 && 'border-t border-gray-400'}`}>
+              style={tw`${index > 0 && "border-t border-gray-400"}`}
+            >
               <PressableAnimated
                 style={tw`flex-row items-center p-2`}
                 onPress={() => {
@@ -33,11 +33,14 @@ const SearchEngine = () => {
                     searchEngine: key,
                   };
                   setBrowserSettings(newBrowserSettings);
-                }}>
-                <Favicon domain={hostname} />
+                }}
+              >
+                {/* <Favicon domain={hostname} /> */}
                 <View style={tw`flex-1 ml-2`}>
-                  <Text>{key}</Text>
-                  <Text style={tw`dark:text-white  text-gray-500`}>
+                  <Text style={tw`text-lg text-black dark:text-white`}>
+                    {key}
+                  </Text>
+                  <Text style={tw`text-gray-500 dark:text-white`}>
                     {hostname}
                   </Text>
                 </View>

@@ -1,18 +1,18 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import CryptoJS from "crypto-js";
+import { useCallback, useEffect, useState } from "react";
 import {
   AlreadyHasActiveConnectionError,
   createConnection,
   getConnection,
   getRepository,
-} from 'typeorm/browser';
-import toastr from '../../utils/toastr';
-import { ChainWallet } from './entities/chainWallet';
-import { BrowserFavorites } from './entities/favoritesBrowser';
-import { BrowserHistory } from './entities/historyBrowser';
-import { Wallet } from './entities/wallet';
-import CryptoJS from 'crypto-js';
-import { getFromKeychain } from '../../utils/keychain';
-import { SearchRecent } from './entities/searchRecent';
+} from "typeorm/browser";
+import { getFromKeychain } from "../../utils/keychain";
+import toastr from "../../utils/toastr";
+import { ChainWallet } from "./entities/chainWallet";
+import { BrowserFavorites } from "./entities/favoritesBrowser";
+import { BrowserHistory } from "./entities/historyBrowser";
+import { SearchRecent } from "./entities/searchRecent";
+import { Wallet } from "./entities/wallet";
 
 const useDatabase = () => {
   const [connection, setconnection] = useState(null);
@@ -28,9 +28,9 @@ const useDatabase = () => {
   const setupConnection = useCallback(async () => {
     try {
       const _connection = await createConnection({
-        type: 'react-native',
-        database: 'navara',
-        location: 'default',
+        type: "react-native",
+        database: "navara",
+        location: "default",
         // logging: ['error', 'query', 'schema'],s
         synchronize: true,
         keepConnectionAlive: true,
@@ -42,7 +42,6 @@ const useDatabase = () => {
           SearchRecent,
         ],
       });
-      //
       setconnection(_connection);
     } catch (error) {
       if (error.constructor === AlreadyHasActiveConnectionError) {
@@ -64,7 +63,7 @@ const useDatabase = () => {
       const password = await getFromKeychain();
       const encryptedSeedPhrase = CryptoJS.AES.encrypt(
         seedPhrase,
-        password,
+        password
       ).toString();
 
       newWallet.seedPhrase = password ? encryptedSeedPhrase : seedPhrase;
@@ -77,7 +76,7 @@ const useDatabase = () => {
     },
     updateWalletSpecific: async (
       walletId: string,
-      newValue: {},
+      newValue: {}
     ): Promise<any> => {
       const walletRepository = getRepository(Wallet);
       const wallet = await walletRepository.findOne({ id: walletId });
@@ -95,8 +94,8 @@ const useDatabase = () => {
       const walletRepository = getRepository(Wallet);
 
       const listWallets = await walletRepository
-        .createQueryBuilder('wallet')
-        .leftJoinAndSelect('wallet.chains', 'chainWallet')
+        .createQueryBuilder("wallet")
+        .leftJoinAndSelect("wallet.chains", "chainWallet")
         .getMany();
 
       return listWallets;
@@ -112,14 +111,15 @@ const useDatabase = () => {
 
   const [latestHistory, setLatestHistory] = useState(null);
   const historyBrowserController = {
-    createHistoryBrowser: async (
-      url: string,
-      title: string,
-    ): Promise<BrowserHistory> => {
-      if (latestHistory === url) { return; }
+    createHistoryBrowser: async (data): Promise<BrowserHistory> => {
+      const { url, title, icon } = data;
+      if (latestHistory === url) {
+        return;
+      }
       const newBrowserHistory = new BrowserHistory();
       newBrowserHistory.url = url;
       newBrowserHistory.title = title;
+      newBrowserHistory.icon = icon;
       const historyBrowserRepository = getRepository(BrowserHistory);
       setLatestHistory(url);
       return historyBrowserRepository.save(newBrowserHistory);
@@ -129,7 +129,7 @@ const useDatabase = () => {
       const historyBrowserRepository = getRepository(BrowserHistory);
       return historyBrowserRepository.find({
         order: {
-          createdAt: 'DESC',
+          createdAt: "DESC",
         },
       });
     },
@@ -147,8 +147,8 @@ const useDatabase = () => {
     suggestHistoryBrowser: async (query): Promise<BrowserHistory> => {
       const historyBrowserRepository = getRepository(BrowserHistory);
       return historyBrowserRepository
-        .createQueryBuilder('history')
-        .where('history.url like :query', { query: `%${query}%` })
+        .createQueryBuilder("history")
+        .where("history.url like :query", { query: `%${query}%` })
         .getRawOne();
     },
 
@@ -160,8 +160,8 @@ const useDatabase = () => {
     getSearchRecent: async (): Promise<SearchRecent[]> => {
       const searchRecentRepository = getRepository(SearchRecent);
       return searchRecentRepository
-        .createQueryBuilder('searchRecent')
-        .orderBy('searchRecent.createdAt', 'DESC')
+        .createQueryBuilder("searchRecent")
+        .orderBy("searchRecent.createdAt", "DESC")
         .take(10)
         .getMany();
     },
@@ -172,17 +172,17 @@ const useDatabase = () => {
   };
 
   const favoritesBrowserController = {
-    createFavoritesBrowser: async (
-      url: string,
-      title: string,
-    ): Promise<BrowserFavorites> => {
+    createFavoritesBrowser: async (data): Promise<BrowserFavorites> => {
+      const { url, title, icon } = data;
       const newBrowserFavorites = new BrowserFavorites();
       newBrowserFavorites.url = url;
       newBrowserFavorites.title = title;
+      newBrowserFavorites.icon = icon;
+
       const favoritesBrowserRepository = getRepository(BrowserFavorites);
 
       const browserFavorites = await favoritesBrowserRepository.save(
-        newBrowserFavorites,
+        newBrowserFavorites
       );
       if (browserFavorites) {
         return browserFavorites;
@@ -193,7 +193,7 @@ const useDatabase = () => {
       const favoritesBrowserRepository = getRepository(BrowserFavorites);
       return favoritesBrowserRepository.find({
         order: {
-          createdAt: 'DESC',
+          createdAt: "DESC",
         },
       });
     },

@@ -1,15 +1,12 @@
+import Clipboard from '@react-native-clipboard/clipboard';
 import React from 'react';
 import {Text, View} from 'react-native';
-import {tw} from '../../utils/tailwind';
-import {primaryColor} from '../../configs/theme';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 import QRCode from 'react-qr-code';
 import {CHAIN_ICONS} from '../../configs/bcNetworks';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import Clipboard from '@react-native-clipboard/clipboard';
+import {primaryColor} from '../../configs/theme';
+import {tw} from '../../utils/tailwind';
 import toastr from '../../utils/toastr';
-import {useDarkMode} from '../../hooks/useModeDarkMode';
-import {useTextDarkMode} from '../../hooks/useModeDarkMode';
-import {useGridDarkMode} from '../../hooks/useModeDarkMode';
 type TokenCardProps = {
   address: string;
   symbol: string;
@@ -20,10 +17,6 @@ type TokenCardProps = {
 const TokenCard = ({token, amount}) => {
   const Icon = CHAIN_ICONS[token.network];
   //background Darkmode
-
-  //text darkmode
-
-  //grid, shadow darkmode
 
   return (
     <View style={tw`w-full p-4  rounded-3xl `}>

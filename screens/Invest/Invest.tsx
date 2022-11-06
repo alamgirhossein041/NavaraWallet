@@ -1,45 +1,29 @@
-import {Skeleton, Text} from 'native-base';
-import React, {Suspense, useCallback, useEffect, useState} from 'react';
-import {Dimensions, View} from 'react-native';
-import {ScrollView} from 'react-native';
-import SearchBar from '../../components/SearchBar';
-import {primaryColor} from '../../configs/theme';
-import {tw} from '../../utils/tailwind';
-import Carousel from 'react-native-snap-carousel';
-import IconBTC from '../../assets/icons/icon-bsc.svg';
-import IconETH from '../../assets/icons/icon-eth.svg';
-import IconBNB from '../../assets/icons/icon-bsc.svg';
-import {useWalletSelected} from '../../hooks/useWalletSelected';
-import {useIsFocused, useNavigation} from '@react-navigation/native';
-import {ChainWallet} from '../../data/database/entities/chainWallet';
-import PriceChartsFavorites from './PriceChartsFavorites';
-import PricesChart from '../Home/PricesChart';
-import {CHAIN_ICONS} from '../../configs/bcNetworks';
-import axios from 'axios';
-import {apiUrl} from '../../configs/apiUrl';
-import {useRecoilState, useRecoilValue} from 'recoil';
-import showTotalAssets from '../../data/globalState/showTotalAssets';
-import {balanceChainsState} from '../../data/globalState/priceTokens';
-import {WalletInterface} from '../../data/types';
-import {useWallet} from '../../hooks/useWallet';
-import {ChartData} from '../../components/MiniLineChart';
-import MiniAreaChart from '../../components/MiniAreaChart';
-import CurrencyFormat from '../../components/CurrencyFormat';
-import Loading from '../../components/Loading';
+import { Text } from "native-base";
+import React from "react";
+import { useTranslation } from "react-i18next";
+import { Dimensions, ScrollView, View } from "react-native";
+import Carousel from "react-native-snap-carousel";
+import MiniAreaChart from "../../components/UI/MiniAreaChart";
+import { ChartData } from "../../components/UI/MiniLineChart";
+import SearchBar from "../../components/UI/SearchBar";
+import { CHAIN_ICONS } from "../../configs/bcNetworks";
+import { primaryColor } from "../../configs/theme";
+import { useWalletSelected } from "../../hooks/useWalletSelected";
+import { tw } from "../../utils/tailwind";
 const SubInvest = () => {
-  const {width: viewportWidth, height: viewportHeight} =
-    Dimensions.get('window');
+  const { width: viewportWidth, height: viewportHeight } =
+    Dimensions.get("window");
   const SLIDE_WIDTH = Math.round(viewportWidth / 2.8);
   const ITEM_HORIZONTAL_MARGIN = 15;
   const ITEM_WIDTH = SLIDE_WIDTH + ITEM_HORIZONTAL_MARGIN * 2;
   const SLIDER_WIDTH = viewportWidth;
   const walletSelected = useWalletSelected();
-  const COIN_GECKO_URL = 'https://api.coingecko.com/api/v3/coins/';
+  const COIN_GECKO_URL = "https://api.coingecko.com/api/v3/coins/";
   const listChains = walletSelected.data.chains || [];
   const [price, setPrice] = React.useState<ChartData[]>([]);
   const [loadingPrices, setLoadingPrices] = React.useState(false);
   const [loadingBalance, setLoadingBalance] = React.useState(false);
-  console.log(price);
+
   // const getPrice = useCallback(async () => {
   //   setLoadingPrices(true);
   //   const tokenId = await (
@@ -77,7 +61,7 @@ const SubInvest = () => {
   //   })();
   // }, [getPrice]);
 
-  const RenderItem = props => {
+  const RenderItem = (props) => {
     const Icon = CHAIN_ICONS[props.item.network];
     // const getPrice = useCallback(async () => {
     //   setLoadingPrices(true);
@@ -122,7 +106,8 @@ const SubInvest = () => {
             tw`relative p-2 mb-3 
                bg-[#E2E8F0]
               rounded-3xl h-50`,
-          ]}>
+          ]}
+        >
           <View style={tw`flex-row`}>
             <View style={tw`w-1/2`}>
               <Icon width={40} height={40} />
@@ -155,15 +140,15 @@ const SubInvest = () => {
       </View>
     );
   };
-
+  const { t } = useTranslation();
   return (
     <View style={tw`mb-10`}>
       <ScrollView style={tw`flex flex-col w-full p-3 `}>
         <SearchBar
-          placeholder="Search "
+          placeholder={t("search_bar.search")}
           // list={listChains}
 
-          filterProperty={['network', 'symbol']}
+          filterProperty={["network", "symbol"]}
           // onListFiltered={(list: any[]) => {
           //   setListChainsFiltered(list);
           // }}
@@ -171,11 +156,13 @@ const SubInvest = () => {
         <View style={tw`flex flex-row w-full px-2 `}>
           <View style={tw`mr-auto`}>
             <Text
-              style={tw`dark:text-white  font-thin text-[12px] text-[#8E9BAE]`}>
+              style={tw`dark:text-white  font-thin text-[12px] text-[#8E9BAE]`}
+            >
               Market Cap
             </Text>
             <Text
-              style={tw`dark:text-white  text-lg font-bold dark:text-white `}>
+              style={tw`dark:text-white  text-lg font-bold dark:text-white `}
+            >
               $2.5B
             </Text>
             <Text style={tw`dark:text-white  text-xs text-green-500`}>
@@ -184,11 +171,13 @@ const SubInvest = () => {
           </View>
           <View style={tw`mx-auto`}>
             <Text
-              style={tw`dark:text-white  font-thin text-[12px] text-[#8E9BAE]`}>
+              style={tw`dark:text-white  font-thin text-[12px] text-[#8E9BAE]`}
+            >
               24th Volumn
             </Text>
             <Text
-              style={tw`dark:text-white  text-lg font-bold dark:text-white `}>
+              style={tw`dark:text-white  text-lg font-bold dark:text-white `}
+            >
               $219B
             </Text>
             <Text style={tw`dark:text-white  text-xs text-green-500`}>
@@ -197,11 +186,13 @@ const SubInvest = () => {
           </View>
           <View style={tw`ml-auto`}>
             <Text
-              style={tw`dark:text-white  font-thin text-[12px] text-[#8E9BAE]`}>
+              style={tw`dark:text-white  font-thin text-[12px] text-[#8E9BAE]`}
+            >
               BTC Dominance
             </Text>
             <Text
-              style={tw`dark:text-white  text-lg font-bold dark:text-white `}>
+              style={tw`dark:text-white  text-lg font-bold dark:text-white `}
+            >
               $60%
             </Text>
             <Text style={tw`dark:text-white  text-xs text-green-500`}>
@@ -221,10 +212,10 @@ const SubInvest = () => {
           data={listChains}
           sliderWidth={SLIDER_WIDTH}
           itemWidth={ITEM_WIDTH}
-          activeSlideAlignment={'start'}
+          activeSlideAlignment={"start"}
           inactiveSlideScale={1}
           inactiveSlideOpacity={1}
-          renderItem={props => <RenderItem {...props} />}
+          renderItem={(props) => <RenderItem {...props} />}
         />
         {/* {listChains.map((chain: ChainWallet, index) => {
           return (

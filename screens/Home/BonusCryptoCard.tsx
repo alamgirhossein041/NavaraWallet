@@ -1,8 +1,8 @@
-import {View, Text, TouchableOpacity} from 'react-native';
-import React from 'react';
-import {tw} from '../../utils/tailwind';
-import BonusIcon from '../../assets/icons/bonus.svg';
-import PressableAnimated from '../../components/PressableAnimated';
+import React from "react";
+import { Text, View } from "react-native";
+import BonusIcon from "../../assets/icons/bonus.svg";
+import PressableAnimated from "../../components/UI/PressableAnimated";
+import { tw } from "../../utils/tailwind";
 export default function BonusCryptoCard(props) {
   return (
     <View style={tw`px-4 `}>

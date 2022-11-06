@@ -1,29 +1,25 @@
-import dayjs from 'dayjs';
-import {Actionsheet, ScrollView, useDisclose} from 'native-base';
-import React, {useState} from 'react';
-import {Text, View} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import {ShieldCheckIcon} from 'react-native-heroicons/solid';
-import {useInfiniteQuery} from 'react-query';
-import IconCheckOK from '../../assets/icons/icon-checkmark.svg';
-import IconHighRisk from '../../assets/icons/icon-high-risk.svg';
-import IconNoData from '../../assets/icons/icon-no-data-amico.svg';
-import ScreenLoading from '../../components/ScreenLoading';
-import {CHAIN_ICONS} from '../../configs/bcNetworks';
-import {fetchHistory} from '../../data/api/fetchHistory';
-import {IHistory} from '../../data/types';
-import {
-  useDarkMode,
-  useGridDarkMode,
-  useTextDarkMode,
-} from '../../hooks/useModeDarkMode';
-import {shortenAddressForHistory} from '../../utils/stringsFunction';
-import {tw} from '../../utils/tailwind';
-var relativeTime = require('dayjs/plugin/relativeTime');
+import dayjs from "dayjs";
+import { Actionsheet, ScrollView, useDisclose } from "native-base";
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Text, View } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { ShieldCheckIcon } from "react-native-heroicons/solid";
+import { useInfiniteQuery } from "react-query";
+import IconCheckOK from "../../assets/icons/icon-checkmark.svg";
+import IconHighRisk from "../../assets/icons/icon-high-risk.svg";
+import IconNoData from "../../assets/icons/icon-no-data-amico.svg";
+import ScreenLoading from "../../components/Skeleton/ScreenLoading";
+import { CHAIN_ICONS } from "../../configs/bcNetworks";
+import { fetchHistory } from "../../data/api/fetchHistory";
+import { IHistory } from "../../data/types";
+import { shortenAddressForHistory } from "../../utils/stringsFunction";
+import { tw } from "../../utils/tailwind";
+var relativeTime = require("dayjs/plugin/relativeTime");
 const day: any = dayjs;
 day.extend(relativeTime);
-const HistoryWallets = props => {
-  const {route} = props;
+const HistoryWallets = (props) => {
+  const { route } = props;
 
   const symbol = route.params.token.symbol;
   const address = route.params.token.address;
@@ -42,25 +38,25 @@ const HistoryWallets = props => {
     hasPreviousPage,
   } = useInfiniteQuery(
     address,
-    async ({pageParam = 1}) => {
+    async ({ pageParam = 1 }) => {
       const response: any = await fetchHistory(network, {
         address,
       });
 
       const data: IHistory[] = Array.prototype.concat.apply(
         [],
-        response.map(res => res),
+        response.map((res) => res)
       );
       setLoading(false);
       return data;
     },
     {
       getNextPageParam: (lastPage: any, pages) => lastPage.nextCursor,
-    },
+    }
   );
   // start groupByArray
   const groups = data?.pages[0].reduce((groups, item) => {
-    const date = day(+item.timeStamp * 1000).format('MMMM D, YYYY ');
+    const date = day(+item.timeStamp * 1000).format("MMMM D, YYYY ");
     if (!groups[date]) {
       groups[date] = [];
     }
@@ -70,7 +66,7 @@ const HistoryWallets = props => {
 
   const groupArrays =
     data &&
-    Object.keys(groups).map(date => {
+    Object.keys(groups).map((date) => {
       return groups[date];
     });
   // end groupByArray
@@ -83,9 +79,9 @@ const HistoryWallets = props => {
       </View>
       <ScrollView style={tw`bg-white dark:bg-[#18191A]  h-full`}>
         <View style={tw`mx-3`}>
-          {groupArrays.map(itemGroup => {
+          {groupArrays.map((itemGroup) => {
             const dateTime = day(+itemGroup[0].timeStamp * 1000).format(
-              'DD-MM-YYYY',
+              "DD-MM-YYYY"
             );
             return (
               data &&
@@ -97,8 +93,8 @@ const HistoryWallets = props => {
 
                   {/* map history to history item  */}
                   {itemGroup &&
-                    itemGroup?.map(historyItem => (
-                      // console.log(historyItem)
+                    itemGroup?.map((historyItem) => (
+                      //
                       <HistoryItem
                         historyItem={historyItem}
                         symbol={symbol}
@@ -117,14 +113,10 @@ const HistoryWallets = props => {
     <View>{loading ? <ScreenLoading show={loading} /> : <IconNoData />}</View>
   );
 };
-const HistoryItem = props => {
-  const {isOpen, onOpen, onClose} = useDisclose();
+const HistoryItem = (props) => {
+  const { isOpen, onOpen, onClose } = useDisclose();
 
-  //text darkmode
-
-  //grid, shadow darkmode
-
-  const {historyItem, symbol, address, network} = props;
+  const { historyItem, symbol, address, network } = props;
 
   const checkFailedOrSuccess = historyItem.from === historyItem.to;
 
@@ -136,10 +128,10 @@ const HistoryItem = props => {
   const toAddress = shortenAddressForHistory(historyItem.to);
 
   const dateTransition = day(+historyItem.timeStamp * 1000).format(
-    'h:mm A - MMMM D, YYYY ',
+    "h:mm A - MMMM D, YYYY "
   );
 
-  const hourTransition = day(+historyItem.timeStamp * 1000).format(' h:mm A');
+  const hourTransition = day(+historyItem.timeStamp * 1000).format(" h:mm A");
 
   const takeFirstString = historyItem.from.charAt(0);
 
@@ -148,27 +140,30 @@ const HistoryItem = props => {
   const labelSend = address.toLowerCase() === historyItem.from;
 
   const labelReceive = address.toLowerCase() === historyItem.to;
-
+  const { t } = useTranslation();
   return (
     <View>
       <TouchableOpacity activeOpacity={0.6} onPress={onOpen} style={tw` `}>
         <View
-          style={tw`rounded-full p-3 flex-row justify-between mb-2  border border-gray-200  `}>
+          style={tw`rounded-full p-3 flex-row justify-between mb-2  border border-gray-200  `}
+        >
           <View style={tw`flex-row  items-center`}>
             <View style={tw`w-1/5`}>
               {historyItem?.from.length > 20 ? (
                 <View
-                  style={tw`w-10 h-10 rounded-full bg-gray-200 flex justify-center items-center`}>
+                  style={tw`w-10 h-10 rounded-full bg-gray-200 flex justify-center items-center`}
+                >
                   <Text
-                    style={tw`dark:text-white  text-2xl font-bold uppercase`}>
+                    style={tw`dark:text-white  text-2xl font-bold uppercase`}
+                  >
                     <Icon />
                   </Text>
                 </View>
               ) : (
                 <View
-                  style={tw`w-10 h-10 rounded-full bg-gray-200 flex justify-center items-center`}>
-                  <Text
-                    style={tw`dark:text-white  text-2xl font-bold uppercase`}>
+                  style={tw`w-10 h-10 rounded-full bg-gray-200 flex justify-center items-center`}
+                >
+                  <Text style={tw` text-2xl font-bold uppercase`}>
                     {takeFirstString}
                   </Text>
                 </View>
@@ -177,7 +172,8 @@ const HistoryItem = props => {
             <View style={tw`w-3/5`}>
               <View style={tw`py-1`}>
                 <Text
-                  style={tw`dark:text-white  dark:text-white  font-bold text-[12px]`}>
+                  style={tw`dark:text-white  dark:text-white  font-bold text-[12px]`}
+                >
                   {shortAddressWhenTooLong}
                 </Text>
                 {/* {!checkAlreadyGetDomain &&   <Text style={tw`dark:text-white  dark:text-white   text-[10px]`}>({toAddress})</Text>} */}
@@ -185,11 +181,12 @@ const HistoryItem = props => {
               {!checkFailedOrSuccess ? (
                 <Text style={tw`dark:text-white  text-gray-500 `}>
                   {!checkFailedOrSuccess ? <IconCheckOK /> : <IconHighRisk />}
-                  {labelSend && ' Send '} {labelReceive && ' Receive '}
+                  {labelSend && `${t("history.send")}`}{" "}
+                  {labelReceive && `${t("history.receive")}`}
                 </Text>
               ) : (
                 <Text style={tw`dark:text-white  text-gray-500 `}>
-                  {!checkFailedOrSuccess ? <IconCheckOK /> : <IconHighRisk />}{' '}
+                  {!checkFailedOrSuccess ? <IconCheckOK /> : <IconHighRisk />}{" "}
                   Failed
                 </Text>
               )}
@@ -213,50 +210,62 @@ const HistoryItem = props => {
           <ScrollView style={tw`flex flex-col w-screen px-4`}>
             <View style={tw`mb-4`}>
               {!checkFailedOrSuccess ? (
-                <Text style={tw` font-bold  text-center capitalize`}>
-                  {labelSend && ' Send '} {labelReceive && ' Receive '}
-                  {network}
+                <Text
+                  style={tw` font-bold dark:text-white  text-center capitalize`}
+                >
+                  {labelSend && `${t("history.send")}`}{" "}
+                  {labelReceive && `${t("history.receive")}`} {network}
                 </Text>
               ) : (
                 <Text style={tw` font-bold  text-center capitalize`}>
-                  Failed
+                  {t("history.failed")}
                 </Text>
               )}
 
               <View style={tw`flex flex-row my-2`}>
-                <Text style={tw`dark:text-white  font-bold mt-2 `}>From</Text>
+                <Text style={tw`dark:text-white  font-bold mt-2 `}>
+                  {t("history.from")}
+                </Text>
                 {/* FromAddress */}
                 <Text style={tw`dark:text-white  font-medium ml-auto mt-2 `}>
                   {shortAddressWhenTooLong}
                 </Text>
               </View>
               <View style={tw`flex flex-row my-2`}>
-                <Text style={tw`dark:text-white  font-bold mt-2 `}>To</Text>
+                <Text style={tw`dark:text-white  font-bold mt-2 `}>
+                  {t("history.to")}
+                </Text>
                 <Text style={tw`dark:text-white  font-medium ml-auto mt-2 `}>
                   {toAddress}
                 </Text>
               </View>
               <View style={tw`flex flex-row my-2`}>
-                <Text style={tw`dark:text-white  font-bold mt-2 `}>Date</Text>
+                <Text style={tw`dark:text-white  font-bold mt-2 `}>
+                  {t("history.date")}
+                </Text>
                 <Text style={tw`dark:text-white  font-medium ml-auto mt-2 `}>
                   {dateTransition}
                 </Text>
               </View>
               <View style={tw`flex flex-row my-2`}>
-                <Text style={tw`dark:text-white  font-bold mt-2 `}>Status</Text>
+                <Text style={tw`dark:text-white  font-bold mt-2 `}>
+                  {t("history.status")}
+                </Text>
                 <Text style={tw`dark:text-white  font-medium ml-auto mt-2 `}>
                   {checkFailedOrSuccess ? (
                     <View
-                      style={tw`bg-red-100  text-xs font-semibold mr-2 px-2.5 py-0.5 rounded `}>
+                      style={tw`bg-red-100  text-xs font-semibold mr-2 px-2.5 py-0.5 rounded `}
+                    >
                       <Text style={tw`dark:text-white  text-red-800 `}>
-                        Failed
+                        {t("history.failed")}
                       </Text>
                     </View>
                   ) : (
                     <View
-                      style={tw`bg-green-100  text-xs font-semibold mr-2 px-2.5 py-0.5 rounded `}>
-                      <Text style={tw`dark:text-white  text-green-800 `}>
-                        Success
+                      style={tw`bg-green-100  text-xs font-semibold mr-2 px-2.5 py-0.5 rounded `}
+                    >
+                      <Text style={tw` text-green-800 `}>
+                        {t("history.success")}
                       </Text>
                     </View>
                   )}
@@ -264,11 +273,13 @@ const HistoryItem = props => {
               </View>
               <View style={tw`flex flex-row my-2`}>
                 <Text style={tw`dark:text-white  font-bold mt-2 `}>
-                  Security
+                  {t("history.security")}
                 </Text>
                 <Text
-                  style={tw`dark:text-white  mt-2 ml-auto font-medium text-green-400`}>
-                  <ShieldCheckIcon width={15} height={15} color="green" /> Safe
+                  style={tw`dark:text-white  mt-2 ml-auto font-medium text-green-400`}
+                >
+                  <ShieldCheckIcon width={15} height={15} color="green" />{" "}
+                  {t("history.safe")}
                 </Text>
               </View>
             </View>

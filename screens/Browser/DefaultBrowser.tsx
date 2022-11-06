@@ -1,276 +1,276 @@
-import {Text, View, TouchableOpacity} from 'react-native';
-import React, {useState} from 'react';
-import {tw} from '../../utils/tailwind';
-import TabBrowser from '../../components/TabBrowser';
-import LogoUniswap from '../../assets/logoDApp/logo-uniswap.svg';
-import LogoSushiswap from '../../assets/logoDApp/logo-sushiswap.svg';
-import LogoOasis from '../../assets/logoDApp/logo-oasis.svg';
-import LogoPancake from '../../assets/logoDApp/logo-pancake.svg';
-import LogoBalancer from '../../assets/logoDApp/logo-balancer-bal.svg';
-import LogoAvalache from '../../assets/logoDApp/logo-avalanche.svg';
-import LogoBinance from '../../assets/logoDApp/logo-binance.svg';
-import LogoChainLink from '../../assets/logoDApp/logo-chainlink.svg';
-import LogoDai from '../../assets/logoDApp/logo-dai.svg';
-import LogoTopShot from '../../assets/logoDApp/logo-topshot.svg';
-import LogoAxie from '../../assets/logoDApp/logo-axie.svg';
-import LogoOpenSea from '../../assets/logoDApp/logo-opensea.svg';
-import LogoRarible from '../../assets/logoDApp/logo-rarible.svg';
-import LogoZapper from '../../assets/logoDApp/logo-zapper.svg';
-import LogoApy from '../../assets/logoDApp/logo-apy-vision.svg';
-import LogoDeBank from '../../assets/logoDApp/logo-debank.svg';
-import LogoOrion from '../../assets/logoDApp/logo-orion.svg';
-import LogoDune from '../../assets/logoDApp/logo-dune.svg';
-import LogoDefiKingDoms from '../../assets/logoDApp/logo-defi-kingdom.svg';
-import LogoMLB from '../../assets/logoDApp/logo-mlb.svg';
-import LogoCryptoKitties from '../../assets/logoDApp/logo-cryptokitties.svg';
-import LogoIlluvium from '../../assets/logoDApp/logo-illuvium.svg';
-import LogoMind from '../../assets/logoDApp/logo-mind.svg';
-import LogoSteemit from '../../assets/logoDApp/logo-steemit.svg';
-import LogoAllme from '../../assets/logoDApp/logo-allme.svg';
-import LogoMastodon from '../../assets/logoDApp/logo-mastodon.svg';
-import LogoSocial from '../../assets/logoDApp/logo-socialx.svg';
+import React, { useState } from "react";
+import { Text, TouchableOpacity, View } from "react-native";
+import LogoAllme from "../../assets/logoDApp/logo-allme.svg";
+import LogoApy from "../../assets/logoDApp/logo-apy-vision.svg";
+import LogoAvalache from "../../assets/logoDApp/logo-avalanche.svg";
+import LogoAxie from "../../assets/logoDApp/logo-axie.svg";
+import LogoBalancer from "../../assets/logoDApp/logo-balancer-bal.svg";
+import LogoBinance from "../../assets/logoDApp/logo-binance.svg";
+import LogoChainLink from "../../assets/logoDApp/logo-chainlink.svg";
+import LogoCryptoKitties from "../../assets/logoDApp/logo-cryptokitties.svg";
+import LogoDai from "../../assets/logoDApp/logo-dai.svg";
+import LogoDeBank from "../../assets/logoDApp/logo-debank.svg";
+import LogoDefiKingDoms from "../../assets/logoDApp/logo-defi-kingdom.svg";
+import LogoDune from "../../assets/logoDApp/logo-dune.svg";
+import LogoIlluvium from "../../assets/logoDApp/logo-illuvium.svg";
+import LogoMastodon from "../../assets/logoDApp/logo-mastodon.svg";
+import LogoMind from "../../assets/logoDApp/logo-mind.svg";
+import LogoMLB from "../../assets/logoDApp/logo-mlb.svg";
+import LogoOasis from "../../assets/logoDApp/logo-oasis.svg";
+import LogoOpenSea from "../../assets/logoDApp/logo-opensea.svg";
+import LogoOrion from "../../assets/logoDApp/logo-orion.svg";
+import LogoPancake from "../../assets/logoDApp/logo-pancake.svg";
+import LogoRarible from "../../assets/logoDApp/logo-rarible.svg";
+import LogoSocial from "../../assets/logoDApp/logo-socialx.svg";
+import LogoSteemit from "../../assets/logoDApp/logo-steemit.svg";
+import LogoSushiswap from "../../assets/logoDApp/logo-sushiswap.svg";
+import LogoTopShot from "../../assets/logoDApp/logo-topshot.svg";
+import LogoUniswap from "../../assets/logoDApp/logo-uniswap.svg";
+import LogoZapper from "../../assets/logoDApp/logo-zapper.svg";
+import TabBrowser from "../../components/UI/TabBrowser";
+import { tw } from "../../utils/tailwind";
 
-import {itemListBrowser} from '../../configs/dappBrowser';
-const DefaultBrowser = ({openLink}: any) => {
+import { itemListBrowser } from "../../configs/dappBrowser";
+const DefaultBrowser = ({ openLink }: any) => {
   const [typeSelected, setTypeSelected] = useState(0);
   const listDAPP = [
     {
-      title: 'DEX',
+      title: "DEX",
       urls: [
         {
-          title: 'Uniswap v3',
+          title: "Uniswap v3",
           description:
-            'Uniswap is a fully decentralized protocol for automated liquidity provision on Ethereum',
+            "Uniswap is a fully decentralized protocol for automated liquidity provision on Ethereum",
           icon: <LogoUniswap width={40} height={40} />,
-          href: 'https://app.uniswap.org/#/swap?chain=mainnet',
+          href: "https://app.uniswap.org/#/swap?chain=mainnet",
         },
         {
-          title: 'Sushiswap',
+          title: "Sushiswap",
           description:
-            'Sushiswap (Arbitrum One) is a decentralized cryptocurrency exchange',
+            "Sushiswap (Arbitrum One) is a decentralized cryptocurrency exchange",
           icon: <LogoSushiswap width={40} height={40} />,
-          href: 'https://app.sushi.com/swap?inputCurrency=ETH&outputCurrency=0x6B3595068778DD592e39A122f4f5a5cF09C90fE2',
+          href: "https://app.sushi.com/swap?inputCurrency=ETH&outputCurrency=0x6B3595068778DD592e39A122f4f5a5cF09C90fE2",
         },
         {
-          title: 'Oasis',
+          title: "Oasis",
           description:
-            'Built on the OasisDEX  protocol, Oasis Trade is a decentralized exchange',
+            "Built on the OasisDEX  protocol, Oasis Trade is a decentralized exchange",
           icon: <LogoOasis width={40} height={40} />,
-          href: 'https://oasisprotocol.org/wallets',
+          href: "https://oasisprotocol.org/wallets",
         },
         {
-          title: 'Pancakeswap v3',
+          title: "Pancakeswap v3",
           description:
-            'PancakeSwap (v2) is a decentralized cryptocurrency exchange',
+            "PancakeSwap (v2) is a decentralized cryptocurrency exchange",
           icon: <LogoPancake width={40} height={40} />,
-          href: 'https://pancakeswap.finance/swap',
+          href: "https://pancakeswap.finance/swap",
         },
         {
-          title: 'Balancer',
+          title: "Balancer",
           description:
-            'Balancer is a non-custodial portfolio manager, liquidity provider, and price sensor protocol.',
+            "Balancer is a non-custodial portfolio manager, liquidity provider, and price sensor protocol.",
           icon: <LogoBalancer width={40} height={40} />,
-          href: 'https://app.balancer.fi/#/trade',
+          href: "https://app.balancer.fi/#/trade",
         },
       ],
     },
     {
-      title: 'DeFi',
+      title: "DeFi",
       urls: [
         {
-          title: 'Uniswap v3',
+          title: "Uniswap v3",
           description:
-            'Uniswap is a fully decentralized protocol for automated liquidity provision on Ethereum',
+            "Uniswap is a fully decentralized protocol for automated liquidity provision on Ethereum",
           icon: <LogoUniswap width={40} height={40} />,
-          href: 'https://uniswap.org/',
+          href: "https://uniswap.org/",
         },
         {
-          title: 'Avalanche',
+          title: "Avalanche",
           description:
-            'Sushiswap (Arbitrum One) is a decentralized cryptocurrency exchange',
+            "Sushiswap (Arbitrum One) is a decentralized cryptocurrency exchange",
           icon: <LogoAvalache width={40} height={40} />,
-          href: 'https://www.avax.network/',
+          href: "https://www.avax.network/",
         },
         {
-          title: 'Dai',
+          title: "Dai",
           description:
-            'Built on the OasisDEX  protocol, Oasis Trade is a decentralized exchange',
+            "Built on the OasisDEX  protocol, Oasis Trade is a decentralized exchange",
           icon: <LogoDai width={40} height={40} />,
-          href: 'https://makerdao.com/vi/',
+          href: "https://makerdao.com/vi/",
         },
         {
-          title: 'Pancakeswap v3',
+          title: "Pancakeswap v3",
           description:
-            'PancakeSwap (v2) is a decentralized cryptocurrency exchange',
+            "PancakeSwap (v2) is a decentralized cryptocurrency exchange",
           icon: <LogoPancake width={40} height={40} />,
-          href: 'https://pancakeswap.finance/swap',
+          href: "https://pancakeswap.finance/swap",
         },
         {
-          title: 'Chainlink',
+          title: "Chainlink",
           description:
-            'Balancer is a non-custodial portfolio manager, liquidity provider, and price sensor protocol.',
+            "Balancer is a non-custodial portfolio manager, liquidity provider, and price sensor protocol.",
           icon: <LogoChainLink width={40} height={40} />,
-          href: 'https://chain.link/',
+          href: "https://chain.link/",
         },
       ],
     },
     {
-      title: 'NFT',
+      title: "NFT",
       urls: [
         {
-          title: 'OpenSea',
+          title: "OpenSea",
           description:
-            'Uniswap is a fully decentralized protocol for automated liquidity provision on Ethereum',
+            "Uniswap is a fully decentralized protocol for automated liquidity provision on Ethereum",
           icon: <LogoOpenSea width={40} height={40} />,
-          href: 'https://opensea.io/',
+          href: "https://opensea.io/",
         },
         {
-          title: 'Axie Marketplace',
+          title: "Axie Marketplace",
           description:
-            'Sushiswap (Arbitrum One) is a decentralized cryptocurrency exchange',
+            "Sushiswap (Arbitrum One) is a decentralized cryptocurrency exchange",
           icon: <LogoAxie width={40} height={40} />,
-          href: 'https://marketplace.axieinfinity.com/',
+          href: "https://marketplace.axieinfinity.com/",
         },
         {
-          title: 'Binance',
+          title: "Binance",
           description:
-            'Built on the OasisDEX  protocol, Oasis Trade is a decentralized exchange',
+            "Built on the OasisDEX  protocol, Oasis Trade is a decentralized exchange",
           icon: <LogoBinance width={40} height={40} />,
-          href: 'https://www.binance.com/vi',
+          href: "https://www.binance.com/vi",
         },
         {
-          title: 'NBA Top shot',
+          title: "NBA Top shot",
           description:
-            'PancakeSwap (v2) is a decentralized cryptocurrency exchange',
+            "PancakeSwap (v2) is a decentralized cryptocurrency exchange",
           icon: <LogoTopShot width={40} height={40} />,
-          href: 'https://nbatopshot.com/',
+          href: "https://nbatopshot.com/",
         },
         {
-          title: 'Rarible',
+          title: "Rarible",
           description:
-            'Balancer is a non-custodial portfolio manager, liquidity provider, and price sensor protocol.',
+            "Balancer is a non-custodial portfolio manager, liquidity provider, and price sensor protocol.",
           icon: <LogoRarible width={40} height={40} />,
-          href: 'https://rarible.com/',
+          href: "https://rarible.com/",
         },
       ],
     },
     {
-      title: 'Game Fi',
+      title: "Game Fi",
       urls: [
         {
-          title: 'DeFi Kingdoms',
+          title: "DeFi Kingdoms",
           description:
-            'Uniswap is a fully decentralized protocol for automated liquidity provision on Ethereum',
+            "Uniswap is a fully decentralized protocol for automated liquidity provision on Ethereum",
           icon: <LogoDefiKingDoms width={40} height={40} />,
-          href: 'https://defikingdoms.com/',
+          href: "https://defikingdoms.com/",
         },
         {
-          title: 'MLB Champions',
+          title: "MLB Champions",
           description:
-            'Sushiswap (Arbitrum One) is a decentralized cryptocurrency exchange',
+            "Sushiswap (Arbitrum One) is a decentralized cryptocurrency exchange",
           icon: <LogoMLB width={40} height={40} />,
-          href: 'https://www.mlbc.app/',
+          href: "https://www.mlbc.app/",
         },
         {
-          title: 'Axie Infinity',
+          title: "Axie Infinity",
           description:
-            'Built on the OasisDEX  protocol, Oasis Trade is a decentralized exchange',
+            "Built on the OasisDEX  protocol, Oasis Trade is a decentralized exchange",
           icon: <LogoAxie width={40} height={40} />,
-          href: 'https://axieinfinity.com/',
+          href: "https://axieinfinity.com/",
         },
         {
-          title: 'Illuvium',
+          title: "Illuvium",
           description:
-            'PancakeSwap (v2) is a decentralized cryptocurrency exchange',
+            "PancakeSwap (v2) is a decentralized cryptocurrency exchange",
           icon: <LogoIlluvium width={40} height={40} />,
-          href: 'https://www.illuvium.io/',
+          href: "https://www.illuvium.io/",
         },
         {
-          title: 'CryptoKitties',
+          title: "CryptoKitties",
           description:
-            'Balancer is a non-custodial portfolio manager, liquidity provider, and price sensor protocol.',
+            "Balancer is a non-custodial portfolio manager, liquidity provider, and price sensor protocol.",
           icon: <LogoCryptoKitties width={40} height={40} />,
-          href: 'https://www.cryptokitties.co/',
+          href: "https://www.cryptokitties.co/",
         },
       ],
     },
     {
-      title: 'Tools',
+      title: "Tools",
       urls: [
         {
-          title: 'Zapper',
+          title: "Zapper",
           description:
-            'Uniswap is a fully decentralized protocol for automated liquidity provision on Ethereum',
+            "Uniswap is a fully decentralized protocol for automated liquidity provision on Ethereum",
           icon: <LogoZapper width={40} height={40} />,
-          href: 'https://zapper.fi/fr',
+          href: "https://zapper.fi/fr",
         },
         {
-          title: 'Apy Vision',
+          title: "Apy Vision",
           description:
-            'Sushiswap (Arbitrum One) is a decentralized cryptocurrency exchange',
+            "Sushiswap (Arbitrum One) is a decentralized cryptocurrency exchange",
           icon: <LogoApy width={40} height={40} />,
-          href: 'https://apy.vision/',
+          href: "https://apy.vision/",
         },
         {
-          title: 'DeBank',
+          title: "DeBank",
           description:
-            'Built on the OasisDEX  protocol, Oasis Trade is a decentralized exchange',
+            "Built on the OasisDEX  protocol, Oasis Trade is a decentralized exchange",
           icon: <LogoDeBank width={40} height={40} />,
-          href: 'https://debank.com/',
+          href: "https://debank.com/",
         },
         {
-          title: 'Orion Protocol',
+          title: "Orion Protocol",
           description:
-            'PancakeSwap (v2) is a decentralized cryptocurrency exchange',
+            "PancakeSwap (v2) is a decentralized cryptocurrency exchange",
           icon: <LogoOrion width={40} height={40} />,
-          href: 'https://www.orionprotocol.io/',
+          href: "https://www.orionprotocol.io/",
         },
         {
-          title: 'Dune Analytics',
+          title: "Dune Analytics",
           description:
-            'Balancer is a non-custodial portfolio manager, liquidity provider, and price sensor protocol.',
+            "Balancer is a non-custodial portfolio manager, liquidity provider, and price sensor protocol.",
           icon: <LogoDune width={40} height={40} />,
-          href: 'https://dune.com/browse/dashboards',
+          href: "https://dune.com/browse/dashboards",
         },
       ],
     },
     {
-      title: 'Social',
+      title: "Social",
       urls: [
         {
-          title: 'Minds.com',
+          title: "Minds.com",
           description:
-            'Minds.com is a social networking application based on the blockchain system',
+            "Minds.com is a social networking application based on the blockchain system",
           icon: <LogoMind width={40} height={40} />,
-          href: 'https://minds.com',
+          href: "https://minds.com",
         },
         {
-          title: 'Steemit',
+          title: "Steemit",
           description:
-            'Steemit, while looking very much similar to Reddit, is one of the most advanced blockchain social community networks in the world.',
+            "Steemit, while looking very much similar to Reddit, is one of the most advanced blockchain social community networks in the world.",
           icon: <LogoSteemit width={40} height={40} />,
-          href: 'https://steemit.com/',
+          href: "https://steemit.com/",
         },
         {
-          title: 'All.me',
+          title: "All.me",
           description:
-            'Mail3 is a crypto native communication protocol that promises security, privacy preservation and self-sovereign identity.',
+            "Mail3 is a crypto native communication protocol that promises security, privacy preservation and self-sovereign identity.",
           icon: <LogoAllme width={40} height={40} />,
-          href: 'https://app.mail3.me/',
+          href: "https://app.mail3.me/",
         },
         {
-          title: 'Mastodon.social',
+          title: "Mastodon.social",
           description:
-            'PancakeSwap (v2) is a decentralized cryptocurrency exchange',
+            "PancakeSwap (v2) is a decentralized cryptocurrency exchange",
           icon: <LogoMastodon width={40} height={40} />,
-          href: 'https://mastodon.social/about',
+          href: "https://mastodon.social/about",
         },
         {
-          title: 'SocialX',
+          title: "SocialX",
           description:
-            'Balancer is a non-custodial portfolio manager, liquidity provider, and price sensor protocol.',
+            "Balancer is a non-custodial portfolio manager, liquidity provider, and price sensor protocol.",
           icon: <LogoSocial width={40} height={40} />,
-          href: 'https://socialx.network/',
+          href: "https://socialx.network/",
         },
       ],
     },
@@ -280,7 +280,7 @@ const DefaultBrowser = ({openLink}: any) => {
       <View style={tw``}>
         <TabBrowser
           tabSelected={typeSelected}
-          setTabSelected={index => setTypeSelected(index)}
+          setTabSelected={(index) => setTypeSelected(index)}
           itemTabBar={itemListBrowser}
           styleViewSelected="border-b border-blue-600"
           styleTextSelected="text-blue-600 "
@@ -292,7 +292,8 @@ const DefaultBrowser = ({openLink}: any) => {
                 <TouchableOpacity
                   key={index}
                   onPress={() => openLink(item.href)}
-                  style={tw`flex flex-row mt-3 items-center`}>
+                  style={tw`flex flex-row mt-3 items-center`}
+                >
                   <View style={tw`bg-gray-800  h-10 w-10 rounded-full`}>
                     {item.icon}
                   </View>
@@ -301,8 +302,9 @@ const DefaultBrowser = ({openLink}: any) => {
                       {item.title}
                     </Text>
                     <Text
-                      style={tw`dark:text-white  text-[14px] text-gray-400 mr-5`}>
-                      {item.description}{' '}
+                      style={tw`dark:text-white  text-[14px] text-gray-400 mr-5`}
+                    >
+                      {item.description}{" "}
                     </Text>
                   </View>
                 </TouchableOpacity>

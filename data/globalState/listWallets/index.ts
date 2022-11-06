@@ -1,20 +1,30 @@
-import {atom} from 'recoil';
-import {Wallet} from '../../database/entities/wallet';
-import {IWallet} from './../../types/index';
+import { atom } from "recoil";
+
+import { Wallet } from "../../database/entities/wallet";
+const DefaultValue: Wallet[] = [];
+/**
+ * Return list wallet from local database
+ */
 
 const listWalletsState = atom({
-  key: 'listWalletsState',
-  default: [] as Wallet[],
+  key: "listWalletsState",
+  default: DefaultValue,
 });
 
+/**
+ * index of wallet seleted
+ */
 const idWalletSelected = atom({
-  key: 'idWalletSelected',
+  key: "idWalletSelected",
   default: 0,
 });
 
+/**
+ * @return: isLoading of state fetching list wallets from local database
+ */
 const reloadingWallets = atom({
   default: true,
-  key: 'reloadingWallets',
+  key: "reloadingWallets",
 });
 
-export {listWalletsState, idWalletSelected, reloadingWallets};
+export { listWalletsState, idWalletSelected, reloadingWallets };

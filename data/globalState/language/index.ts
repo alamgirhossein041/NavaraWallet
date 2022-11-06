@@ -4,4 +4,8 @@ const languageSelected = atom({
   key: 'languageSelected',
   default: 0 ,
 });
-export {languageSelected};
+const nameLanguage = atom({
+  key: 'nameLanguage',
+  default: "en" ,
+});
+export {languageSelected,nameLanguage};

@@ -2,8 +2,8 @@ import {useRecoilValue} from 'recoil';
 import {walletEnvironmentState} from '../data/globalState/userData';
 import {NETWORK_ENVIRONMENT_ENUM} from '../enum/bcEnum';
 import {ENVIRONMENT} from '../global.config';
-import mainnetConfig from '../configs/bcMainnets';
-import testnetConfig from '../configs/bcTestnets';
+import {EVM_MAINET_CONFIG, NEAR_MAINNET_CONFIG} from '../configs/bcMainnets';
+import {EVM_TESTNET_CONFIG, NEAR_TESTNET_CONFIG} from '../configs/bcTestnets';
 import {clusterApiUrl} from '@solana/web3.js';
 
 export const useBcNetworks = () => {
@@ -31,8 +31,8 @@ export const getNetworkEnvironment = (env: ENVIRONMENT) => {
 
 export const getNetworkConfig = (env: NETWORK_ENVIRONMENT_ENUM) => {
   return env === NETWORK_ENVIRONMENT_ENUM.MAINNET
-    ? mainnetConfig
-    : testnetConfig;
+    ? EVM_MAINET_CONFIG
+    : EVM_TESTNET_CONFIG;
 };
 
 export const getSolanaClusterApiUrl = (env: NETWORK_ENVIRONMENT_ENUM) => {
@@ -49,16 +49,6 @@ export const getPolkadotWsEndpoint = (env: NETWORK_ENVIRONMENT_ENUM) => {
 
 export const getNearConfig = (env: NETWORK_ENVIRONMENT_ENUM) => {
   return env === NETWORK_ENVIRONMENT_ENUM.MAINNET
-    ? {
-        networkId: 'mainnet',
-        nodeUrl: 'https://rpc.mainnet.near.org',
-        helperUrl: 'https://helper.mainnet.near.org',
-        explorerUrl: 'https://explorer.mainnet.near.org',
-      }
-    : {
-        networkId: 'testnet',
-        nodeUrl: 'https://rpc.testnet.near.org',
-        helperUrl: 'https://testnet-api.kitwallet.app',
-        explorerUrl: 'https://explorer.testnet.near.org',
-      };
+    ? NEAR_MAINNET_CONFIG
+    : NEAR_TESTNET_CONFIG;
 };

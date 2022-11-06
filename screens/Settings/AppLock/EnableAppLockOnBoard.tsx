@@ -1,29 +1,18 @@
-import {View, Text, ScrollView, Platform, SafeAreaView} from 'react-native';
+import {cloneDeep} from 'lodash';
 import React from 'react';
+import {View} from 'react-native';
+import {useRecoilState} from 'recoil';
+import Logo from '../../../assets/logo/logo.svg';
+import useDatabase from '../../../data/database/useDatabase';
+import {listWalletsState} from '../../../data/globalState/listWallets';
+import {encryptAESWithKeychain, getFromKeychain} from '../../../utils/keychain';
 import {tw} from '../../../utils/tailwind';
 import EnableAppLock from './EnableAppLock';
-import Logo from '../../../assets/logo/logo.svg';
-import {useDarkMode} from '../../../hooks/useModeDarkMode';
-import {useTextDarkMode} from '../../../hooks/useModeDarkMode';
-import {useGridDarkMode} from '../../../hooks/useModeDarkMode';
-import {useNavigation} from '@react-navigation/native';
-import {KeyboardAvoidingView} from 'native-base';
-import Button from '../../../components/Button';
-import {encryptAESWithKeychain, getFromKeychain} from '../../../utils/keychain';
-import useDatabase from '../../../data/database/useDatabase';
-import {useRecoilState, useRecoilValue} from 'recoil';
-import {listWalletsState} from '../../../data/globalState/listWallets';
-import {cloneDeep} from 'lodash';
-import CryptoJS from 'crypto-js';
 
 export default function EnableAppLockOnBoard({navigation, route}) {
   const {walletController} = useDatabase();
   const [listWallets, setListWallets] = useRecoilState(listWalletsState);
   //background Darkmode
-
-  //text darkmode
-
-  //grid, shadow darkmode
 
   const handlePress = async () => {
     const password = await getFromKeychain();

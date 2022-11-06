@@ -1,58 +1,59 @@
-import {View, Text, ScrollView} from 'react-native';
-import React, {useEffect} from 'react';
-import {tw} from '../../utils/tailwind';
-import {CHAIN_ICONS} from '../../configs/bcNetworks';
-import IconRecevie from '../../assets/icons/icon-recevie.svg';
-import IconSend from '../../assets/icons/icon-send.svg';
-import IconSwap from '../../assets/icons/icon-swap.svg';
-import IconHistory from '../../assets/icons/icon-history.svg';
-import {ButtonProps} from './WalletDashboard';
-import {useDarkMode} from '../../hooks/useModeDarkMode';
-import {useTextDarkMode} from '../../hooks/useModeDarkMode';
-import {useGridDarkMode} from '../../hooks/useModeDarkMode';
-import CurrencyFormat from '../../components/CurrencyFormat';
-import PressableAnimated from '../../components/PressableAnimated';
-import ShowBalanceChain from '../../components/ShowBalanceChain';
-import {SupportedSwapChainsEnum} from '../../enum';
+import React, { useEffect, useMemo } from "react";
+import { ScrollView, Text, View } from "react-native";
+import IconHistory from "../../assets/icons/icon-history.svg";
+import IconRecevie from "../../assets/icons/icon-recevie.svg";
+import IconSend from "../../assets/icons/icon-send.svg";
+import IconSwap from "../../assets/icons/icon-swap.svg";
+import CurrencyFormat from "../../components/UI/CurrencyFormat";
+import PressableAnimated from "../../components/UI/PressableAnimated";
+import ShowBalanceChain from "../../components/UI/ShowBalanceChain";
+import { SupportedSwapChainsEnum } from "../../enum";
 
-export default function DetailChain({route, navigation}) {
-  const {token} = route.params;
+import { useTranslation } from "react-i18next";
+
+import DappView from "../../components/UI/Dapp";
+import { NETWORKS } from "../../enum/bcEnum";
+import { tw } from "../../utils/tailwind";
+import News from "./News";
+import { ButtonProps } from "./WalletDashboard";
+
+export default function DetailChain({ route, navigation }) {
+  const { token } = route.params;
+  const { t } = useTranslation();
+
   const buttonsAction = [
     {
       icon: <IconRecevie />,
-      label: 'Receive',
-      path: '/ReceiveToken',
-      onPress: () => navigation.navigate('ReceiveSpecificToken', {token}),
+      label: `${t("home.receive")}`,
+      path: "/ReceiveToken",
+      onPress: () => navigation.navigate("ReceiveSpecificToken", { token }),
     },
     {
       icon: <IconSend />,
-      label: 'Send',
-      path: '/ViewListWallet',
-      onPress: () => navigation.navigate('SendingToken', {token}),
+      label: `${t("home.send")}`,
+      path: "/ViewListWallet",
+      onPress: () => navigation.navigate("SendingToken", { token }),
     },
     {
       icon: <IconSwap />,
-      label: 'Swap',
-      path: '/SwapToken',
-      onPress: () => navigation.navigate('SwapScreen', {token}),
+      label: `${t("home.swap")}`,
+      path: "/SwapToken",
+      onPress: () => navigation.navigate("SwapScreen", { token }),
     },
     {
       icon: <IconHistory />,
-      label: 'History',
-      path: '/HistoryWallets',
-      onPress: () => navigation.navigate('HistoryWallets', {token}),
+      label: `${t("home.history")}`,
+      path: "/HistoryWallets",
+      onPress: () => navigation.navigate("HistoryWallets", { token }),
     },
   ];
-  const Icon = CHAIN_ICONS[token.network];
-  const [isEnabled, setIsEnabled] = React.useState(true);
-
   const isSupportedSwap = Object.keys(SupportedSwapChainsEnum).includes(
-    token.network,
+    token.network
   );
 
   useEffect(() => {
     navigation.setOptions({
-      title: `${token.network.split('_')[0]}`,
+      title: `${token.network.split("_")[0]} Network`,
       headerRight: () => (
         <CurrencyFormat
           value={token.price}
@@ -61,14 +62,22 @@ export default function DetailChain({route, navigation}) {
       ),
     });
   }, [token]);
+  const keyWordNews = useMemo(() => {
+    if (token.network === NETWORKS.NEAR) {
+      return "near protocol";
+    } else if (token.network === NETWORKS.BINANCE_SMART_CHAIN) {
+      return "binance";
+    }
+    return token.network.toLowerCase() || "blockchain";
+  }, [token]);
 
   return (
-    <ScrollView style={tw` h-full w-full `}>
+    <ScrollView style={tw`w-full h-full `}>
       <ShowBalanceChain chain={token} />
-      <View style={tw`flex flex-row items-center justify-center mb-10`}>
+      <View style={tw`flex flex-row justify-center mb-10 items-centerm`}>
         {buttonsAction.map((item, index) => (
           <>
-            {!isSupportedSwap && item.label === 'Swap' ? (
+            {!isSupportedSwap && item.label === "Swap" ? (
               <></>
             ) : (
               <ButtonAction key={index} {...item} />
@@ -76,27 +85,22 @@ export default function DetailChain({route, navigation}) {
           </>
         ))}
       </View>
-      {/* <ChartToken/> */}
-      {/* <HistoryWallets /> */}
+      <DappView chain={token.network} />
+      <News keyword={keyWordNews} />
     </ScrollView>
   );
 }
-const ButtonAction = ({icon, label, onPress}: ButtonProps) => {
-  //background Darkmode
-
-  //text darkmode
-
-  //grid, shadow darkmode
-
+const ButtonAction = ({ icon, label, onPress }: ButtonProps) => {
   return (
     <View style={tw`items-center mx-2 text-center h-18 w-18 `}>
       <PressableAnimated
         activeOpacity={0.6}
-        style={tw` shadow  mx-3 mb-3 h-18 w-18 rounded-3xl items-center justify-center`}
-        onPress={onPress}>
+        style={tw`items-center justify-center mx-3 mb-3 bg-gray-100 dark:bg-gray-800 shadow h-16=5 w-16=5 rounded-3xl`}
+        onPress={onPress}
+      >
         {icon}
       </PressableAnimated>
-      <Text style={tw`dark:text-white  `}>{label}</Text>
+      <Text style={tw`dark:text-white `}>{label}</Text>
     </View>
   );
 };

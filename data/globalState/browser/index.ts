@@ -24,10 +24,16 @@ const browserHistory = atom({
   default: [] as IHistoryBrowser[],
 });
 
+const browserApprovedHost = atom({
+  key: "browserApprovedHost",
+  default: {},
+});
+
 export {
   newTabDefaultData,
   currentTabState,
   browserHistory,
   NEW_TAB,
   browserState,
+  browserApprovedHost,
 };

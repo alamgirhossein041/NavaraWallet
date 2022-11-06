@@ -1,6 +1,7 @@
-import {ethers} from 'ethers';
-import {KeyboardAvoidingView, Skeleton, Switch} from 'native-base';
-import React, {useCallback, useEffect, useState} from 'react';
+import { ethers } from "ethers";
+import { KeyboardAvoidingView, Skeleton, Switch } from "native-base";
+import React, { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Platform,
   ScrollView,
@@ -8,59 +9,86 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from 'react-native';
-import {useRecoilState} from 'recoil';
-import IconSwap from '../../assets/icons/icon-swap.svg';
-import Button from '../../components/Button';
-import {CHAIN_ICONS} from '../../configs/bcNetworks';
-import {defaultToken} from '../../configs/defaultValue';
-import {primaryColor, primaryGray} from '../../configs/theme';
-import {balanceChainsState} from '../../data/globalState/priceTokens';
-import {IToken} from '../../data/types';
-import {NETWORKS} from '../../enum/bcEnum';
-import {useBcNetworks} from '../../hooks/useBcNetworks';
-import useEvm from '../../hooks/useEvm';
-import {useDarkMode, useTextDarkMode} from '../../hooks/useModeDarkMode';
-import {useWallet} from '../../hooks/useWallet';
+} from "react-native";
+import { useQuery } from "react-query";
+import IconSwap from "../../assets/icons/icon-swap.svg";
+import Button from "../../components/UI/Button";
+import { CHAIN_ICONS } from "../../configs/bcNetworks";
+import { defaultToken } from "../../configs/defaultValue";
+import { primaryColor, primaryGray } from "../../configs/theme";
+import API from "../../data/api";
+import { IToken } from "../../data/types";
+import { NETWORKS } from "../../enum/bcEnum";
+import { useBcNetworks } from "../../hooks/useBcNetworks";
+import useEvm from "../../hooks/useEvm";
 import {
   getSwapRate,
   getSwapTransaction,
   getTokenBalance,
   IGetSwapRate,
-} from '../../module/swap/ParaswapModule';
-import {tw} from '../../utils/tailwind';
-import toastr from '../../utils/toastr';
-import ModalResult from './ModalResult';
-import SelectToken from './SelectToken';
-import WalletsCard from './WalletsCard';
+} from "../../module/swap/ParaswapModule";
+import { tw } from "../../utils/tailwind";
+import toastr from "../../utils/toastr";
+import ModalResult from "./ModalResult";
+import SelectToken from "./SelectToken";
+import WalletsCard from "./WalletsCard";
 
-const SwapScreen = ({route, navigation}) => {
+const SwapScreen = ({ route, navigation }) => {
   const [srcToken, setSrcToken] = useState<IToken>(defaultToken);
   const [destToken, setDestToken] = useState<IToken>(defaultToken);
-  const [fromBalance, setFromBalance] = useState<string>('0');
-  const [toAmount, setToBalance] = useState<string>('0');
-  const [price, setPrice] = useState('1');
-  const [gasCost, setGasCost] = useState('0');
-  const [fromValue, setFromValue] = useState('');
-  const [toValue, setToValue] = useState('');
-  const [error, setError] = useState('Enter an amount');
-  const [loading, setLoading] = useState('');
-  const [showingModal, setShowingModal] = useState('');
-  const {token: chain} = route?.params;
+  const [fromBalance, setFromBalance] = useState<string>("0");
+  const [toAmount, setToBalance] = useState<string>("0");
+  const [price, setPrice] = useState("1");
+  const [gasCost, setGasCost] = useState("0");
+  const [fromValue, setFromValue] = useState("");
+  const [toValue, setToValue] = useState("");
+  const { t } = useTranslation();
+
+  const [error, setError] = useState(t("swap.enter_an_amount"));
+  const [loading, setLoading] = useState("");
+  const [showingModal, setShowingModal] = useState("");
+  const { NETWORK_CONFIG } = useBcNetworks();
+
+  const { token: chain } = route?.params;
   const network = chain?.network || NETWORKS.ETHEREUM;
-  const privateKey = chain?.privateKey;
-  const {NETWORK_CONFIG} = useBcNetworks();
+  const balanceChain = chain?.balance;
+
   const config = NETWORK_CONFIG[network];
-  const [balanceChains, setBalanceChains] = useRecoilState(balanceChainsState);
-  const {getBalanceOf} = useWallet({
-    network: network,
-    privateKey: privateKey,
-  });
 
   const evm = useEvm(network, chain?.privateKey);
   const wallet: ethers.Wallet = evm.getWallet();
   const provider = evm.provider;
   const Icon = CHAIN_ICONS[chain.network];
+
+  const [searchValue, setSearchValue] = useState("");
+
+  const {
+    isLoading,
+    data: listTokens,
+    isError,
+    refetch,
+  } = useQuery(
+    [`tokens`, config?.chainId, searchValue],
+    async (): Promise<IToken[]> => {
+      const params =
+        searchValue.length > 0
+          ? {
+              chainId: config?.chainId,
+              symbol: searchValue.length > 0 && searchValue.toLowerCase(),
+            }
+          : {
+              chainId: config?.chainId,
+            };
+
+      const response = await API.get("/tokens", {
+        params: params,
+      });
+
+      const _listTokens = response as any;
+
+      return _listTokens;
+    }
+  );
 
   useEffect(() => {
     navigation.setOptions({
@@ -76,88 +104,73 @@ const SwapScreen = ({route, navigation}) => {
 
   useEffect(() => {
     if (srcToken.symbol === defaultToken.symbol) {
-      setError('Select a from Token');
+      setError(t("swap.select_a_from_token"));
       return;
     }
 
     if (destToken.symbol === defaultToken.symbol) {
-      setError('Select a to Token');
+      setError(t("swap.select_a_to_token"));
       return;
     }
 
     if (Number(fromValue) === 0) {
-      setError('Enter an amount');
+      setError(t("swap.enter_an_amount"));
       return;
     }
     if (Number(fromValue) > Number(fromBalance)) {
-      setError('Insufficient Balance');
+      setError(t("swap.insufficient_balance"));
       return;
     }
     setToValue(
-      Number((Number(fromValue) * Number(price))?.toFixed(20)).toString(),
+      Number((Number(fromValue) * Number(price))?.toFixed(20)).toString()
     );
   }, [fromValue, srcToken, destToken, price, fromBalance]);
 
   const resets = useCallback(() => {
-    setFromValue('');
-    setToValue('');
+    setFromValue("");
+    setToValue("");
     setSrcToken(defaultToken);
     setDestToken(defaultToken);
-    setFromBalance('0');
-    setToBalance('0');
-    setPrice('1');
-    setGasCost('0');
+    setFromBalance("0");
+    setToBalance("0");
+    setPrice("1");
+    setGasCost("0");
   }, []);
-
-  const getBalanceChains = useCallback(async () => {
-    try {
-      const address = chain?.address;
-      const response = await getBalanceOf(address);
-
-      setBalanceChains(oldState => {
-        const newState = {...oldState};
-        newState[chain?.network] = +response;
-        return newState;
-      });
-    } catch (err) {
-      console.error(err);
-    }
-  }, [chain?.address, chain?.network, getBalanceOf, setBalanceChains]);
 
   const getBalance = useCallback(
     async (tk: IToken) => {
-      setLoading('balance');
+      setLoading("balance");
 
       if (tk.symbol === chain?.symbol) {
-        setLoading('');
-        return balanceChains[chain?.network].toFixed(6).toString();
+        setLoading("");
+        return +(+balanceChain).toFixed(6);
       }
       const balance = await getTokenBalance(
         provider,
         evm.address,
         tk.address,
-        tk.decimals,
+        tk.decimals
       );
 
-      setLoading('');
+      setLoading("");
       return Number(Number(balance).toFixed(6)).toString();
     },
-    [chain?.symbol, chain?.network, provider, evm?.address, balanceChains],
+    [chain?.symbol, provider, evm?.address, balanceChain]
   );
 
   const fetchPrice = useCallback(async () => {
-    setLoading('price');
+    setLoading("price");
 
     const params: IGetSwapRate = {
       srcToken: srcToken,
       destToken: destToken,
-      srcAmount: '1',
+      srcAmount: "1",
       networkID: config?.chainId,
     };
 
     const swapRate = await getSwapRate(params);
     if (swapRate === undefined) {
-      toastr.error('Can not find swap pool for selected pair', {
+      toastr.error(t("swap.can_not_find_swap_pool_for_selected_pair"), {
         duration: 2000,
       });
       resets();
@@ -166,15 +179,15 @@ const SwapScreen = ({route, navigation}) => {
 
     const destAmount = ethers.utils.formatUnits(
       swapRate.destAmount,
-      swapRate.destDecimals,
+      swapRate.destDecimals
     );
     setPrice(Number(destAmount).toFixed(10).toString());
     // setGasCost(swapRate.gasCostUSD);
-    setLoading('');
+    setLoading("");
   }, [srcToken, destToken, config?.chainId, resets]);
 
   const fetchGasCost = useCallback(async () => {
-    setLoading('Gas');
+    setLoading("Gas");
 
     const params: IGetSwapRate = {
       srcToken: srcToken,
@@ -192,11 +205,11 @@ const SwapScreen = ({route, navigation}) => {
     // ).toFixed(10);
     setGasCost(finalFee);
 
-    setLoading('');
+    setLoading("");
   }, [srcToken, destToken, fromValue, config?.chainId]);
 
   const paraSwap = async () => {
-    setLoading('swap');
+    setLoading("swap");
     try {
       const slippage = 1;
       const params = {
@@ -221,7 +234,7 @@ const SwapScreen = ({route, navigation}) => {
         toastr.error(resTransaction.error, {
           duration: 2000,
         });
-        setLoading('');
+        setLoading("");
         return;
       }
       if (transaction) {
@@ -232,30 +245,28 @@ const SwapScreen = ({route, navigation}) => {
           console.info(
             `https://${config?.name.toLowerCase()}.etherscan.io/tx/${
               tradeTransaction.hash
-            }`,
+            }`
           );
-          if (srcToken.symbol === chain?.symbol) {
-            await getBalanceChains();
-          } else {
+          if (srcToken.symbol !== chain?.symbol) {
             await getBalance(srcToken);
           }
           await getBalance(destToken);
 
-          setFromValue('');
-          setToValue('');
-          setGasCost('0');
-          setShowingModal('success');
+          setFromValue("");
+          setToValue("");
+          setGasCost("0");
+          setShowingModal("success");
         } else {
-          console.error('Error submitting transaction');
-          setShowingModal('failed');
+          console.error(t("swap.error_submitting_transaction"));
+          setShowingModal("failed");
         }
       }
     } catch (err) {
       console.error(err);
-      setLoading('');
-      setShowingModal('failed');
+      setLoading("");
+      setShowingModal("failed");
     }
-    setLoading('');
+    setLoading("");
   };
 
   useEffect(() => {
@@ -268,11 +279,11 @@ const SwapScreen = ({route, navigation}) => {
       }
       if (srcToken.symbol !== defaultToken.symbol) {
         const balance = await getBalance(srcToken);
-        setFromBalance(balance);
+        setFromBalance(balance.toString());
       }
       if (destToken.symbol !== defaultToken.symbol) {
         const balance = await getBalance(destToken);
-        setToBalance(balance);
+        setToBalance(balance.toString());
       }
     })();
   }, [srcToken, destToken, getBalance, fetchPrice, fromValue, fetchGasCost]);
@@ -288,10 +299,8 @@ const SwapScreen = ({route, navigation}) => {
     return value1 < value2 ? value1 : value2;
   };
 
-  //text darkmode
-
   return (
-    <View style={tw`h-full  flex flex-col `}>
+    <View style={tw`flex flex-col h-full `}>
       <ScrollView style={tw`p-4`}>
         <View style={tw`flex flex-col mt-5`}>
           <WalletsCard address={evm?.address} />
@@ -299,11 +308,13 @@ const SwapScreen = ({route, navigation}) => {
         <View style={tw`relative`}>
           <View style={tw`flex px-4 py-8`}>
             <View
-              style={tw`flex flex-row items-center justify-between w-full mb-2 `}>
+              style={tw`flex flex-row items-center justify-between w-full mb-2 `}
+            >
               <View>
                 <Text
-                  style={tw`dark:text-white  text-base font-light text-gray-500`}>
-                  You Send
+                  style={tw`text-base font-light text-gray-500 dark:text-white`}
+                >
+                  {t("swap.you_send")}
                 </Text>
                 <TextInput
                   style={tw`text-xl font-semibold text-gray-700`}
@@ -311,33 +322,39 @@ const SwapScreen = ({route, navigation}) => {
                   placeholderTextColor={primaryGray}
                   value={fromValue}
                   maxLength={20}
-                  onChangeText={value => {
+                  onChangeText={(value) => {
                     var reg = /^\d*\.?\d*$/;
-                    if (reg.test(value) || value === '') {
+                    if (reg.test(value) || value === "") {
                       setFromValue(value);
                     }
                   }}
                   onEndEditing={async () => {
                     setFromValue(
-                      min(Number(fromValue), Number(fromBalance)).toString(),
+                      min(Number(fromValue), Number(fromBalance)).toString()
                     );
                     await fetchGasCost();
-                    setError('');
+                    setError(null);
                   }}
                 />
               </View>
-              <View>
+              <View style={tw`flex-col items-end`}>
                 <SelectToken
                   chainId={config?.chainId}
                   value={srcToken.symbol}
+                  searchValue={searchValue}
+                  setSearchValue={setSearchValue}
+                  listTokens={listTokens}
+                  isError={isError}
+                  isLoading={isLoading}
+                  refetch={refetch}
                   disabledValue={destToken.symbol}
                   iconUri={srcToken.img}
-                  onSetValue={value => {
+                  onSetValue={(value) => {
                     setSrcToken(value);
                   }}
                 />
-                <Text style={tw`dark:text-white  `}>
-                  {fromBalance} {srcToken.symbol} Available
+                <Text style={tw`dark:text-white `}>
+                  {fromBalance} {srcToken.symbol} {t("swap.available")}
                 </Text>
               </View>
             </View>
@@ -349,43 +366,53 @@ const SwapScreen = ({route, navigation}) => {
               style={[
                 tw`w-8 h-8`,
                 {
-                  transform: [{rotate: '90deg'}],
+                  transform: [{ rotate: "90deg" }],
                 },
               ]}
               onPress={async () => {
                 await swapPosition();
-              }}>
+              }}
+            >
               <IconSwap width="100%" height="100%" />
             </TouchableOpacity>
             <View style={tw`flex-1 mx-4 border-t border-gray-200`} />
           </View>
           <View style={tw`flex px-4 py-8 rounded-t-2xl`}>
             <View
-              style={tw`flex flex-row items-center justify-between w-full mb-2`}>
+              style={tw`flex flex-row items-center justify-between w-full mb-2`}
+            >
               <View>
                 <Text
-                  style={tw`dark:text-white  text-base font-light text-gray-500`}>
-                  You Receive
+                  style={tw`text-base font-light text-gray-500 dark:text-white`}
+                >
+                  {t("swap.you_receive")}
                 </Text>
                 <Text
                   style={tw` text-${
                     Number(toValue) === 0 && ``
-                  } font-semibold text-xl dark:text-white `}>
-                  {Number(toValue) === 0 ? '0.0' : toValue}
+                  } font-semibold text-xl dark:text-white `}
+                >
+                  {Number(toValue) === 0 ? "0.0" : toValue}
                 </Text>
               </View>
-              <View>
+              <View style={tw`flex-col items-end`}>
                 <SelectToken
                   chainId={config?.chainId}
                   value={destToken.symbol}
+                  searchValue={searchValue}
+                  setSearchValue={setSearchValue}
+                  listTokens={listTokens}
+                  isError={isError}
+                  isLoading={isLoading}
+                  refetch={refetch}
                   disabledValue={srcToken.symbol}
                   iconUri={destToken.img}
-                  onSetValue={value => {
+                  onSetValue={(value) => {
                     setDestToken(value);
                   }}
                 />
-                <Text style={tw`dark:text-white  text-right`}>
-                  {toAmount} {destToken.symbol} Available
+                <Text style={tw`text-right dark:text-white`}>
+                  {toAmount} {destToken.symbol} {t("swap.available")}
                 </Text>
               </View>
             </View>
@@ -394,15 +421,15 @@ const SwapScreen = ({route, navigation}) => {
         <View style={tw`flex flex-col w-full p-4`}>
           <View style={tw`flex flex-row items-center justify-end w-full py-4`}>
             <View style={tw`flex flex-col items-center w-full`}>
-              {loading === 'price' ? (
-                <Skeleton rounded="lg" w={'16'} h={'4'} />
+              {loading === "price" ? (
+                <Skeleton rounded="lg" w={"16"} h={"4"} />
               ) : (
                 <View style={tw`flex-row items-center`}>
                   <View style={tw`h-2 w-2 rounded-full bg-[${primaryColor}]`} />
-                  <Text style={tw`dark:text-white  text-lg text-gray-400`}>
-                    {' '}
-                    1 {srcToken.symbol} ~{' '}
-                    {Number(Number(price).toFixed(6)).toString()}{' '}
+                  <Text style={tw`text-lg text-gray-400 dark:text-white`}>
+                    {" "}
+                    1 {srcToken.symbol} ~{" "}
+                    {Number(Number(price).toFixed(6)).toString()}{" "}
                     {destToken.symbol}
                   </Text>
                 </View>
@@ -410,37 +437,43 @@ const SwapScreen = ({route, navigation}) => {
               {/* {loading === 'Gas' ? (
                 <Skeleton rounded="lg" w={'32'} h={'4'} />
               ) : (
-                 <Text style={tw`dark:text-white  0`}>
+                 <Text style={tw`dark:text-white 0`}>
                   Fee ~ {Number(gasCost).toString()} {chain?.symbol}
                 </Text>
               )} */}
               <View
-                style={tw`flex-row items-center justify-around w-full mt-8`}>
-                <Text style={tw`dark:text-white  text-xl`}>
-                  Optimized Gas fee
+                style={tw`flex-row items-center justify-around w-full mt-8`}
+              >
+                <Text style={tw`text-xl dark:text-white`}>
+                  {t("swap.optimized_gas_fee")}
                 </Text>
                 <Switch
-                  trackColor={{false: primaryGray, true: primaryColor}}
+                  trackColor={{ false: primaryGray, true: primaryColor }}
                   thumbColor="white"
                 />
               </View>
               <View
-                style={tw`flex-row items-center justify-around w-full mt-8`}>
+                style={tw`flex-row items-center justify-around w-full mt-8`}
+              >
                 <View
-                  style={tw`flex-wrap flex-row items-center justify-center`}>
+                  style={tw`flex-row flex-wrap items-center justify-center`}
+                >
                   <Text
-                    style={tw`dark:text-white  text-center flex items-center text-gray-400`}>
-                    Click here for
+                    style={tw`flex items-center text-center text-gray-400 dark:text-white`}
+                  >
+                    {t("swap.click_here_for")}
                   </Text>
-                  <TouchableOpacity style={tw``}>
+                  <TouchableOpacity style={tw`ml-1`}>
                     <Text
-                      style={tw`dark:text-white  text-[${primaryColor}] font-semibold`}>
-                      Terms & Conditions
+                      style={tw`dark:text-white  text-[${primaryColor}] font-semibold`}
+                    >
+                      {t("swap.term_&_conditions")}
                     </Text>
                   </TouchableOpacity>
                   <Text
-                    style={tw`dark:text-white  text-center flex items-center text-gray-400`}>
-                    For this transaction fee will be taken
+                    style={tw`flex items-center text-center text-gray-400 dark:text-white`}
+                  >
+                    {t("swap.for_this_transactions_fee_will_be_taken")}
                   </Text>
                 </View>
               </View>
@@ -450,19 +483,21 @@ const SwapScreen = ({route, navigation}) => {
       </ScrollView>
       <KeyboardAvoidingView
         style={tw`absolute bottom-0 w-full px-4 mb-3`}
-        behavior={Platform.OS === 'ios' ? 'padding' : null}>
+        behavior={Platform.OS === "ios" ? "padding" : null}
+      >
         <Button
-          buttonStyle={'rounded-2xl'}
-          stringStyle={'font-semibold'}
-          loading={loading.length > 0}
-          disabled={error.length > 0}
-          variant={error === '' ? 'primary' : 'secondary'}
+          buttonStyle={"rounded-2xl"}
+          stringStyle={"font-semibold"}
+          loading={loading?.length > 0}
+          disabled={error?.length > 0}
+          variant={error === null ? "primary" : "secondary"}
           onPress={() => {
-            if (error === '') {
-              setShowingModal('confirmation');
+            if (error === null) {
+              setShowingModal("confirmation");
             }
-          }}>
-          {error !== '' ? error : 'Swap'}
+          }}
+        >
+          {error ? error : t("swap.swap")}
         </Button>
       </KeyboardAvoidingView>
 
@@ -473,9 +508,13 @@ const SwapScreen = ({route, navigation}) => {
         fromSymbol={srcToken.symbol}
         toSymbol={destToken.symbol}
         message={
-          showingModal === 'confirmation'
-            ? `Are you sure you want to swap ${fromValue} ${srcToken.symbol} for ${toValue} ${destToken.symbol}?`
-            : `Swapping ${srcToken.symbol} for ${destToken.symbol}...`
+          showingModal === "confirmation"
+            ? `${t("swap.are_you_sure_you_want_to_swap")} ${fromValue} ${
+                srcToken.symbol
+              } ${t("swap.for")} ${toValue} ${destToken.symbol}?`
+            : `${t("swap.swapping")} ${srcToken.symbol} ${t("swap.for")} ${
+                destToken.symbol
+              }...`
         }
         onConfirm={async () => {
           await paraSwap();

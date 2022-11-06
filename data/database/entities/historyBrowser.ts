@@ -7,6 +7,8 @@ export class BrowserHistory {
   url: string;
   @Column()
   title: string;
+  @Column({nullable: true})
+  icon: string;
   @Column({type: 'date', default: () => 'CURRENT_TIMESTAMP'})
   createdAt: string;
 }

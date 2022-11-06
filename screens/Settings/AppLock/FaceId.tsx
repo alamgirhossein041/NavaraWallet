@@ -1,41 +1,45 @@
-import React, {FunctionComponent, useEffect, useMemo, useState} from 'react';
-import {Switch, View} from 'react-native';
-import {primaryColor, primaryGray} from '../../../configs/theme';
-import ReactNativeBiometrics, {BiometryTypes} from 'react-native-biometrics';
-import {FingerPrintIcon, UserIcon} from 'react-native-heroicons/solid';
-import MenuItem from '../../../components/MenuItem';
-import {appLockState} from '../../../data/globalState/appLock';
-import {useRecoilState} from 'recoil';
-import {Spinner} from 'native-base';
+import { Spinner } from "native-base";
+import React, { FunctionComponent, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Switch, View } from "react-native";
+import ReactNativeBiometrics, { BiometryTypes } from "react-native-biometrics";
+import { UserIcon } from "react-native-heroicons/solid";
+import { useRecoilState } from "recoil";
+import MenuItem from "../../../components/UI/MenuItem";
+import { primaryColor, primaryGray } from "../../../configs/theme";
+import { appLockState } from "../../../data/globalState/appLock";
 const rnBiometrics = new ReactNativeBiometrics({
   allowDeviceCredentials: false,
 });
 
 export const checkStateScanFingerNative = async (): Promise<boolean> => {
   const result = await rnBiometrics.simplePrompt({
-    promptMessage: 'Scan your finger',
+    promptMessage: "Scan your finger",
   });
   return result.success;
 };
 
 const FaceId: FunctionComponent = () => {
+  const { t } = useTranslation();
+
   const [loading, setLoading] = useState(false);
   const [appLock, setAppLock] = useRecoilState(appLockState);
   const [supported, setSupported] = useState<any>({
     available: false,
-    biometryType: '',
+    biometryType: "",
   });
   const menu = {
     onPress: () => handleChangeSwitch(true),
     icon: <UserIcon width="100%" height="100%" fill={primaryColor} />,
-    name: 'FaceID',
+    name: `${t("setting.apps_lock.face_id")}`,
+    // label={t("setting.apps_lock.set_password")}
     value: loading ? (
       <Spinner />
     ) : (
       <Switch
-        trackColor={{false: primaryGray, true: primaryColor}}
+        trackColor={{ false: primaryGray, true: primaryColor }}
         thumbColor="white"
-        onValueChange={value => handleChangeSwitch(value)}
+        onValueChange={(value) => handleChangeSwitch(value)}
         value={appLock.typeBioMetric === BiometryTypes.FaceID}
       />
     ),
@@ -45,8 +49,9 @@ const FaceId: FunctionComponent = () => {
 
   useEffect(() => {
     (async () => {
-      const {available, biometryType} = await rnBiometrics.isSensorAvailable();
-      setSupported({available, biometryType});
+      const { available, biometryType } =
+        await rnBiometrics.isSensorAvailable();
+      setSupported({ available, biometryType });
     })();
   }, []);
 
@@ -61,7 +66,7 @@ const FaceId: FunctionComponent = () => {
       } else {
         setAppLock({
           ...appLock,
-          typeBioMetric: 'none',
+          typeBioMetric: "none",
         });
       }
     }

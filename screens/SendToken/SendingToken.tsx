@@ -1,42 +1,43 @@
-import {View, Text, ScrollView} from 'react-native';
-import React from 'react';
-import {tw} from '../../utils/tailwind';
-import Button from '../../components/Button';
-import {useState} from 'react';
-import ScanQR from './ScanQR';
-import {useForm, Controller} from 'react-hook-form';
-import {EVM_CHAINS} from '../../configs/bcNetworks';
-import {useMutation} from 'react-query';
-import API from '../../data/api';
-import {ShieldExclamationIcon, XIcon} from 'react-native-heroicons/solid';
-import {primaryColor} from '../../configs/theme';
-import IconUSA from '../../assets/icons/icon-usa.svg';
-import {Actionsheet, CheckCircleIcon, Spinner, useDisclose} from 'native-base';
-import {NETWORKS, NETWORK_ENVIRONMENT_ENUM} from '../../enum/bcEnum';
-import {useDarkMode} from '../../hooks/useModeDarkMode';
-import {useTextDarkMode} from '../../hooks/useModeDarkMode';
-import {AxiosError} from 'axios';
-import * as WAValidator from 'multicoin-address-validator';
-import {useRecoilValue} from 'recoil';
-import {balanceChainsState} from '../../data/globalState/priceTokens';
-import {validateAccountId} from '../../hooks/useNEAR';
-import ActionSheetItem from '../../components/ActionSheetItem';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import CurrencyFormat from '../../components/CurrencyFormat';
-import {TextInput} from 'react-native';
-import {useGridDarkMode} from '../../hooks/useModeDarkMode';
+import Clipboard from "@react-native-clipboard/clipboard";
+import { AxiosError } from "axios";
+import * as WAValidator from "multicoin-address-validator";
 import {
-  capitalizeFirstLetter,
-  shortenAddress,
-} from '../../utils/stringsFunction';
-import ShowIconChainSelected from '../../components/ShowIconChainSelected';
-import Clipboard from '@react-native-clipboard/clipboard';
-import {walletEnvironmentState} from '../../data/globalState/userData';
-import {getNetworkEnvironment} from '../../hooks/useBcNetworks';
+  Actionsheet,
+  CheckCircleIcon,
+  Spinner,
+  useDisclose,
+} from "native-base";
+import React, { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { ScrollView, Text, TextInput, View } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { ShieldExclamationIcon, XIcon } from "react-native-heroicons/solid";
+import { useMutation } from "react-query";
+import { useRecoilValue } from "recoil";
+import IconUSA from "../../assets/icons/icon-usa.svg";
+import ActionSheetItem from "../../components/UI/ActionSheetItem";
+import Button from "../../components/UI/Button";
+import CurrencyFormat from "../../components/UI/CurrencyFormat";
+import ShowIconChainSelected from "../../components/UI/ShowIconChainSelected";
+import { EVM_CHAINS } from "../../configs/bcNetworks";
+import { primaryColor } from "../../configs/theme";
+import API from "../../data/api";
+import { walletEnvironmentState } from "../../data/globalState/userData";
+import { NETWORKS, NETWORK_ENVIRONMENT_ENUM } from "../../enum/bcEnum";
+import { getNetworkEnvironment } from "../../hooks/useBcNetworks";
+
+import { useTranslation } from "react-i18next";
+
+import { SelectListChains } from "../../components/UI/SelectListChains";
+import { validateAccountId } from "../../hooks/useNEAR";
+import { shortenAddress } from "../../utils/stringsFunction";
+import { tw } from "../../utils/tailwind";
+import ScanQR from "./ScanQR";
+
 const validateToken = async (
   address: string,
   network: string,
-  env: NETWORK_ENVIRONMENT_ENUM,
+  env: NETWORK_ENVIRONMENT_ENUM
 ): Promise<boolean> => {
   let validatingNetwork = network;
   if (network === NETWORKS.NEAR) {
@@ -48,27 +49,28 @@ const validateToken = async (
   try {
     const result: boolean = WAValidator.validate(
       address,
-      validatingNetwork.toLowerCase(),
+      validatingNetwork.toLowerCase()
     );
     return result;
   } catch (error) {
     return false;
   }
 };
-const ViewSendingToken = ({route, navigation}: any) => {
-  const {isOpen, onOpen, onClose} = useDisclose();
+const ViewSendingToken = ({ route, navigation }: any) => {
+  const { isOpen, onOpen, onClose } = useDisclose();
   const [domainChecked, setDomainChecked] = useState<boolean>(false);
   const [isScam, setIsScam] = useState<boolean>(false);
   const [receiver, setReceiver] = useState<string>();
-  const {token, seed} = route.params;
-  const balanceChains = useRecoilValue(balanceChainsState);
+  const { token, seed } = route.params;
   const balance = token.balance || 0;
-  const [resolveBy, setResolveBy] = useState<string>('');
+  const [resolveBy, setResolveBy] = useState<string>("");
   const walletEnvironment = useRecoilValue(walletEnvironmentState);
   const env = getNetworkEnvironment(walletEnvironment);
+  const { t } = useTranslation();
 
   navigation.setOptions({
-    title: `Send ${token.symbol}`,
+    title: `${t("home.send")} ${token.symbol}`,
+    headerRight: () => <SelectListChains token={token} next="SendingToken" />,
   });
   // declare wallet
 
@@ -78,28 +80,24 @@ const ViewSendingToken = ({route, navigation}: any) => {
     handleSubmit,
     setValue,
     watch,
-    formState: {errors},
+    formState: { errors },
   } = useForm({
     defaultValues: {
-      receiver: '',
+      receiver: "",
       amount: 0,
     },
   });
-
-  //text darkmode
-
-  //grid, shadow darkmode
 
   const [err, setErr] = useState({
     domain: false,
     address: false,
   });
-  const onSubmit = data => {
-    navigation.navigate('ConfirmTransaction', {
+  const onSubmit = (data) => {
+    navigation.navigate("ConfirmTransaction", {
       token,
       seed,
       receiver: {
-        domain: watch('receiver').trim(),
+        domain: watch("receiver").trim(),
         address: receiver.trim(),
       },
       amount: +data.amount,
@@ -122,16 +120,19 @@ const ViewSendingToken = ({route, navigation}: any) => {
   };
   // input domain, return address
   const requestGetAddress = useMutation(
-    params => {
-      const {network, input} = params;
-      if (network === NETWORKS.NEAR.toLocaleLowerCase()) {
-        return validateAccountId(input, env).then(isValid =>
+    (params: any) => {
+      const { network, input } = params;
+      if (
+        network === NETWORKS.NEAR.toLocaleLowerCase() &&
+        !input.includes(".nns.one")
+      ) {
+        return validateAccountId(input, env).then((isValid) =>
           isValid
-            ? {type: 'near blockchain', address: input, isScam: false}
-            : null,
+            ? { type: "near blockchain", address: input, isScam: false }
+            : null
         );
       } else {
-        return API.get('/domain/resolver/domain', {
+        return API.get("/domain/resolver/domain", {
           params,
         });
       }
@@ -139,7 +140,7 @@ const ViewSendingToken = ({route, navigation}: any) => {
     {
       onError: (e: AxiosError) => {
         setDomainChecked(false);
-        if (watch('receiver').length < 10 || watch('receiver').includes('.')) {
+        if (watch("receiver").length < 10 || watch("receiver").includes(".")) {
           setErr({
             ...err,
             domain: true,
@@ -147,11 +148,10 @@ const ViewSendingToken = ({route, navigation}: any) => {
           return;
         } else {
           resetErr();
-          setReceiver(watch('receiver'));
+          setReceiver(watch("receiver"));
         }
       },
       onSuccess: (data: any) => {
-        console.log(data);
         if (!!data) {
           setResolveBy(data.type);
           setReceiver(data.address);
@@ -164,55 +164,63 @@ const ViewSendingToken = ({route, navigation}: any) => {
           });
         }
       },
-    },
+    }
   );
 
   // input address, return domain
   const requestGetDomain = useMutation(
-    params => {
-      return API.get('/domain/resolver/address', {
+    (params) => {
+      return API.get("/domain/resolver/address", {
         params,
       });
     },
     {
-      onError: e => {
+      onError: (e: AxiosError) => {
+        const data: any = e.response.data;
+        setIsScam(data.isScam);
         setDomainChecked(false);
-        setReceiver(watch('receiver'));
+        setReceiver(watch("receiver"));
       },
       onSuccess: (data: any) => {
-        setValue('receiver', data.domain);
+        setValue("receiver", data.domain);
         setDomainChecked(true);
         setIsScam(data.isScam);
         setReceiver(data.address);
       },
-    },
+    }
   );
 
   const handleResultQrScan = async (input: string) => {
-    setValue('receiver', input);
-    if (await validateToken(input, token.network, env)) {
+    setValue("receiver", input);
+    if (input.includes(".")) {
+      requestGetAddress.mutate({
+        input,
+        network: token.symbol,
+      } as any);
+      return;
+    } else if (await validateToken(input, token.network, env)) {
       requestGetDomain.mutate({
         input,
-        network: getNetworkType(token.network),
+        network: token.symbol,
       } as any);
-      setValue('receiver', input);
     } else {
-      setValue('receiver', input);
       setErr({
         ...err,
         address: true,
       });
     }
+    setValue("receiver", input);
   };
 
   const fetchCopiedText = async () => {
     const text = await Clipboard.getString();
-    setValue('receiver', text);
+    setValue("receiver", text);
+    handleCheckReceiver();
   };
   const clearState = () => {
     setDomainChecked(false);
-    setValue('receiver', '');
-    setReceiver('');
+    setValue("receiver", "");
+    setReceiver("");
     setErr({
       domain: false,
       address: false,
@@ -220,37 +228,24 @@ const ViewSendingToken = ({route, navigation}: any) => {
     setIsScam(false);
   };
 
-  const handleOnBlurInputAddress = async () => {
+  const handleCheckReceiver = async () => {
     resetErr();
-    if (watch('receiver').includes('.')) {
+
+    // check is domain
+    if (watch("receiver").includes(".")) {
       requestGetAddress.mutate({
-        input: watch('receiver'),
-        network: getNetworkType(token.network),
+        input: watch("receiver"),
+        network: token.symbol,
       } as any);
       return;
     }
-    if (watch('receiver').length > 3 && watch('receiver').length <= 10) {
-      requestGetAddress.mutate({
-        input: watch('receiver'),
-        network: getNetworkType(token.network),
+
+    if (await validateToken(watch("receiver"), token.network, env)) {
+      requestGetDomain.mutate({
+        input: watch("receiver").trim(),
+        network: token.symbol,
       } as any);
-      return;
-    }
-    if (watch('receiver').length > 10) {
-      const validate = await validateToken(
-        watch('receiver'),
-        token.network,
-        env,
-      );
-      if (!!validate) {
-        requestGetDomain.mutate({
-          input: watch('receiver').trim(),
-          network: getNetworkType(token.network),
-        } as any);
-        setReceiver(watch('receiver'));
-      } else {
-        setErr({...err, address: true});
-      }
+      setReceiver(watch("receiver"));
     }
   };
 
@@ -260,13 +255,14 @@ const ViewSendingToken = ({route, navigation}: any) => {
         {/* <ShowBalanceChain chain={token} /> */}
 
         <View style={tw`flex-row items-center justify-between m-1`}>
-          <Text style={tw`dark:text-white  text-lg font-bold`}>Recipient</Text>
+          <Text style={tw`dark:text-white  text-lg font-bold`}>
+            {t("send.recipient")}
+          </Text>
           {domainChecked ? (
             <View style={tw`flex-row items-center justify-center `}>
               <Text
-                style={tw`${
-                  isScam ? 'text-orange-300' : `text-[${primaryColor}]`
-                }`}>
+                style={tw`${isScam ? "text-black" : `text-[${primaryColor}]`}`}
+              >
                 {shortenAddress(receiver)}
               </Text>
             </View>
@@ -280,31 +276,26 @@ const ViewSendingToken = ({route, navigation}: any) => {
             <View
               style={tw`${
                 isScam
-                  ? 'border-orange-300 bg-orange-100'
+                  ? "border-red-500 bg-red-100"
                   : `border-[${primaryColor}]  bg-blue-100`
-              } flex flex-row  rounded-xl items-center text-gray-400 p-2 border h-15 `}>
+              } flex flex-row  rounded-xl items-center text-gray-400 p-2 border h-15 `}
+            >
               <View style={tw`w-7/8 tex-white items-center flex-row `}>
                 <Text
                   style={tw`${
                     isScam
-                      ? 'text-red-500 font-bold'
-                      : 'text-blue-500 font-bold'
-                  } mr-1`}>
-                  {watch('receiver').trim()}
+                      ? "text-red-500 font-bold"
+                      : "text-blue-500 font-bold"
+                  } mr-1`}
+                >
+                  {watch("receiver").trim()}
                 </Text>
-                {isScam && (
-                  <Text style={tw`dark:text-white  font-bold text-red-500`}>
-                    (scam)
-                  </Text>
-                )}
-                {!isScam ? (
+                {!isScam && (
                   <CheckCircleIcon
                     width={30}
                     height={30}
                     color={primaryColor}
                   />
-                ) : (
-                  <ShieldExclamationIcon width={20} height={20} color="red" />
                 )}
               </View>
               <View style={tw`flex flex-row justify-end w-1/8`}>
@@ -321,24 +312,29 @@ const ViewSendingToken = ({route, navigation}: any) => {
           <View
             style={tw`${
               errors.receiver || err.domain || err.address
-                ? 'border-red-500 bg-red-100 dark:bg-red-100 border'
-                : ' border-gray-100 dark:border-gray-600'
-            } flex flex-row border  rounded-xl items-center  h-15 px-2`}>
+                ? "border-red-500 bg-red-100 dark:bg-red-100 border"
+                : " border-gray-100 dark:border-gray-600"
+            } flex flex-row border ${
+              isScam ? "border-red-500 bg-red-100" : ""
+            } rounded-xl items-center  h-15 px-2`}
+          >
             <Controller
               control={control}
               rules={{
                 required: true,
                 minLength: 3,
               }}
-              render={({field: {onChange, value}}) => (
+              render={({ field: { onChange, value } }) => (
                 <TextInput
-                  editable={!requestGetAddress.isLoading}
+                  editable={
+                    !requestGetAddress.isLoading || !requestGetDomain.isLoading
+                  }
                   autoCapitalize="none"
-                  onBlur={handleOnBlurInputAddress}
+                  onBlur={handleCheckReceiver}
                   onChangeText={onChange}
                   value={value}
                   style={tw`flex-1 text-black dark:text-white`}
-                  placeholder="Address or NNS"
+                  placeholder={t("send.address_or_nns")}
                   autoCompleteType="off"
                   placeholderTextColo={primaryColor}
                 />
@@ -347,9 +343,9 @@ const ViewSendingToken = ({route, navigation}: any) => {
             />
 
             <View>
-              {watch('receiver') && watch('receiver').length > 0 ? (
+              {watch("receiver") && watch("receiver").length > 0 ? (
                 <View>
-                  {requestGetAddress.isLoading ? (
+                  {requestGetAddress.isLoading || requestGetDomain.isLoading ? (
                     <Spinner color={primaryColor} />
                   ) : (
                     <XIcon
@@ -363,32 +359,48 @@ const ViewSendingToken = ({route, navigation}: any) => {
               ) : (
                 <TouchableOpacity
                   onPress={fetchCopiedText}
-                  style={tw`dark:bg-gray-800 bg-gray-100  p-1 px-3 rounded-lg`}>
-                  <Text style={tw`dark:text-white text-green-500`}>PASTE</Text>
+                  style={tw`dark:bg-gray-800 bg-gray-100  p-1 px-3 rounded-lg`}
+                >
+                  <Text style={tw`dark:text-white text-green-500 uppercase`}>
+                    {t("send.paste")}
+                  </Text>
                 </TouchableOpacity>
               )}
             </View>
           </View>
         )}
-
+        {isScam && (
+          <View
+            style={tw`flex-row items-center justify-center mt-3 bg-red-100  p-2 rounded mx-auto`}
+          >
+            <ShieldExclamationIcon width={20} height={20} color="red" />
+            <Text style={tw`text-center  font-bold text-red-500`}>
+              Known scam address
+            </Text>
+          </View>
+        )}
         {!domainChecked && errors.receiver && (
           <Text style={tw`text-center text-red-500 `}>
-            Receiving address required
+            {t("send.receiving_address_required")}
           </Text>
         )}
 
         {err.domain && (
-          <Text style={tw` text-center text-red-500 `}>Domain not found</Text>
+          <Text style={tw` text-center text-red-500 `}>
+            {t("send.domain_not_found")}
+          </Text>
         )}
 
         {err.address && (
-          <Text style={tw`text-center text-red-500 `}>Invalid address</Text>
+          <Text style={tw`text-center text-red-500 `}>
+            {t("send.invalid_address")}
+          </Text>
         )}
 
         <View style={tw`flex flex-col my-5`}>
           <View style={tw`flex-row justify-between m-1`}>
             <Text style={tw`dark:text-white  text-lg font-bold`}>
-              To Network
+              {t("send.to_network")}
             </Text>
             <View style={tw`flex-row items-center`}>
               <ShowIconChainSelected chain={token} />
@@ -398,16 +410,20 @@ const ViewSendingToken = ({route, navigation}: any) => {
             </View>
           </View>
           <Text style={tw`dark:text-white  text-gray-400  mx-1`}>
-            Recipient will receive {token.symbol} network as {token.symbol}
+            {t("send.recipient_will_receive")} {token.symbol}{" "}
+            {t("send.network_as")} {token.symbol}
           </Text>
         </View>
 
         <View style={tw`flex flex-row items-center justify-between m-1`}>
-          <Text style={tw`dark:text-white  text-lg font-bold`}>Amount</Text>
+          <Text style={tw`dark:text-white  text-lg font-bold`}>
+            {t("send.amount")}
+          </Text>
           <View style={tw`flex-row`}>
             <Text style={tw`dark:text-white  `}>~{balance.toFixed(4)} </Text>
-            <Text style={tw`dark:text-white   dark:text-white `}>
-              {token.symbol} Available
+
+            <Text style={tw`dark:text-white`}>
+              {token.symbol} {t("send.available")}
             </Text>
           </View>
         </View>
@@ -415,9 +431,10 @@ const ViewSendingToken = ({route, navigation}: any) => {
         <View
           style={tw`${
             errors.amount
-              ? 'border-red-500 bg-red-100 '
-              : 'border-gray-100 dark:border-gray-600'
-          } flex flex-row border  rounded-xl items-center text-gray-400 h-15 px-2`}>
+              ? "border-red-500 bg-red-100 "
+              : "border-gray-100 dark:border-gray-600"
+          } flex flex-row border  rounded-xl items-center text-gray-400 h-15 px-2`}
+        >
           <View style={tw``}>
             <ShowIconChainSelected chain={token} />
           </View>
@@ -425,16 +442,16 @@ const ViewSendingToken = ({route, navigation}: any) => {
             control={control}
             rules={{
               required: true,
-              validate: value => value > 0,
+              validate: (value) => value > 0,
             }}
-            render={({field: {onChange, value, onBlur}}) => (
+            render={({ field: { onChange, value, onBlur } }) => (
               <TextInput
-                value={value !== 0 ? value.toString() : ''}
+                value={value !== 0 ? value.toString() : ""}
                 keyboardType="numeric"
                 onBlur={onBlur}
                 onChangeText={onChange}
-                style={tw`w-full p-4  `}
-                placeholder="Enter amount"
+                style={tw`w-full p-4  dark:text-white`}
+                placeholder={t("send.enter_amount")}
                 // placeholderTextColor={'gray'}
               />
             )}
@@ -443,10 +460,13 @@ const ViewSendingToken = ({route, navigation}: any) => {
 
           <View style={tw`flex-row ml-auto`}>
             <TouchableOpacity
-              onPress={() => setValue('amount', balance)}
+              onPress={() => setValue("amount", balance)}
               underlayColor="transparent"
-              style={tw`dark:bg-gray-800 bg-gray-100  p-1 px-3 rounded-lg`}>
-              <Text style={tw`dark:text-white  text-green-500`}>MAX</Text>
+              style={tw`dark:bg-gray-800 bg-gray-100  p-1 px-3 rounded-lg`}
+            >
+              <Text style={tw`dark:text-white  text-green-500`}>
+                {t("send.max")}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -454,26 +474,29 @@ const ViewSendingToken = ({route, navigation}: any) => {
           <Text style={tw`text-lg`}>≈</Text>
         </View>
         <View
-          style={tw`flex flex-row border py-3 px-2 border-gray-100 dark:border-gray-600 h-15  rounded-xl items-center text-gray-400`}>
+          style={tw`flex flex-row border py-3 px-2 border-gray-100 dark:border-gray-600 h-15  rounded-xl items-center text-gray-400`}
+        >
           <View>
             <IconUSA />
           </View>
           <View>
             <CurrencyFormat
-              value={+watch('amount') * token.price}
+              value={+watch("amount") * token.price}
               style="m-1 italic text-sm"
             />
           </View>
           <View style={tw`ml-auto`}>
-            <Text style={tw`dark:text-white  dark:text-white `}>USD</Text>
+            <Text style={tw`dark:text-white`}>USD</Text>
           </View>
         </View>
       </ScrollView>
 
-      {receiver ? (
+      {receiver &&
+      !requestGetAddress.isLoading &&
+      !requestGetDomain.isLoading ? (
         <View style={tw`absolute w-full px-4 bottom-5`}>
           <Button onPress={isScam ? onOpen : handleSubmit(onSubmit)}>
-            Continue
+            {t("send.continue")}
           </Button>
         </View>
       ) : (
@@ -482,13 +505,23 @@ const ViewSendingToken = ({route, navigation}: any) => {
 
       <Actionsheet isOpen={isOpen} onClose={onClose}>
         <Actionsheet.Content style={tw``}>
+          <View
+            style={tw`flex-row items-center justify-center mt-3 bg-red-100  p-2 rounded mx-auto`}
+          >
+            <ShieldExclamationIcon width={20} height={20} color="red" />
+            <Text style={tw`text-center  font-bold text-red-500`}>
+              Known scam address
+            </Text>
+          </View>
           <ActionSheetItem onPress={onClose}>
-            <Text style={tw`dark:text-white  font-bold text-lg `}>Cancel</Text>
+            <Text style={tw`dark:text-white  font-bold text-lg `}>
+              {t("send.cancel")}
+            </Text>
           </ActionSheetItem>
           <ActionSheetItem onPress={handleSubmit(onSubmit)}>
             <View style={tw`flex-row items-center justify-between w-full`}>
               <Text style={tw`dark:text-white  text-lg text-red-500`}>
-                Continue transaction
+                {t("send.continue_transaction")}
               </Text>
             </View>
           </ActionSheetItem>
@@ -498,7 +531,7 @@ const ViewSendingToken = ({route, navigation}: any) => {
   );
 };
 
-const SendingToken = props => {
+const SendingToken = (props) => {
   return <ViewSendingToken {...props} />;
 };
 export default SendingToken;

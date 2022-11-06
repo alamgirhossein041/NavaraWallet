@@ -70,8 +70,10 @@ buck-out/
 
 # App release
 /android/app/release
+# android/app/release/output-metadata.json
 
 # @end expo-cli
 ios/fastlane/.env
 # patch-package
 patches/bip39+2.6.0.patch
+

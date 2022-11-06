@@ -1,27 +1,48 @@
-import {cloneDeep} from 'lodash';
-import {useCallback, useEffect, useMemo, useState} from 'react';
-import {useRecoilState, useRecoilValue} from 'recoil';
-import {Wallet} from '../data/database/entities/wallet';
-import useDatabase from '../data/database/useDatabase';
+import { useCallback, useMemo } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { Wallet } from "../data/database/entities/wallet";
+import useDatabase from "../data/database/useDatabase";
 import {
   idWalletSelected,
   listWalletsState,
-} from '../data/globalState/listWallets';
-import {defaultEnabledNetworks} from '../enum/bcEnum';
-import {localStorage, SELECTED_WALLET} from '../utils/storage';
+} from "../data/globalState/listWallets";
+import { walletEnvironmentState } from "../data/globalState/userData";
+import { defaultEnabledNetworks } from "../enum/bcEnum";
+import { ENVIRONMENT } from "../global.config";
 
-interface IUseWalletSelected {
+export interface IUseWalletSelected {
   index: number | null;
   data: Wallet | null;
   setEnabledNetworks: (array: string[]) => void;
   enabledNetworks: string[];
 }
-
+/**
+ *
+ * @returns get data current wallet selected by idWalletSelected  state
+ */
 const useWalletSelected = (): IUseWalletSelected => {
   const index = useRecoilValue(idWalletSelected);
   const [listWallets, setListWallets] = useRecoilState(listWalletsState);
-  const {walletController} = useDatabase();
-  const selectedWallet = listWallets[index];
+  const { walletController } = useDatabase();
+  const selectedWalletInstance =
+    listWallets[index === listWallets.length ? 0 : index];
+  const walletEnvironment = useRecoilValue(walletEnvironmentState);
+
+  const selectedWallet = useMemo(() => {
+    const wallet = {
+      ...selectedWalletInstance,
+      chains: selectedWalletInstance.chains.map((chain) => {
+        return {
+          ...chain,
+          address:
+            walletEnvironment === ENVIRONMENT.PRODUCTION
+              ? chain?.address
+              : chain?.testnetAddress,
+        };
+      }),
+    };
+    return wallet;
+  }, [selectedWalletInstance, walletEnvironment]);
 
   const setEnabledNetworks = useCallback(
     (array: string[]) => {
@@ -35,15 +56,15 @@ const useWalletSelected = (): IUseWalletSelected => {
           enabledNetworks: JSON.stringify(array),
         });
         setListWallets(
-          listWallets.map(wallet =>
-            wallet.id === newWallet.id ? newWallet : wallet,
-          ),
+          listWallets.map((wallet) =>
+            wallet.id === newWallet.id ? newWallet : wallet
+          )
         );
       } catch (error) {
         console.warn("Error updating wallet's enabledNetworks: ", error);
       }
     },
-    [listWallets, selectedWallet, setListWallets, walletController],
+    [listWallets, selectedWallet, setListWallets, walletController]
   );
 
   const enabledNetworks = useMemo((): Array<string> => {
@@ -61,10 +82,10 @@ const useWalletSelected = (): IUseWalletSelected => {
 
   return {
     index,
-    data: listWallets[index],
+    data: selectedWallet,
     setEnabledNetworks,
     enabledNetworks,
   };
 };
 
-export {useWalletSelected};
+export { useWalletSelected };

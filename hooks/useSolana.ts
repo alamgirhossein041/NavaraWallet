@@ -8,14 +8,12 @@ import {
   LAMPORTS_PER_SOL,
   sendAndConfirmTransaction,
 } from '@solana/web3.js';
-import {WalletInterface, WalletProps} from '../data/types';
+import {WalletInterface} from '../data/types';
 import {DEVIVERATION_PATH} from '../configs/bcNetworks';
 import {Buffer} from 'buffer';
 import bs58 from 'bs58';
 import {NETWORKS, NETWORK_ENVIRONMENT_ENUM} from '../enum/bcEnum';
-import * as bip39 from 'bip39';
 import * as bip32 from 'bip32';
-import {normalizeSeedPhrase} from '../utils/mnemonic';
 import {getSolanaClusterApiUrl, useBcNetworks} from './useBcNetworks';
 
 // Create connection
@@ -29,6 +27,7 @@ export const createSolanaWallet = (seed: Buffer, accountIndex = 0) => {
   const keypair = Keypair.fromSeed(derivedSeed);
   return {
     address: keypair.publicKey.toBase58(),
+    testnetAddress: keypair.publicKey.toBase58(),
     network: NETWORKS.SOLANA,
     publicKey: keypair.publicKey.toBase58(),
     privateKey: bs58.encode(keypair.secretKey),

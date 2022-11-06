@@ -1,44 +1,45 @@
-import React, {useEffect} from 'react';
-import {primaryColor} from '../../configs/theme';
-import ProgressBar from 'react-native-progress/Bar';
-import {View} from 'react-native';
-import {tw} from '../../utils/tailwind';
+import React, { useEffect, useRef } from "react";
+import { Animated } from "react-native";
+import ProgressBar from "react-native-progress/Bar";
+import { primaryColor } from "../../configs/theme";
 export default function WebviewProgressBar(props) {
-  const {progress} = props;
-  const [isShow, setIsShow] = React.useState(progress > 0);
-
-  const hide = () => {
-    setTimeout(() => {
-      setIsShow(false);
-    }, 0);
+  const { progress } = props;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const fadeIn = () => {
+    //@ts-ignore
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 50,
+    }).start();
   };
-  const show = () => {
-    setIsShow(true);
+
+  const fadeOut = () => {
+    //@ts-ignore
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 50,
+    }).start();
   };
 
   useEffect(() => {
     if (progress === 1) {
-      hide();
-    } else if (!isShow && progress !== 1) {
-      show();
+      fadeOut();
+    } else if (progress < 1 && progress > 0.2) {
+      fadeIn();
     }
   }, [progress]);
 
   return (
-    <View>
-      {isShow ? (
-        <ProgressBar
-          progress={progress}
-          color={primaryColor}
-          width={null}
-          height={3}
-          borderRadius={0}
-          borderWidth={0}
-          useNativeDriver
-        />
-      ) : (
-        <View style={tw`h-1`}></View>
-      )}
-    </View>
+    <Animated.View style={{ opacity: fadeAnim }}>
+      <ProgressBar
+        progress={progress}
+        color={primaryColor}
+        width={null}
+        height={3}
+        borderRadius={0}
+        borderWidth={0}
+        useNativeDriver
+      />
+    </Animated.View>
   );
 }

@@ -1,18 +1,21 @@
-import {createStackNavigator} from '@react-navigation/stack';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {
+  CardStyleInterpolators,
+  createStackNavigator,
+} from '@react-navigation/stack';
 import React from 'react';
-import {SafeAreaView, StatusBar, useColorScheme, View} from 'react-native';
+import {StatusBar, useColorScheme, View} from 'react-native';
 import {primaryColor, secondaryGray} from '../configs/theme';
+import Browser from '../screens/Browser';
 import Home from '../screens/Home';
-import NotUse from '../screens/OnBoard';
+import {default as NotUse, default as OnBoard} from '../screens/OnBoard';
 import Settings from '../screens/Settings';
 import Splash from '../screens/Splash';
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import Browser from '../screens/Browser';
 import {tw} from '../utils/tailwind';
 import CustomTabBar from './CustomTabBar';
-import OnBoard from '../screens/OnBoard';
+
 const RootStack = createStackNavigator();
-const Tab = createMaterialTopTabNavigator();
+const Tab = createBottomTabNavigator();
 
 interface ITab {
   name: string;
@@ -64,7 +67,6 @@ const TabsNavigation = () => {
         tabBarInactiveTintColor: secondaryGray,
         headerShown: false,
         tabBarShowLabel: false,
-        swipeEnabled: false,
       }}>
       {tabs.map((tab: ITab) => (
         <Tab.Screen key={tab.name} name={tab.name} component={tab.component} />
@@ -94,7 +96,12 @@ const AppRoutes = () => {
         />
         <RootStack.Screen
           name="Browser"
-          options={{headerShown: false}}
+          options={{
+            headerShown: false,
+            animationEnabled: true,
+            gestureEnabled: false,
+            cardStyleInterpolator: CardStyleInterpolators.forNoAnimation,
+          }}
           component={Browser}
         />
         <RootStack.Screen

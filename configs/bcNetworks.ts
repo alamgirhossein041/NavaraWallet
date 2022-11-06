@@ -1,22 +1,18 @@
 import {ENVIRONMENT, WALLET_ENVIRONMENT} from '../global.config';
-import mainnetConfig from './bcMainnets';
-import testnetConfig from './bcTestnets';
+import {EVM_MAINET_CONFIG, NEAR_MAINNET_CONFIG} from './bcMainnets';
+import {EVM_TESTNET_CONFIG, NEAR_TESTNET_CONFIG} from './bcTestnets';
 import {NETWORK_ENVIRONMENT_ENUM, NETWORKS} from '../enum/bcEnum';
 
 import {clusterApiUrl} from '@solana/web3.js';
 
 // import Near from ".../assets/icons/icon-near.svg";
 import Solana from '../assets/icons/icon-solana.svg';
-import Terra from '../assets/icons/icon-terra.svg';
 import Bitcoin from '../assets/icons/icon-btc.svg';
 import Binance from '../assets/icons/icon-bsc.svg';
 import Ethereum from '../assets/icons/icon-ethereum.svg';
 // import Dnet from "../assets/icons/icon-dnet.svg";
-import Hamony from '../assets/icons/harmony-one-logo.svg';
 import Cromos from '../assets/icons/crypto-com-coin-cro-logo.svg';
-import Polygon from '../assets/icons/polygon-matic-logo.svg';
 import Fantom from '../assets/icons/fantom-ftm-logo.svg';
-import Celo from '../assets/icons/celo-celo-logo.svg';
 import Alavanche from '../assets/icons/avalanche-avax-logo.svg';
 import Near from '../assets/icons/icon-near.svg';
 import Aurora from '../assets/icons/icon-aurora.svg';
@@ -128,8 +124,8 @@ export const NETWORK_ENVIRONMENT =
 
 export const NETWORK_CONFIG =
   NETWORK_ENVIRONMENT === NETWORK_ENVIRONMENT_ENUM.MAINNET
-    ? mainnetConfig
-    : testnetConfig;
+    ? EVM_MAINET_CONFIG
+    : EVM_TESTNET_CONFIG;
 
 const mapConfigByChainId = configObject => {
   const configByChainId = {};
@@ -141,8 +137,8 @@ const mapConfigByChainId = configObject => {
 };
 
 export const NETWORK_CONFIG_BY_CHAIN_ID = {
-  ...mapConfigByChainId(mainnetConfig),
-  ...mapConfigByChainId(testnetConfig),
+  ...mapConfigByChainId(EVM_MAINET_CONFIG),
+  ...mapConfigByChainId(EVM_TESTNET_CONFIG),
 };
 
 export const SOLANA_CLUSTER_API_URL =
@@ -157,18 +153,8 @@ export const POLKADOT_WS_ENDPOINT =
 
 export const NEAR_CONFIG =
   NETWORK_ENVIRONMENT === NETWORK_ENVIRONMENT_ENUM.MAINNET
-    ? {
-        networkId: 'mainnet',
-        nodeUrl: 'https://rpc.mainnet.near.org',
-        helperUrl: 'https://helper.mainnet.near.org',
-        explorerUrl: 'https://explorer.mainnet.near.org',
-      }
-    : {
-        networkId: 'testnet',
-        nodeUrl: 'https://rpc.testnet.near.org',
-        helperUrl: 'https://testnet-api.kitwallet.app',
-        explorerUrl: 'https://explorer.testnet.near.org',
-      };
+    ? NEAR_MAINNET_CONFIG
+    : NEAR_TESTNET_CONFIG;
 
 export const DEVIVERATION_PATH = {
   [NETWORKS.ETHEREUM]: (walletIndex = 0) => `m/44'/60'/0'/0/${walletIndex}`,

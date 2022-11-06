@@ -1,22 +1,9 @@
-import {atom} from 'recoil';
-import {ENVIRONMENT} from '../../../global.config';
-import {IUser} from '../../types';
-
-const userState = atom({
-  key: 'userState',
-  default: {
-    wallets: [],
-  } as IUser,
-});
-
-const walletSelectedState = atom({
-  key: 'walletSelectedState',
-  default: 'wallet1',
-});
+import { atom } from "recoil";
+import { ENVIRONMENT } from "../../../global.config";
 
 const walletEnvironmentState = atom({
-  key: 'walletEnvironmentState',
-  default: 1 as ENVIRONMENT,
+  key: "walletEnvironmentState",
+  default: ENVIRONMENT.PRODUCTION,
 });
 
-export {userState, walletSelectedState, walletEnvironmentState};
+export { walletEnvironmentState };

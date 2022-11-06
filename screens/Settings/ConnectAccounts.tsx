@@ -1,49 +1,46 @@
-import React from 'react';
-import {ScrollView, Text, View} from 'react-native';
-import {tw} from '../../utils/tailwind';
-import Google from '../../assets/icons/icon-google.svg';
-import Facebook from '../../assets/icons/icon-facebook.svg';
-import Telegram from '../../assets/icons/icon-telegram.svg';
-import Twitter from '../../assets/icons/icon-twitter.svg';
-import Github from '../../assets/icons/icon-github.svg';
-import Mobile from '../../assets/icons/icon-mobile.svg';
-import Email from '../../assets/icons/icon-email.svg';
-import MenuItem from '../../components/MenuItem';
-import {primaryColor} from '../../configs/theme';
-import Button from '../../components/Button';
-import HeaderScreen from '../../components/HeaderScreen';
-import {useDarkMode} from '../../hooks/useModeDarkMode';
+import React from "react";
+import { ScrollView, Text, View } from "react-native";
+import Email from "../../assets/icons/icon-email.svg";
+import Facebook from "../../assets/icons/icon-facebook.svg";
+import Github from "../../assets/icons/icon-github.svg";
+import Google from "../../assets/icons/icon-google.svg";
+import Mobile from "../../assets/icons/icon-mobile.svg";
+import Telegram from "../../assets/icons/icon-telegram.svg";
+import Twitter from "../../assets/icons/icon-twitter.svg";
+import MenuItem from "../../components/UI/MenuItem";
+import { primaryColor } from "../../configs/theme";
+import { tw } from "../../utils/tailwind";
 
-const ConnectedAccounts = ({navigation}) => {
+const ConnectedAccounts = ({ navigation }) => {
   const accounts = [
     {
       icon: <Google width="100%" height="100%" />,
-      name: 'Google',
-      status: 'thisismygmail@gmail.com',
+      name: "Google",
+      status: "thisismygmail@gmail.com",
       onPress: () => {},
     },
     {
       icon: <Facebook width="100%" height="100%" />,
-      name: 'Facebook',
-      status: 'Not connected',
+      name: "Facebook",
+      status: "Not connected",
       onPress: () => {},
     },
     {
       icon: <Telegram width="100%" height="100%" />,
-      name: 'Telegram',
-      status: 'Not connected',
+      name: "Telegram",
+      status: "Not connected",
       onPress: () => {},
     },
     {
       icon: <Twitter width="100%" height="100%" />,
-      name: 'Twitter',
-      status: 'Not connected',
+      name: "Twitter",
+      status: "Not connected",
       onPress: () => {},
     },
     {
       icon: <Github width="100%" height="100%" />,
-      name: 'Github',
-      status: 'Not connected',
+      name: "Github",
+      status: "Not connected",
       onPress: () => {},
     },
     {
@@ -52,8 +49,8 @@ const ConnectedAccounts = ({navigation}) => {
           <Mobile width="100%" height="100%" />
         </View>
       ),
-      name: 'Mobile',
-      status: 'Not connected',
+      name: "Mobile",
+      status: "Not connected",
       onPress: () => {},
     },
     {
@@ -62,23 +59,22 @@ const ConnectedAccounts = ({navigation}) => {
           <Email width="100%" height="100%" />
         </View>
       ),
-      name: 'Email',
-      status: 'Not connected',
+      name: "Email",
+      status: "Not connected",
       onPress: () => {},
     },
   ];
 
   return (
-    <View style={tw`h-full flex flex-col  justify-between `}>
-      {/* <HeaderScreen title="Connected accounts" showBack /> */}
+    <View style={tw`flex flex-col justify-between h-full `}>
       <ScrollView style={tw`w-full px-4`}>
-        <View style={tw`w-full flex flex-col items-center`}>
+        <View style={tw`flex flex-col items-center w-full`}>
           <View style={tw`w-full mt-6 `}>
             <View style={tw`my-8`}>
-              <Text style={tw`dark:text-white  text-base text-red-400`}>
+              <Text style={tw`text-base text-red-400 dark:text-white`}>
                 Attention!
               </Text>
-              <Text style={tw`dark:text-white  text-sm text-gray-400`}>
+              <Text style={tw`text-sm text-gray-400 dark:text-white`}>
                 It requires at least 02 connected accounts for you to backup
                 passphrase and re-import your wallet. ...
               </Text>
@@ -90,7 +86,7 @@ const ConnectedAccounts = ({navigation}) => {
                   name={account.name}
                   value={account.status}
                   onPress={() => account.onPress()}
-                  iconPadding={''}
+                  iconPadding={""}
                 />
               </View>
             ))}

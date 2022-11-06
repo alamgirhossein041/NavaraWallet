@@ -1,50 +1,66 @@
-import React from 'react';
-import {ScrollView, Switch, Text, View} from 'react-native';
-import {tw} from '../../utils/tailwind';
-import {primaryColor, primaryGray} from '../../configs/theme';
-import MenuItem from '../../components/MenuItem';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {useDeviceContext} from 'twrnc';
-import {useRecoilState, useRecoilValue} from 'recoil';
-import {listWalletsState} from '../../data/globalState/listWallets';
-import {appLockState} from '../../data/globalState/appLock';
-import {useColorMode} from 'native-base';
-import IconLanguage from '../../assets/icons/icon-language.svg';
-import IconCurrency from '../../assets/icons/icon-currency.svg';
-import IconManageWallet from '../../assets/icons/icon-manager-wallet.svg';
-import IconLock from '../../assets/icons/icon-lock.svg';
-import IconKey from '../../assets/icons/icon-key.svg';
-import {BeakerIcon} from 'react-native-heroicons/solid';
-import {walletEnvironmentState} from '../../data/globalState/userData';
-import {ENVIRONMENT} from '../../global.config';
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { ScrollView, Switch, Text, View } from "react-native";
+import { getReadableVersion } from "react-native-device-info";
+import { BeakerIcon } from "react-native-heroicons/solid";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useRecoilState } from "recoil";
+import { useDeviceContext } from "twrnc";
+import IconLanguage from "../../assets/icons/icon-language.svg";
+import IconLock from "../../assets/icons/icon-lock.svg";
+import IconManageWallet from "../../assets/icons/icon-manager-wallet.svg";
+import MenuItem from "../../components/UI/MenuItem";
+import { primaryColor, primaryGray } from "../../configs/theme";
+import { listWalletsState } from "../../data/globalState/listWallets";
+import { walletEnvironmentState } from "../../data/globalState/userData";
+import { ENVIRONMENT } from "../../global.config";
+import { localStorage, NETWORKS_ENVIRONMENT } from "../../utils/storage";
+import { tw } from "../../utils/tailwind";
+import toastr from "../../utils/toastr";
 
-const Menu = ({navigation}) => {
+const Menu = ({ navigation }) => {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const [listWallets] = useRecoilState(listWalletsState);
-  useDeviceContext(tw, {withDeviceColorScheme: false});
-  const [appLock, setAppLock] = useRecoilState(appLockState);
-  const shortenAddress = (address: string) => {
-    if (address.length > 10) {
-      return address.substring(0, 5) + '...';
-    } else {
-      return address;
+  useDeviceContext(tw, { withDeviceColorScheme: false });
+  const [walletEnvironment, setWalletEnvironment] = useRecoilState(
+    walletEnvironmentState
+  );
+
+  /**
+   * Hanlde swtich testnet / mainnet
+   */
+  const [isLoading, setIsLoading] = useState(false);
+  const handelChangeTestNet = async (isTestnet: boolean) => {
+    setIsLoading(true);
+    try {
+      const newEnvironment = isTestnet
+        ? ENVIRONMENT.DEVELOPMENT
+        : ENVIRONMENT.PRODUCTION;
+      setWalletEnvironment(newEnvironment);
+      await localStorage.set(NETWORKS_ENVIRONMENT, newEnvironment);
+    } catch (error) {
+      toastr.error("Error");
     }
+    setIsLoading(false);
   };
-  const walletEnvironment = useRecoilValue(walletEnvironmentState);
+
   const menu = [
     {
-      group: 'Wallets',
+      group: `${t("setting.wallets")}`,
       items: [
         {
           icon: <IconManageWallet />,
-          name: 'Manage wallets',
+          name: `${t("setting.manage_wallets")}`,
+
           onPress: () => {
-            navigation.push('ManageWallets');
+            navigation.push("ManageWallets");
           },
           value: (
             <View style={tw`flex flex-row items-center`}>
               <View
-                style={tw`bg-[${primaryColor}] mx-1 rounded-full px-3 py-1`}>
+                style={tw`bg-[${primaryColor}] mx-1 rounded-full px-3 py-1`}
+              >
                 <Text style={tw`font-bold text-white dark:text-white`}>
                   {listWallets.length}
                 </Text>
@@ -54,17 +70,24 @@ const Menu = ({navigation}) => {
           next: true,
         },
         {
-          icon: <BeakerIcon />,
+          icon: <BeakerIcon color={primaryColor} />,
           name: `${
             walletEnvironment === ENVIRONMENT.DEVELOPMENT
-              ? 'Using Testnet'
-              : 'Try Testnet'
-          } (beta)`,
-          onPress: () => {
-            navigation.navigate('NetworksEnvironment');
-          },
-          next: true,
+              ? `${t("setting.using_testnet")}`
+              : `${t("setting.try_testnet")}`
+          } `,
+          value: (
+            <Switch
+              trackColor={{ false: primaryGray, true: primaryColor }}
+              thumbColor="white"
+              onValueChange={handelChangeTestNet}
+              value={walletEnvironment === ENVIRONMENT.DEVELOPMENT}
+              disabled={isLoading}
+            />
+          ),
+          next: false,
         },
+
         // {
         //   icon: <UserIcon width="100%" height="100%" fill={primaryColor} />,
         //   name: 'Credentials',
@@ -94,7 +117,7 @@ const Menu = ({navigation}) => {
       ],
     },
     {
-      group: 'App Security',
+      group: `${t("setting.app_security")}`,
       items: [
         // {
         //   icon: colorMode === 'light' ? (
@@ -123,56 +146,57 @@ const Menu = ({navigation}) => {
         // },
         {
           icon: <IconLock />,
-          name: 'App Lock',
+          name: `${t("setting.app_lock")}`,
+
           onPress: () => {
-            navigation.navigate('AppLock');
+            navigation.navigate("AppLock");
           },
-          value: 'PIN / Biometric',
+          value: "Password / Biometric",
           next: true,
         },
-        {
-          icon: <IconKey />,
-          name: 'Transaction signing',
-          onPress: () => {},
-          value: (
-            <Switch
-              trackColor={{false: primaryGray, true: primaryColor}}
-              thumbColor="white"
-              onValueChange={value =>
-                setAppLock({...appLock, transactionSigning: value})
-              }
-              value={appLock.transactionSigning}
-            />
-          ),
-          next: false,
-        },
+        // {
+        //   icon: <IconKey />,
+        //   name: `${t('setting.transaction_signing')}`,
+
+        //   onPress: () => {},
+        //   value: (
+        //     <Switch
+        //       trackColor={{false: primaryGray, true: primaryColor}}
+        //       thumbColor="white"
+        //       onValueChange={value =>
+        //         setAppLock({...appLock, transactionSigning: value})
+        //       }
+        //       value={appLock.transactionSigning}
+        //     />
+        //   ),
+        //   next: false,
+        // },
       ],
     },
 
-    // {
-    //   group: 'General',
-    //   items: [
-    //     {
-    //       icon: <IconLanguage />,
-    //       name: 'Language',
-    //       onPress: () => {
-    //         navigation.navigate('Language');
-    //       },
-    //       value: '',
-    //       next: true,
-    //     },
-    //     {
-    //       icon: <IconCurrency  />,
-    //       name: 'Currency',
-    //       onPress: () => {
-    //         navigation.navigate('Currency');
-    //       },
-    //       value: '',
-    //       next: true,
-    //     },
-
-    //   ],
-    // },
+    {
+      group: `${t("setting.general")}`,
+      items: [
+        {
+          icon: <IconLanguage />,
+          name: `${t("setting.language")}`,
+          onPress: () => {
+            navigation.navigate("Language");
+          },
+          value: "",
+          next: true,
+        },
+        // {
+        //   icon: <IconCurrency  />,
+        //   name: `${t("setting.currency")}`,
+        //   onPress: () => {
+        //     navigation.navigate('Currency');
+        //   },
+        //   value: '',
+        //   next: true,
+        // },
+      ],
+    },
     // {
     //   group: 'Activities',
     //   items: [
@@ -183,31 +207,21 @@ const Menu = ({navigation}) => {
     //       value: <></>,
     //       next: true,
     //     },
-    //     // Platform.OS === PlatFormEnum.IOS && {
-    //     //   icon: <ShareIcon width="100%" height="100%" fill={primaryColor} />,
-    //     //   name: 'Airdrop',
-    //     //   onPress: () => {},
-    //     //   value: <></>,
-    //     //   next: true,
-    //     // },
     //   ],
     // },
   ];
 
-  //text darkmode
-
-  //grid, shadow darkmode
-  //grid, shadow darkmode
-
   return (
     <View style={tw`flex flex-col h-full bg-white dark:bg-[#18191A] `}>
-      {/* <HeaderScreen title="Settings" /> */}
       <ScrollView style={tw`mb-[${insets.bottom + 60}]`}>
         {menu.map((group, index) => (
           <View
             key={index}
-            style={tw`mb-3 border-b border-gray-100 dark:border-gray-600 dark:border-gray-800`}>
-            <Text style={tw`px-3 text-base font-semibold dark:text-white`}>
+            style={tw`mb-3 border-b border-gray-100 dark:border-gray-800`}
+          >
+            <Text
+              style={tw`px-3 text-base font-semibold text-black dark:text-white`}
+            >
               {group.group}
             </Text>
             {group.items.map(
@@ -223,10 +237,15 @@ const Menu = ({navigation}) => {
                       disabled={!item.next}
                     />
                   </View>
-                ),
+                )
             )}
           </View>
         ))}
+        <Text
+          style={tw`w-full mt-10 text-center text-gray-400 dark:text-gray-100`}
+        >
+          Version: {getReadableVersion()}
+        </Text>
       </ScrollView>
     </View>
   );

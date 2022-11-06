@@ -1,26 +1,8 @@
-import {ethers} from 'ethers';
-import {NETWORKS} from '../../enum/bcEnum';
-import * as nearApi from 'near-api-js';
-import {Connection} from '@solana/web3.js';
-
-export interface IWallet {
-  name: any;
-  label: string;
-  value: string;
-  id?: string;
-  seedPhrase: any;
-  isSelected: boolean;
-  listChains?: any[];
-  createdAt: Date;
-  updatedAt?: Date;
-  domain?: any;
-  isBackedUp?: boolean;
-}
-export interface IUser {
-  id: number;
-  name: string;
-  wallets: IWallet[];
-}
+import { Connection } from "@solana/web3.js";
+import { ethers } from "ethers";
+import * as nearApi from "near-api-js";
+import * as nearAPI from "near-api-js";
+import { NETWORKS } from "../../enum/bcEnum";
 
 export type WalletType = {
   icon?: JSX.Element;
@@ -134,6 +116,8 @@ export interface ITab {
   url: string;
   title: string | null;
   screenShot?: string;
+  icon?: string;
+  colorTheme?: string;
 }
 
 export interface IBrowser {
@@ -145,4 +129,32 @@ export interface IBrowser {
 
 export interface IHistoryBrowser extends ITab {
   createdAt: Date;
+}
+
+export interface INEAR_CONFIG {
+  networkId: string;
+  walletUrl: string;
+  nodeUrl: string;
+  helperUrl: string;
+  explorerUrl: string;
+}
+
+export interface INearInstance {
+  near: nearAPI.Near;
+  accountId: string;
+  keyStore: nearAPI.keyStores.InMemoryKeyStore;
+  publicKey: string;
+}
+
+export interface INearInstanceByNetwork {
+  mainnet: INearInstance;
+  testnet: INearInstance;
+}
+
+export interface IDapp {
+  chain: string;
+  name: string;
+  logo: string;
+  link: string;
+  category: string;
 }

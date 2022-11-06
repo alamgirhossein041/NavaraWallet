@@ -1,17 +1,17 @@
 /* eslint-disable react-native/no-inline-styles */
-import {View, Text, TouchableOpacity, Animated, Alert} from 'react-native';
-import React, {memo, useEffect, useRef} from 'react';
-import {tw} from '../../utils/tailwind';
+import React, { memo, useEffect, useRef } from "react";
+import { Animated, Text, TouchableOpacity, View } from "react-native";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ShareIcon,
-} from 'react-native-heroicons/solid';
-import OptionsBrowser from './OptionsBrowser';
-import {useRecoilValue} from 'recoil';
-import {browserState, NEW_TAB} from '../../data/globalState/browser';
-import Share from 'react-native-share';
-import {useTabBrowser} from './useTabBrowser';
+} from "react-native-heroicons/solid";
+import Share from "react-native-share";
+import { useRecoilValue } from "recoil";
+import { middleGray } from "../../configs/theme";
+import { browserState, NEW_TAB } from "../../data/globalState/browser";
+import { tw } from "../../utils/tailwind";
+import OptionsBrowser from "./OptionsBrowser";
 interface INavigationBarBrowserProps {
   isShow?: boolean;
   goBack?: () => void;
@@ -22,11 +22,19 @@ interface INavigationBarBrowserProps {
   tabId: number;
   url: string;
   tabData;
+  goForward;
 }
 const NavigationBarBrowser = memo((props: INavigationBarBrowserProps) => {
-  const {goBack, goNext, openManageTabs, isShow, url, gotoHomePage, tabData} =
-    props;
-  const {createTabBrowser} = useTabBrowser();
+  const {
+    goBack,
+    goForward,
+    openManageTabs,
+    isShow,
+    url,
+    gotoHomePage,
+    tabData,
+  } = props;
+
   const browser = useRecoilValue(browserState);
   const handleShareUrl = async () => {
     if (url === NEW_TAB) {
@@ -34,33 +42,21 @@ const NavigationBarBrowser = memo((props: INavigationBarBrowserProps) => {
     }
     await Share.open({
       url,
-      message: 'Send via Navara browser',
+      message: "Send via Navara Wallet",
     });
   };
   const navbarItems = [
     {
-      icon: (
-        <ChevronLeftIcon
-          fill={url === NEW_TAB ? '#e8e8e8' : 'gray'}
-          width={35}
-          height={35}
-        />
-      ),
+      icon: <ChevronLeftIcon fill={"gray"} width={35} height={35} />,
       onPress: () => {
         goBack();
       },
     },
 
     {
-      icon: (
-        <ChevronRightIcon
-          fill={!tabData?.canGoForward ? '#e8e8e8' : 'gray'}
-          width={35}
-          height={35}
-        />
-      ),
+      icon: <ChevronRightIcon fill={"gray"} width={35} height={35} />,
       onPress: () => {
-        goNext();
+        goForward();
       },
     },
 
@@ -71,10 +67,11 @@ const NavigationBarBrowser = memo((props: INavigationBarBrowserProps) => {
           style={[
             tw`items-center justify-center h-6 px-1 mx-2 border-2 rounded-lg w-7`,
             {
-              borderColor: 'gray',
+              borderColor: "gray",
             },
-          ]}>
-          <Text style={tw`text-gray-500 dark:text-white`}>
+          ]}
+        >
+          <Text style={tw`text-[${middleGray}]`}>
             {browser.length <= 99 ? browser.length : `${99}+`}
           </Text>
         </View>
@@ -106,7 +103,6 @@ const NavigationBarBrowser = memo((props: INavigationBarBrowserProps) => {
         useNativeDriver: true,
       }).start();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isShow]);
 
   return (
@@ -120,13 +116,15 @@ const NavigationBarBrowser = memo((props: INavigationBarBrowserProps) => {
             },
           ],
         },
-      ]}>
+      ]}
+    >
       {navbarItems.map((item, index) => {
         return (
           <TouchableOpacity
             key={index}
             {...item}
-            style={tw`flex-row justify-center w-10 `}>
+            style={tw`flex-row justify-center w-10 `}
+          >
             {item.icon}
           </TouchableOpacity>
         );

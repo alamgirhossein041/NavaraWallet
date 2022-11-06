@@ -1,38 +1,40 @@
-import React, {FunctionComponent, useEffect, useMemo, useState} from 'react';
-import {Switch, View} from 'react-native';
-import {primaryColor, primaryGray} from '../../../configs/theme';
-import ReactNativeBiometrics, {BiometryTypes} from 'react-native-biometrics';
-import {FingerPrintIcon} from 'react-native-heroicons/solid';
-import MenuItem from '../../../components/MenuItem';
-import {appLockState} from '../../../data/globalState/appLock';
-import {useRecoilState} from 'recoil';
+import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Switch, View } from "react-native";
+import ReactNativeBiometrics, { BiometryTypes } from "react-native-biometrics";
+import { FingerPrintIcon } from "react-native-heroicons/solid";
+import { useRecoilState } from "recoil";
+import MenuItem from "../../../components/UI/MenuItem";
+import { primaryColor, primaryGray } from "../../../configs/theme";
+import { appLockState } from "../../../data/globalState/appLock";
 const rnBiometrics = new ReactNativeBiometrics({
   allowDeviceCredentials: false,
 });
 
 export const checkStateScanFingerNative = async (): Promise<boolean> => {
   const result = await rnBiometrics.simplePrompt({
-    promptMessage: 'Scan your finger',
+    promptMessage: "Scan your finger",
   });
   return result.success;
 };
 
 const FingerPrint: FunctionComponent = () => {
   const [appLock, setAppLock] = useRecoilState(appLockState);
+  const { t } = useTranslation();
   const [supported, setSupported] = useState<any>({
     available: false,
-    biometryType: '',
+    biometryType: "",
   });
   const menu = useMemo(() => {
     return {
       onPress: () => handleChangeSwitch(true),
       icon: <FingerPrintIcon width="100%" height="100%" fill={primaryColor} />,
-      name: 'Finger print',
+      name: `${t("setting.apps_lock.finger_print")}`,
       value: (
         <Switch
-          trackColor={{false: primaryGray, true: primaryColor}}
+          trackColor={{ false: primaryGray, true: primaryColor }}
           thumbColor="white"
-          onValueChange={value => handleChangeSwitch(value)}
+          onValueChange={(value) => handleChangeSwitch(value)}
           value={appLock.typeBioMetric === BiometryTypes.Biometrics}
         />
       ),
@@ -42,8 +44,9 @@ const FingerPrint: FunctionComponent = () => {
   }, [appLock]);
   useEffect(() => {
     (async () => {
-      const {available, biometryType} = await rnBiometrics.isSensorAvailable();
-      setSupported({available, biometryType});
+      const { available, biometryType } =
+        await rnBiometrics.isSensorAvailable();
+      setSupported({ available, biometryType });
     })();
   }, []);
 
@@ -57,7 +60,7 @@ const FingerPrint: FunctionComponent = () => {
       } else {
         setAppLock({
           ...appLock,
-          typeBioMetric: 'none',
+          typeBioMetric: "none",
         });
       }
     }

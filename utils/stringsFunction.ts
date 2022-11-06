@@ -1,18 +1,18 @@
 export const capitalizeFirstLetter = (str: string) => {
   if (!str) {
-    return '';
+    return "";
   }
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 };
 export const shortenAddress = (address: string, length?: number) => {
   if (!address) {
-    return '';
+    return "";
   }
   const maxLength = length || 20;
   if (address.length > maxLength) {
     return (
       address.substring(0, maxLength / 2) +
-      '...' +
+      "..." +
       address.substring(address.length - maxLength / 2)
     );
   } else {
@@ -22,13 +22,13 @@ export const shortenAddress = (address: string, length?: number) => {
 
 export const shortenAddressForHistory = (address: string, length?: number) => {
   if (!address) {
-    return '';
+    return "";
   }
   const maxLength = length || 10;
   if (address.length > maxLength) {
     return (
       address.substring(0, maxLength / 3) +
-      '...' +
+      "..." +
       address.substring(address.length - maxLength / 3)
     );
   } else {
@@ -38,9 +38,20 @@ export const shortenAddressForHistory = (address: string, length?: number) => {
 
 export const getHostname = (url: string) => {
   if (!url) {
-    return '';
+    return "";
   }
 
-  const hostname = url.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+  const hostname = url.replace(/^https?:\/\//, "").replace(/\/.*$/, "");
   return hostname;
+};
+
+export const getKeyByValue = (
+  object: object,
+  value: object | string
+): string => {
+  try {
+    return Object.keys(object).find((key) => object[key] === value);
+  } catch (error) {
+    return "";
+  }
 };

@@ -1,30 +1,30 @@
-import {View, Text, Image, TouchableOpacity} from 'react-native';
-import React from 'react';
-import {Actionsheet, useDisclose} from 'native-base';
-import Button from '../../components/Button';
-import {tw} from '../../utils/tailwind';
-import getDomainFromUrl from '../../utils/getDomainFromUrl';
-import {LockClosedIcon} from 'react-native-heroicons/solid';
-import {useWalletSelected} from '../../hooks/useWalletSelected';
-import getAvatar from '../../utils/getAvatar';
-import {shortenAddress} from '../../utils/stringsFunction';
-import Favicon from './Favicon';
-import {DuplicateIcon} from 'react-native-heroicons/outline';
-import {primaryColor} from '../../configs/theme';
+import { Actionsheet, useDisclose } from "native-base";
+import React from "react";
+import { Image, Text, TouchableOpacity, View } from "react-native";
+import { DuplicateIcon } from "react-native-heroicons/outline";
+import { LockClosedIcon } from "react-native-heroicons/solid";
+import Button from "../../components/UI/Button";
+import { primaryColor } from "../../configs/theme";
+import { useWalletSelected } from "../../hooks/useWalletSelected";
+import getAvatar from "../../utils/getAvatar";
+import getDomainFromUrl from "../../utils/getDomainFromUrl";
+import { shortenAddress } from "../../utils/stringsFunction";
+import { tw } from "../../utils/tailwind";
+import Favicon from "./Favicon";
 
 interface IGrantAccessWeb3Props {
   url: string;
 }
 
 export default function GrantAccessWeb3(props: IGrantAccessWeb3Props) {
-  const {isOpen, onOpen, onClose} = useDisclose();
-  const {url} = props;
+  const { isOpen, onOpen, onClose } = useDisclose();
+  const { url } = props;
   const walletSelected = useWalletSelected();
   const ethAddress = shortenAddress(walletSelected.data.chains[0].address);
   return (
     <Actionsheet isOpen={isOpen} onClose={onClose}>
-      <Actionsheet.Content>
-        <Favicon domain={getDomainFromUrl(url)} />
+      <Actionsheet.Content style={tw`bg-white dark:bg-[#18191A]`}>
+        <Favicon url={getDomainFromUrl(url)} />
         <View style={tw`flex-row items-center mb-3`}>
           <LockClosedIcon color="black" size={15} />
           <Text>{getDomainFromUrl(url)}</Text>
@@ -41,7 +41,8 @@ export default function GrantAccessWeb3(props: IGrantAccessWeb3Props) {
         <View style={tw`mb-5 flex-row items-center`}>
           <Text>Contract:</Text>
           <TouchableOpacity
-            style={tw`flex-row mx-1 rounded-full bg-blue-100 p-1 items-center`}>
+            style={tw`flex-row mx-1 rounded-full bg-blue-100 p-1 items-center`}
+          >
             <Image
               style={tw`w-4 h-4 rounded-full`}
               source={{
@@ -57,7 +58,8 @@ export default function GrantAccessWeb3(props: IGrantAccessWeb3Props) {
           </TouchableOpacity>
         </View>
         <View
-          style={tw`flex-row items-center w-full p-3 mb-3 border border-gray-300 rounded-lg`}>
+          style={tw`flex-row items-center w-full p-3 mb-3 border border-gray-300 rounded-lg`}
+        >
           <Image
             style={tw`w-8 h-8 rounded-full`}
             source={{
@@ -66,13 +68,14 @@ export default function GrantAccessWeb3(props: IGrantAccessWeb3Props) {
           />
           <View style={tw`mx-2`}>
             <Text style={tw`dark:text-white  font-bold`}>
-              {walletSelected.data.name || `Wallet ${walletSelected.index + 1}`}{' '}
+              {walletSelected.data.name || `Wallet ${walletSelected.index + 1}`}{" "}
               ({ethAddress})
             </Text>
           </View>
         </View>
         <View
-          style={tw`flex-col w-full p-3 mb-3 border border-gray-300 rounded-lg`}>
+          style={tw`flex-col w-full p-3 mb-3 border border-gray-300 rounded-lg`}
+        >
           <View style={tw`flex-row justify-between w-full mb-2`}>
             <Text style={tw`dark:text-white  font-bold`}>Gas fee estimate</Text>
             <Text style={tw`dark:text-white  font-bold text-blue-500`}>
@@ -89,7 +92,8 @@ export default function GrantAccessWeb3(props: IGrantAccessWeb3Props) {
         </View>
         {true && (
           <View
-            style={tw`mb-5 rounded-lg bg-red-100 w-full text-center p-1 border-red-700 border`}>
+            style={tw`mb-5 rounded-lg bg-red-100 w-full text-center p-1 border-red-700 border`}
+          >
             <Text style={tw`dark:text-white  text-center`}>
               You need an additional 0.0007 ETH to complete this transaction
             </Text>

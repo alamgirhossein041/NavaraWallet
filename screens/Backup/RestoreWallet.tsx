@@ -1,29 +1,27 @@
-import {View, Text, ScrollView, Platform} from 'react-native';
-import React, {useCallback, useEffect, useState} from 'react';
-import {IBackupData} from '../../data/types';
-import {GOOGLE_ACCESS_TOKEN} from '../../utils/storage';
-import {useLocalStorage} from '../../hooks/useLocalStorage';
-import {googleDriveReadFileContent} from '../../module/googleApi/GoogleDrive';
-import base64 from 'react-native-base64';
-import Button from '../../components/Button';
-import {tw} from '../../utils/tailwind';
-import {useDarkMode} from '../../hooks/useModeDarkMode';
-import {useTextDarkMode} from '../../hooks/useModeDarkMode';
-import TextField from '../../components/TextField';
-import {KeyboardAvoidingView, Spinner} from 'native-base';
-import toastr from '../../utils/toastr';
-import {decryptAESWithKeychain} from '../../utils/keychain';
-import {primaryColor} from '../../configs/theme';
-import useSeedPhraseService from '../../hooks/useSeedPhrase';
+import { KeyboardAvoidingView, Spinner } from "native-base";
+import React, { useCallback, useEffect, useState } from "react";
+import { Platform, ScrollView, Text, View } from "react-native";
+import base64 from "react-native-base64";
+import Button from "../../components/UI/Button";
+import TextField from "../../components/UI/TextField";
+import { primaryColor } from "../../configs/theme";
+import { IBackupData } from "../../data/types";
+import { useLocalStorage } from "../../hooks/useLocalStorage";
+import useSeedPhraseService from "../../hooks/useSeedPhrase";
+import { googleDriveReadFileContent } from "../../module/googleApi/GoogleDrive";
+import { decryptAESWithKeychain } from "../../utils/keychain";
+import { GOOGLE_ACCESS_TOKEN } from "../../utils/storage";
+import { tw } from "../../utils/tailwind";
+import toastr from "../../utils/toastr";
 
-const RestoreWallet = ({navigation, route}) => {
-  const {fileId} = route.params;
+const RestoreWallet = ({ navigation, route }) => {
+  const { fileId } = route.params;
   const [storedAccessToken] = useLocalStorage(GOOGLE_ACCESS_TOKEN);
   const [fileContent, setFileContent] = useState<IBackupData>();
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [decrypting, setDecrypting] = useState(false);
-  const [encryptedSeedPhrase, setEncryptedSeedPhrase] = useState('');
+  const [encryptedSeedPhrase, setEncryptedSeedPhrase] = useState("");
   const seedPhraseService = useSeedPhraseService();
 
   const readFileContent = useCallback(
@@ -35,28 +33,28 @@ const RestoreWallet = ({navigation, route}) => {
       const seedPhrase = await decryptAESWithKeychain(jsonData.data);
 
       if (seedPhrase) {
-        toastr.success('Successfully decrypt seed phrase using App Password');
+        toastr.success("Successfully decrypt seed phrase using App Password");
         setEncryptedSeedPhrase(seedPhrase);
       } else {
         setFileContent(jsonData);
       }
       setDecrypting(false);
     },
-    [fileId],
+    [fileId]
   );
 
   const handleOnPress = async () => {
     setLoading(true);
     if (encryptedSeedPhrase) {
       const isDuplicate = await seedPhraseService.isDuplicate(
-        encryptedSeedPhrase,
+        encryptedSeedPhrase
       );
       if (isDuplicate) {
-        toastr.error('Seed phrase is existing');
+        toastr.error("Seed phrase is existing");
         setLoading(false);
         return;
       } else {
-        navigation.navigate('CreateWallet', {
+        navigation.navigate("CreateWallet", {
           seedPhrase: encryptedSeedPhrase,
         });
         setLoading(false);
@@ -67,27 +65,27 @@ const RestoreWallet = ({navigation, route}) => {
     try {
       const seedPhrase = await decryptAESWithKeychain(
         fileContent.data,
-        password,
+        password
       );
 
       if (seedPhrase) {
         const isDuplicate = await seedPhraseService.isDuplicate(seedPhrase);
         if (isDuplicate) {
-          toastr.error('Seed phrase is existing');
+          toastr.error("Seed phrase is existing");
           setLoading(false);
           return;
         } else {
-          navigation.navigate('CreateWallet', {
+          navigation.navigate("CreateWallet", {
             seedPhrase: seedPhrase,
           });
         }
       } else {
-        toastr.error('Incorrect password');
+        toastr.error("Incorrect password");
       }
     } catch (error) {
-      toastr.error('Incorrect password');
+      toastr.error("Incorrect password");
     }
-    setPassword('');
+    setPassword("");
 
     setLoading(false);
   };
@@ -100,8 +98,6 @@ const RestoreWallet = ({navigation, route}) => {
       }
     })();
   }, [readFileContent, storedAccessToken]);
-
-  //text darkmode
 
   return (
     <View style={tw`h-full p-5 flex justify-center items-center `}>
@@ -116,7 +112,8 @@ const RestoreWallet = ({navigation, route}) => {
         <ScrollView style={tw`flex `}>
           {encryptedSeedPhrase ? (
             <Text
-              style={tw`dark:text-white  text-lg font-semibold text-center`}>
+              style={tw`dark:text-white  text-lg font-semibold text-center`}
+            >
               Seed phrase is decrypted successfully. Press "Restore" to continue
             </Text>
           ) : (
@@ -124,7 +121,7 @@ const RestoreWallet = ({navigation, route}) => {
               <TextField
                 value={password}
                 labelStyle={``}
-                onChangeText={text => setPassword(text)}
+                onChangeText={(text) => setPassword(text)}
                 type="password"
                 label="Password"
               />
@@ -137,13 +134,15 @@ const RestoreWallet = ({navigation, route}) => {
       )}
       <View style={tw`absolute w-full bottom-5`}>
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : null}>
+          behavior={Platform.OS === "ios" ? "padding" : null}
+        >
           <Button
             onPress={async () => {
               await handleOnPress();
             }}
             loading={loading || decrypting}
-            disabled={loading || decrypting}>
+            disabled={loading || decrypting}
+          >
             Restore
           </Button>
         </KeyboardAvoidingView>

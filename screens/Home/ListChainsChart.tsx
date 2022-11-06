@@ -1,53 +1,50 @@
-import {useIsFocused, useNavigation} from '@react-navigation/native';
-import React, {useEffect, useMemo} from 'react';
-import {Text, View} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import {CogIcon} from 'react-native-heroicons/outline';
-import {useRecoilState, useRecoilValue, useSetRecoilState} from 'recoil';
-import Loading, {SkeletonFlatList} from '../../components/Loading';
-import {primaryColor} from '../../configs/theme';
-import {ChainWallet} from '../../data/database/entities/chainWallet';
-import {Wallet} from '../../data/database/entities/wallet';
-import useDatabase from '../../data/database/useDatabase';
+import { useIsFocused, useNavigation } from "@react-navigation/native";
+import React, { useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { Text, View } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { CogIcon } from "react-native-heroicons/solid";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import Loading, { SkeletonFlatList } from "../../components/Skeleton/Loading";
+import { primaryColor } from "../../configs/theme";
+import { ChainWallet } from "../../data/database/entities/chainWallet";
+import { Wallet } from "../../data/database/entities/wallet";
 import {
   listWalletsState,
   reloadingWallets,
-} from '../../data/globalState/listWallets';
-import {walletEnvironmentState} from '../../data/globalState/userData';
-import {ENVIRONMENT} from '../../global.config';
-import {getNetworkEnvironment} from '../../hooks/useBcNetworks';
-import {useWalletSelected} from '../../hooks/useWalletSelected';
-import {tw} from '../../utils/tailwind';
-import updateBalanceForWallet from '../../utils/updateBalanceForWallet';
-import PricesChart from './PricesChart';
+} from "../../data/globalState/listWallets";
+import { walletEnvironmentState } from "../../data/globalState/userData";
+import { getNetworkEnvironment } from "../../hooks/useBcNetworks";
+import { useWalletSelected } from "../../hooks/useWalletSelected";
+import { tw } from "../../utils/tailwind";
+import updateBalanceForWallet from "../../utils/updateBalanceForWallet";
+import PricesChart from "./PricesChart";
 interface IListChains {
   next: string;
   filter?: string[];
   caching?: boolean;
 }
 
-const ListChainsChart = ({next, filter, caching = false}: IListChains) => {
+const ListChainsChart = ({ next, filter, caching = false }: IListChains) => {
   const [reloading, setReloading] = useRecoilState(reloadingWallets);
   const walletSelected = useWalletSelected();
   const navigation = useNavigation();
-  const {walletController} = useDatabase();
   const isFocused = useIsFocused();
   const setListWallets = useSetRecoilState(listWalletsState);
   const walletEnvironment = useRecoilValue(walletEnvironmentState);
-
+  const { t } = useTranslation();
   const getBalance = async () => {
-    const listWalletsDB = await walletController.getWallets();
-    const selectedWallets = listWalletsDB[walletSelected.index];
+    const { data: selectedWallets } = walletSelected;
     try {
       const walletsUpdatedBalance = await updateBalanceForWallet(
         selectedWallets,
         selectedWallets.chains,
         walletSelected.enabledNetworks,
-        getNetworkEnvironment(walletEnvironment),
+        getNetworkEnvironment(walletEnvironment)
       );
 
       if (walletsUpdatedBalance) {
-        setListWallets(prev => {
+        setListWallets((prev) => {
           return prev.map((wallet: Wallet) => {
             if (wallet.id === walletsUpdatedBalance.id) {
               return walletsUpdatedBalance;
@@ -56,9 +53,7 @@ const ListChainsChart = ({next, filter, caching = false}: IListChains) => {
           });
         });
       }
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
 
     setReloading(false);
   };
@@ -66,14 +61,14 @@ const ListChainsChart = ({next, filter, caching = false}: IListChains) => {
   const filteredListNetworks = useMemo((): ChainWallet[] => {
     const oldListNetworks = walletSelected?.data?.chains || [];
     if (filter?.length > 0 && oldListNetworks?.length > 0) {
-      const newListChains = oldListNetworks.filter(chain =>
-        filter.includes(chain.network.toUpperCase()),
+      const newListChains = oldListNetworks.filter((chain) =>
+        filter.includes(chain.network.toUpperCase())
       );
       return newListChains;
     }
 
     return oldListNetworks || [];
-  }, [filter, walletSelected?.data?.chains]);
+  }, [filter, walletSelected]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -81,7 +76,8 @@ const ListChainsChart = ({next, filter, caching = false}: IListChains) => {
         return (
           <TouchableOpacity
             style={tw``}
-            onPress={() => navigation.navigate('ManageChains' as never)}>
+            onPress={() => navigation.navigate("ManageChains" as never)}
+          >
             <CogIcon color={primaryColor} />
           </TouchableOpacity>
         );
@@ -99,12 +95,14 @@ const ListChainsChart = ({next, filter, caching = false}: IListChains) => {
         {!caching && (
           <View style={tw`flex-row items-center justify-between w-full`}>
             <Text
-              style={tw`dark:text-white text-black text-xl font-semibold mb-3`}>
-              Assets by chains
+              style={tw`dark:text-white text-black text-xl font-semibold mb-3`}
+            >
+              {t("home.assets_by_chains")}
             </Text>
             <TouchableOpacity
               style={tw`flex-row items-center justify-center`}
-              onPress={() => navigation.navigate('ManageChains' as never)}>
+              onPress={() => navigation.navigate("ManageChains" as never)}
+            >
               <CogIcon color={primaryColor} height={30} width={30} />
             </TouchableOpacity>
           </View>
