@@ -5,15 +5,19 @@ import { useTranslation } from "react-i18next";
 import { TouchableOpacity, View } from "react-native";
 import { XIcon } from "react-native-heroicons/solid";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useRecoilState } from "recoil";
+import { appLockState } from "../../data/globalState/appLock";
 import { tw } from "../../utils/tailwind";
 import PinCodeInput from "./PinCodeInput";
 
 const SignPinCode = () => {
   const navigation = useNavigation();
   const [isOpen, setIsOpen] = useState(true);
+  const [appLock, setAppLock] = useRecoilState(appLockState);
 
   const onClose = useCallback(() => {
     setIsOpen(false);
+    setAppLock({ ...appLock, isLock: false });
     navigation.goBack();
   }, []);
 
@@ -26,8 +30,8 @@ const SignPinCode = () => {
       style={tw`flex-row items-start justify-start w-full h-full bg-white dark:bg-[#18191A] `}
       isOpen={isOpen}
     >
-      <SafeAreaView edges={["top"]} style={tw`w-screen h-screen `}>
-        <View style={tw`px-4 mt-10`}>
+      <SafeAreaView edges={["top"]} style={tw`w-screen h-screen`}>
+        <View style={tw`px-4 mt-10 mb-20`}>
           <TouchableOpacity
             activeOpacity={0.6}
             onPress={onClose}
@@ -40,6 +44,7 @@ const SignPinCode = () => {
         <PinCodeInput
           type="required"
           hide
+          forSign
           onSuccess={() => setIsOpen(false)}
           label={`${t("setting.apps_lock.verify_your_access")}`}
         />

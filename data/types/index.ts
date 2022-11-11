@@ -77,6 +77,7 @@ export interface IAppLockState {
   updatedAt: Date;
   openAt: Date;
   isLock: boolean;
+  disableUntil?: number;
   autoLockAfterSeconds: number;
   typeBioMetric: string;
   transactionSigning?: boolean;
@@ -157,4 +158,65 @@ export interface IDapp {
   logo: string;
   link: string;
   category: string;
+}
+
+/**
+ * Interface NFT alchemy
+ * docs: https://docs.alchemy.com/docs/how-to-get-all-nfts-owned-by-an-address
+ */
+interface Contract {
+  address: string;
+}
+
+export interface ContractMetadata {
+  name: string;
+  symbol: string;
+  totalSupply: string;
+  tokenType: string;
+}
+interface TokenMetadata {
+  tokenType: string;
+}
+
+interface Id {
+  tokenId: string;
+  tokenMetadata: TokenMetadata;
+}
+
+interface TokenUri {
+  raw: string;
+  gateway: string;
+}
+
+interface Medium {
+  thumbnail: any;
+  raw: string;
+  gateway: string;
+}
+
+interface Attribute {
+  value: string;
+  trait_type: string;
+}
+
+interface Metadata {
+  name: string;
+  description: string;
+  image: string;
+  external_url: string;
+  attributes: Attribute[];
+  dna: string;
+}
+
+export interface INFT {
+  contract: Contract;
+  id: Id;
+  balance: string;
+  title: string;
+  description: string;
+  tokenUri: TokenUri;
+  media: Medium[];
+  metadata: Metadata;
+  timeLastUpdated: Date;
+  contractMetadata: ContractMetadata;
 }

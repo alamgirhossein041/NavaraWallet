@@ -1,4 +1,4 @@
-import { atom, selector } from "recoil";
+import { selector } from "recoil";
 import { NETWORK_COINGEKO_IDS } from "../../../configs/bcNetworks";
 import { NETWORKS } from "../../../enum/bcEnum";
 import { localStorage } from "../../../utils/storage";
@@ -28,7 +28,7 @@ const priceTokenState = selector({
       });
       if (!response) {
         // return data from localstorage if response is null
-        return getCache();
+        return await getCache();
       } else {
         // Update data price token to localstorage
         localStorage.set(PRICE_TOKEN_STORAGE, response);
@@ -36,7 +36,7 @@ const priceTokenState = selector({
       }
     } catch (e) {
       // return data from localstorage if api request error
-      return getCache();
+      return await getCache();
     }
   },
 });

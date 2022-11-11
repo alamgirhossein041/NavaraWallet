@@ -105,7 +105,7 @@
     "cancel": "取消",
     "confirm": "确认",
     "swap_successful": "交换成功！",
-    "swap_failed!": "交换失败！",
+    "swap_failed": "交换失败！",
     "done": "已经完成"
   },
   "setting": {

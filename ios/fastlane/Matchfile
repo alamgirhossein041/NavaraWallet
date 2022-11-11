@@ -1,4 +1,4 @@
-git_url("https://github.com/NavaraWallets/Fastlane-Certificates.git")
+git_url("https://github.com/NavaraNetwork/Fastlane-Certificates.git")
 
 storage_mode("git")
 

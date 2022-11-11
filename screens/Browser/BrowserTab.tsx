@@ -11,10 +11,9 @@ import ViewShot from "react-native-view-shot";
 import { WebView } from "react-native-webview";
 import { NEAR_MAINNET_CONFIG } from "../../configs/bcMainnets";
 import { NEAR_TESTNET_CONFIG } from "../../configs/bcTestnets";
-import { PAGE_SHOULD_INJECT_WHEN_CONTENT_LOAD_END } from "../../constants/AppConstant";
 import { newTabDefaultData, NEW_TAB } from "../../data/globalState/browser";
 import { useWalletSelected } from "../../hooks/useWalletSelected";
-import { JS_DO_NOTHING, JS_WEBVIEW_URL } from "../../utils/browserScripts";
+import { JS_WEBVIEW_URL } from "../../utils/browserScripts";
 import { tw } from "../../utils/tailwind";
 import AddressBar from "./AddressBar";
 import useApprovalNearAccessModal from "./ApprovalNearAccessModal";
@@ -35,13 +34,11 @@ const BrowserTab = (props) => {
   const { data: selectedWallet } = useWalletSelected();
   const [tab, setTab] = useState<any>();
   const [entryScriptWeb3, setEntryScriptWeb3] = useState<string>();
-  const [entryScripLoadEnd, setEntryScriptLoadEnd] =
-    useState<string>(JS_DO_NOTHING);
+  const [firstUrlLoaded, setFirstUrlLoaded] = useState(false);
   const [navigateState, setNavigateState] = useState({
     canGoBack: false,
     canGoForward: false,
   });
-  const [loadPageCount, setLoadPageCount] = useState({});
   const scheme = useColorScheme();
   const defaultTheme = scheme === "light" ? "white" : "#18191A";
   const [colorTheme, setColorTheme] = useState(defaultTheme);
@@ -51,9 +48,21 @@ const BrowserTab = (props) => {
     setProgress(progress);
   };
 
-  const go = (url: string) => {
+  // const go = (url: string) => {
+  //   setInitialUrl(url);
+  // };
+
+  const go = useCallback(async (url) => {
+    const { current } = webviewRef;
     setInitialUrl(url);
-  };
+    setFirstUrlLoaded(true);
+
+    current &&
+      current.injectJavaScript(
+        `(function(){window.location.href = '${url}' })()`
+      );
+    return null;
+  }, []);
 
   const reload = useCallback(() => {
     const { current } = webviewRef;
@@ -89,7 +98,7 @@ const BrowserTab = (props) => {
   }, []);
 
   const backgroundBridge = useBackgroundBridge({
-    webviewRef,
+    webviewRef
   });
 
   const {
@@ -119,14 +128,9 @@ const BrowserTab = (props) => {
   const onLoadEnd = () => {
     const { current } = webviewRef;
     current && current.injectJavaScript(JS_WEBVIEW_URL);
-    current && current.injectJavaScript(entryScripLoadEnd);
   };
 
-  const onLoadStart = ({ nativeEvent }) => {
-    setInitialUrl(nativeEvent.url);
-    // const { current } = webviewRef;
-    // current && current.injectJavaScript(entryScriptWeb3);
-  };
+  const onLoadStart = ({ nativeEvent }) => {};
 
   const openManageTabs = useCallback(async () => {
     const imageURI = await viewShotRef.current.capture();
@@ -242,24 +246,9 @@ const BrowserTab = (props) => {
    * @returns boolean
    */
   const onShouldStartLoadWithRequest = (event) => {
-    const { url } = event;
-    const hostname = new URL(url).hostname;
-    if (loadPageCount[hostname]) {
-      if (PAGE_SHOULD_INJECT_WHEN_CONTENT_LOAD_END.includes(hostname)) {
-        setEntryScriptLoadEnd(InPageScript);
-        setEntryScriptWeb3(JS_DO_NOTHING);
-      } else {
-        setEntryScriptLoadEnd(JS_DO_NOTHING);
-        setEntryScriptWeb3(InPageScript);
-      }
-      setLoadPageCount({
-        ...loadPageCount,
-        [hostname]: loadPageCount[hostname] + 1,
-      });
-    } else {
-      setLoadPageCount({ ...loadPageCount, [hostname]: 1 });
-    }
+    console.log(event);
 
+    const { url } = event;
     if (url.startsWith(NEAR_MAINNET_CONFIG.walletUrl)) {
       nearRequestHandler(url, NEAR_MAINNET_CONFIG.networkId);
       return false;
@@ -291,39 +280,42 @@ const BrowserTab = (props) => {
           {initialUrl === NEW_TAB ? (
             <HomePageBrowser openLink={(url) => go(url)} />
           ) : (
-            <WebView
-              onNavigationStateChange={({ canGoBack, canGoForward }) =>
-                setNavigateState({ canGoBack, canGoForward })
-              }
-              setSupportMultipleWindows={false}
-              pullToRefreshEnabled // only IOS
-              // scrollEnabled={false}
-              showsVerticalScrollIndicator={true}
-              originWhitelist={["*"]}
-              decelerationRate={"normal"}
-              ref={webviewRef}
-              source={{
-                uri: initialUrl,
-              }}
-              // Inject Web3 script before content loaded
-              javaScriptEnabledAndroid={true}
-              injectedJavaScriptBeforeContentLoaded={entryScriptWeb3}
-              onMessage={onMessage}
-              onLoadProgress={onLoadProgress}
-              onLoadEnd={onLoadEnd}
-              renderLoading={() => <></>}
-              allowsInlineMediaPlayback
-              javascriptEnabled
-              sendCookies
-              forceDarkOn={theme === "dark"} // only Android, ios default enable
-              useWebkit={false}
-              onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
-              style={tw`bg-white dark:bg-[#18191A]`}
-              allowsFullscreenVideo // only Android, ios default enable
-              // cacheEnabled
-              cacheMode="LOAD_DEFAULT"
-              onLoadStart={onLoadStart}
-            />
+            <View style={[tw`h-full`]}>
+              {!!entryScriptWeb3 && (
+                <WebView
+                  onNavigationStateChange={({ canGoBack, canGoForward }) =>
+                    setNavigateState({ canGoBack, canGoForward })
+                  }
+                  pullToRefreshEnabled // only IOS
+                  // scrollEnabled={false}
+                  setSupportMultipleWindows={false}
+                  showsVerticalScrollIndicator={true}
+                  originWhitelist={["*"]}
+                  decelerationRate={"normal"}
+                  ref={webviewRef}
+                  source={{
+                    uri: initialUrl,
+                  }}
+                  // Inject Web3 script before content loaded
+                  injectedJavaScriptBeforeContentLoaded={entryScriptWeb3}
+                  onMessage={onMessage}
+                  onLoadProgress={onLoadProgress}
+                  onLoadEnd={onLoadEnd}
+                  renderLoading={() => <></>}
+                  allowsInlineMediaPlayback
+                  javascriptEnabled
+                  sendCookies
+                  forceDarkOn={theme === "dark"} // only Android, ios default enable
+                  useWebkit={false}
+                  onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
+                  style={tw`bg-white dark:bg-[#18191A]`}
+                  allowsFullscreenVideo // only Android, ios default enable
+                  cacheEnabled
+                  cacheMode="LOAD_DEFAULT"
+                  onLoadStart={onLoadStart}
+                />
+              )}
+            </View>
           )}
         </View>
       </ViewShot>

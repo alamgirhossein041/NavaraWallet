@@ -1,3 +1,4 @@
+$RNFirebaseAsStaticFramework = true
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
@@ -21,12 +22,15 @@ target 'Navara' do
 
   permissions_path = '../node_modules/react-native-permissions/ios'
   pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
-
+  pod 'Permission-Notifications', :path => "#{permissions_path}/Notifications"
+  
   pod 'GoogleSignIn', '~> 6.1.0'
   
   pod 'react-native-view-shot', :path => '../node_modules/react-native-view-shot'
 
   pod 'RNShare', :path => '../node_modules/react-native-share'
+
+  pod 'RNReactNativeHapticFeedback', :path => '../node_modules/react-native-haptic-feedback'
 
   target 'NavaraTests' do
     inherit! :complete
@@ -37,13 +41,33 @@ target 'Navara' do
   #
   # Note that if you have use_frameworks! enabled, Flipper will not work and
   # you should disable the next line.
-  use_flipper!()
+  # use_flipper!()
 
-#  post_install do |installer|
-#	installer.pods_project.targets.each do |target|
-#		target.build_configurations.each do |config|
-#		config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '11.0'
-#		end
-#	end
-#  end
+  use_frameworks! :linkage => :static
+  
+  # Convert all permission pods into static libraries
+pre_install do |installer|
+  Pod::Installer::Xcode::TargetValidator.send(:define_method, :verify_no_static_framework_transitive_dependencies) {}
+
+  installer.pod_targets.each do |pod|
+    if pod.name.eql?('RNPermissions') || pod.name.start_with?('Permission-')
+      def pod.build_type;
+        Pod::BuildType.static_library # >= 1.9
+      end
+    end
+  end
+end
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    if target.name == 'RCT-Folly'
+        target.build_configurations.each do |config|
+            config.build_settings['HEADER_SEARCH_PATHS'] = "$(inherited) ${PODS_ROOT}/fmt/include"
+        end
+    end
+  end
+
+  react_native_post_install(installer)
+  __apply_Xcode_12_5_M1_post_install_workaround(installer)
+end
 end

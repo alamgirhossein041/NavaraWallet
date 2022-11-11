@@ -19,6 +19,7 @@ import { NETWORKS } from "../../enum/bcEnum";
 import usePopupResult from "../../hooks/usePopupResult";
 import { useWallet } from "../../hooks/useWallet";
 import { useWalletSelected } from "../../hooks/useWalletSelected";
+import { formatBalance } from "../../utils/number";
 import { shortenAddress } from "../../utils/stringsFunction";
 import { tw } from "../../utils/tailwind";
 export default function ConfirmTransaction({ route, navigation }) {
@@ -51,11 +52,15 @@ export default function ConfirmTransaction({ route, navigation }) {
 
   const getBalance = async (address) => {
     setLoadingBalance(true);
-    const gasFee = await estimateGas({
-      amount,
-      receiver: address,
-    });
-    setFee(+gasFee);
+    try {
+      const gasFee = await estimateGas({
+        amount,
+        receiver: address,
+      });
+      setFee(+gasFee);
+    } catch (e) {
+      setFee(0);
+    }
     const resultBalance = await getBalanceOf(address);
 
     setBalance(+resultBalance);
@@ -172,7 +177,7 @@ export default function ConfirmTransaction({ route, navigation }) {
             <Skeleton startColor={"gray.200"} rounded="lg" h={"3"} w={"24"} />
           ) : (
             <Text style={tw`font-bold dark:text-white `}>
-              ~ {`${fee.toFixed(2)} ${token.symbol}`}
+              ~ {`${formatBalance(fee.toString())} ${token.symbol}`}
             </Text>
           )}
         </View>

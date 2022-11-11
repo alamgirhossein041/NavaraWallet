@@ -92,11 +92,14 @@ const MainBrowser = ({ route }) => {
   const statusBarStyle = useMemo(() => {
     let backgroundColor = "white";
     let barStyle = "dark-content";
-    // black
+    if (!browser[currentTab]?.colorTheme) {
+      return;
+    }
     if (
       browser[currentTab].colorTheme === "#000000" ||
       browser[currentTab].url === NEW_TAB
     ) {
+      // black
       backgroundColor = "white";
     }
     // Default or white

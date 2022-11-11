@@ -33,12 +33,15 @@ const PATTERN = [
   1 * ONE_SECOND_IN_MS,
 ];
 
+const DISABLE_SECOND = 60;
+
 enum PinCodeEnum {
   NEW = "new",
   REQUIRED = "required",
 }
 interface IPinCodeInputProps {
   type: "new" | "required";
+  forSign?: boolean;
   hide?: boolean;
   label?: string;
   onSuccess?: (value?: string) => void;
@@ -48,17 +51,19 @@ interface IPinCodeInputProps {
 
 const PinCodeInput = ({
   type,
-  hide = false,
+  forSign = false,
   onSuccess,
   label = ``,
   biometric = true,
   error = "",
 }: IPinCodeInputProps) => {
   const { t } = useTranslation();
-
   const [appLock, setAppLock] = useRecoilState(appLockState);
   const [err, setErr] = useState(error);
-  const focusRef = useRef(null);
+  const [countWrong, setCountWrong] = useState(0);
+  const [timer, setTimer] = useState(0);
+  const rePasswordRef = useRef(null);
+
   const { control, getValues, setValue } = useForm({
     defaultValues: {
       password: "",
@@ -67,6 +72,9 @@ const PinCodeInput = ({
   });
 
   const handleEndEditing = async () => {
+    if (timer !== -1) {
+      return;
+    }
     const { password, rePassword } = getValues();
     if (!password.match(Regex.password) && type === PinCodeEnum.NEW) {
       setErr(`${t("setting.apps_lock.description_error_verify_your_access")}`);
@@ -77,9 +85,17 @@ const PinCodeInput = ({
       if (type === PinCodeEnum.REQUIRED) {
         if (await checkPinCode(password)) {
           onSuccess(password);
+          setAppLock({ ...appLock, isLock: false });
           resetValue();
         } else {
           setErr(`${t("setting.apps_lock.incorrect_password")}`);
+          setCountWrong(countWrong + 1);
+          if (countWrong >= 4) {
+            const disableUntil = Date.now() + 1000 * DISABLE_SECOND;
+            setTimer(DISABLE_SECOND);
+            setAppLock({ ...appLock, disableUntil });
+          }
+
           Vibration.vibrate(PATTERN);
         }
       } else if (type === PinCodeEnum.NEW) {
@@ -94,19 +110,33 @@ const PinCodeInput = ({
   const resetValue = () => {
     setValue("password", "");
     setValue("rePassword", "");
+    setErr("");
   };
   const checkBioMetric = useCallback(async () => {
-    const scanResult = await checkStateScanFingerNative();
-    if (scanResult) {
-      setAppLock({ ...appLock, isLock: false });
-      Keyboard.dismiss();
-      onSuccess();
+    if (
+      (appLock?.disableUntil - Date.now() <= 0 && timer === -1) ||
+      !appLock?.disableUntil
+    ) {
+      const scanResult = await checkStateScanFingerNative();
+      if (scanResult) {
+        setAppLock({ ...appLock, isLock: false });
+        Keyboard.dismiss();
+        onSuccess();
+      }
     }
-  }, [appLock]);
+  }, [appLock, timer]);
 
-  const lock = () => {
-    setAppLock({ ...appLock, isLock: true });
-  };
+  useEffect(() => {
+    if (appLock?.disableUntil && appLock?.disableUntil - Date.now() > 0) {
+      const interval = setTimeout(() => {
+        setTimer(Math.floor((appLock.disableUntil - Date.now()) / 1000));
+      }, 1000);
+      return () => clearTimeout(interval);
+    } else {
+      setCountWrong(0);
+      setTimer(-1);
+    }
+  }, [appLock.disableUntil, timer]);
 
   useEffect(() => {
     if (error) {
@@ -119,22 +149,21 @@ const PinCodeInput = ({
       if (
         appLock.typeBioMetric &&
         appLock.typeBioMetric !== "none" &&
-        appLock?.isLock &&
+        (appLock?.isLock || forSign) &&
         biometric
       ) {
         await checkBioMetric();
       }
     })();
-  }, [appLock.typeBioMetric, biometric, checkBioMetric]);
+  }, [appLock.typeBioMetric, biometric]);
 
   return (
     <KeyboardAvoidingView
-      ref={focusRef}
       behavior={Platform.OS === "ios" ? "padding" : null}
-      style={tw`flex flex-col items-center justify-around flex-1 w-full`}
+      style={tw`flex flex-col items-center justify-start flex-1 w-full`}
     >
-      <View style={tw`flex-col p-3`}>
-        <Text style={tw`mb-5 text-2xl font-bold text-center dark:text-white `}>
+      <View style={tw`flex-col px-3 py-10`}>
+        <Text style={tw`mb-5 text-2xl font-bold text-center dark:text-white`}>
           {label}
         </Text>
         <Controller
@@ -148,11 +177,18 @@ const PinCodeInput = ({
               type="password"
               value={value.replace(/\s/g, "")}
               onChangeText={onChange}
-              autoCompleteType="off"
               autoCapitalize="none"
               err={err.length > 0}
               onTouchStart={() => {
                 setErr("");
+              }}
+              returnKeyType={type === PinCodeEnum.NEW ? "next" : "default"}
+              onSubmitEditing={() => {
+                if (type === PinCodeEnum.NEW) {
+                  rePasswordRef?.current?.focus();
+                } else {
+                  handleEndEditing();
+                }
               }}
             />
           )}
@@ -166,16 +202,18 @@ const PinCodeInput = ({
             }}
             render={({ field: { onChange, value } }) => (
               <TextField
+                ref={rePasswordRef}
                 label={t("setting.apps_lock.re_enter_password")}
                 type="password"
+                editable={timer < 0}
                 err={err.length > 0}
                 value={value.replace(/\s/g, "")}
                 onChangeText={onChange}
-                autoCompleteType="off"
                 autoCapitalize="none"
                 onTouchStart={() => {
                   setErr("");
                 }}
+                onSubmitEditing={handleEndEditing}
               />
             )}
             name="rePassword"
@@ -187,21 +225,29 @@ const PinCodeInput = ({
           </Text>
         )}
       </View>
-      {biometric && appLock.typeBioMetric === BiometryTypes.Biometrics && (
-        <PressableAnimated onPress={checkBioMetric}>
-          <FingerPrint fill={primaryColor} height={45} width={45} />
-        </PressableAnimated>
-      )}
-      {biometric && appLock.typeBioMetric === BiometryTypes.FaceID && (
-        <PressableAnimated onPress={checkBioMetric}>
-          <FaceId fill={primaryColor} height={45} width={45} />
-        </PressableAnimated>
+      {timer >= 0 ? (
+        <Text style={tw`text-lg font-semibold text-center dark:text-white`}>
+          Try again in {timer}
+        </Text>
+      ) : (
+        <>
+          {biometric && appLock.typeBioMetric === BiometryTypes.Biometrics && (
+            <PressableAnimated onPress={checkBioMetric}>
+              <FingerPrint fill={primaryColor} height={45} width={45} />
+            </PressableAnimated>
+          )}
+          {biometric && appLock.typeBioMetric === BiometryTypes.FaceID && (
+            <PressableAnimated onPress={checkBioMetric}>
+              <FaceId fill={primaryColor} height={45} width={45} />
+            </PressableAnimated>
+          )}
+        </>
       )}
 
       <View />
 
       <View style={tw`absolute w-full px-3 bottom-5`}>
-        <Button fullWidth onPress={handleEndEditing}>
+        <Button fullWidth onPress={handleEndEditing} disabled={timer >= 0}>
           {t("setting.apps_lock.continue")}
         </Button>
       </View>

@@ -5,6 +5,7 @@ import { debounce } from "lodash";
 import React, { useCallback, useEffect } from "react";
 import {
   Pressable,
+  ScrollView,
   Text,
   TextInput,
   TouchableHighlight,
@@ -247,9 +248,9 @@ const AddressBar = (props) => {
           {!searchInput && (
             <View>
               {!isNewTab && (
-                <View>
+                <ScrollView style={tw`px-3`}>
                   <View
-                    style={tw`flex-row items-center px-3 py-2 border-b border-gray-100 dark:border-gray-600`}
+                    style={tw`flex-row items-center py-2 border-b border-gray-100 dark:border-gray-600`}
                   >
                     <View style={tw`justify-center mr-1`}>
                       <Favicon url={icon} size={7} />
@@ -289,7 +290,7 @@ const AddressBar = (props) => {
                       </TouchableOpacity>
                     </View>
                   </View>
-                </View>
+                </ScrollView>
               )}
             </View>
           )}
@@ -423,9 +424,9 @@ const SuggestionAutoComplete = ({
           })}
         {(asyncSuggetion.length === 0 || searchInput.length === 0) &&
           searchRecent.length > 0 && (
-            <View>
+            <View style={tw`mb-3`}>
               <Text
-                style={tw`px-5 mt-2 font-bold text-gray-600 dark:text-white`}
+                style={tw`px-3 my-3 font-bold text-gray-600 dark:text-white`}
               >
                 Search recent
               </Text>
@@ -460,9 +461,11 @@ const SuggestionAutoComplete = ({
                   </TouchableHighlight>
                 );
               })}
-              <View style={tw`flex-row justify-center`}>
+              <View
+                style={tw`flex-row justify-center py-3 border-b border-gray-100`}
+              >
                 <TouchableOpacity onPress={handleClearSearchRecent}>
-                  <Text style={tw`font-bold text-red-500`}>
+                  <Text style={tw`font-bold text-red-500 `}>
                     Clear search recent
                   </Text>
                 </TouchableOpacity>

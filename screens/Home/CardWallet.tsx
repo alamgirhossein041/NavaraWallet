@@ -1,12 +1,12 @@
 import React, { memo } from "react";
 import { ImageBackground, View } from "react-native";
 import { Wallet } from "../../data/database/entities/wallet";
+import useWalletsActions from "../../data/globalState/listWallets/listWallets.actions";
 import { tw } from "../../utils/tailwind";
 import MyDomain from "./MyDomain";
 import TotalAssets from "./TotalAssets";
 interface ICardWallet {
   wallet: Wallet;
-  index: any;
 }
 const backgroundCard = [
   require("../../assets/backgroundCard/bg-01.png"),
@@ -28,18 +28,21 @@ const backgroundCard = [
   require("../../assets/backgroundCard/bg-15.png"),
   require("../../assets/backgroundCard/bg-16.png"),
 ];
+
 const CardWallet = memo((props: ICardWallet) => {
-  const { wallet, index } = props;
+  const { wallet } = props;
+  const createdIndex = useWalletsActions().createdIndex(wallet.id);
+
   return (
     <View style={tw`w-full`}>
       <ImageBackground
         borderRadius={20}
         style={[tw`relative p-6 mb-3 h-55`]}
-        source={backgroundCard[index]}
+        source={backgroundCard[createdIndex]}
       >
         <View style={tw`flex-row`}>
           <View style={tw`w-2/3`}>
-            <MyDomain data={wallet} index={index} />
+            <MyDomain data={wallet} index={createdIndex} />
           </View>
         </View>
         <React.Suspense fallback={<></>}>

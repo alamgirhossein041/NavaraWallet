@@ -145,6 +145,7 @@ const SubInvest = () => {
     <View style={tw`mb-10`}>
       <ScrollView style={tw`flex flex-col w-full p-3 `}>
         <SearchBar
+          style={tw`dark:text-white p-2`}
           placeholder={t("search_bar.search")}
           // list={listChains}
 

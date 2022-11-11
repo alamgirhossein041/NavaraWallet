@@ -3,12 +3,13 @@ import { Actionsheet, useDisclose } from "native-base";
 import * as nearAPI from "near-api-js";
 import queryString from "query-string";
 import React, { useCallback, useState } from "react";
-import { Alert, Image, Text, View } from "react-native";
+import { Image, Text, View } from "react-native";
 import { CheckCircleIcon, LockClosedIcon } from "react-native-heroicons/solid";
 import { useRecoilValue } from "recoil";
 import IconNear from "../../assets/icons/icon-near.svg";
 import Button from "../../components/UI/Button";
 import { nearInstanceState } from "../../data/globalState/nearInstance";
+import usePopupResult from "../../hooks/usePopupResult";
 import { useWalletSelected } from "../../hooks/useWalletSelected";
 import getAvatar from "../../utils/getAvatar";
 import getDomainFromUrl from "../../utils/getDomainFromUrl";
@@ -110,6 +111,7 @@ const ACCESS_KEY_FUNDING_AMOUNT = new BN("250000000000000000000000");
 export default function useApprovalNearAccessModal(
   props: IApprovalNearAccessModal
 ) {
+  const popupResult = usePopupResult();
   const { isOpen, onOpen, onClose } = useDisclose();
   const { redirect } = props;
   const [contractId, setContractId] = useState<string>();
@@ -167,7 +169,11 @@ export default function useApprovalNearAccessModal(
         parsedUrl.searchParams.set("all_keys", availableKeys.join(","));
         redirect(parsedUrl.href);
       } catch (e) {
-        Alert.alert(e.message);
+        popupResult({
+          isOpen: true,
+          type: "error",
+          title: "Account not exist",
+        });
       }
     }
     onClose();

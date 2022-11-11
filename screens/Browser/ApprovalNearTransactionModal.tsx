@@ -1,3 +1,4 @@
+import { t } from "i18next";
 import { Actionsheet, useDisclose } from "native-base";
 import * as nearAPI from "near-api-js";
 import queryString from "query-string";
@@ -15,6 +16,7 @@ import API, { URL_GET_PRICE } from "../../data/api";
 import { listWalletsState } from "../../data/globalState/listWallets";
 import { NETWORKS } from "../../enum/bcEnum";
 import { createNearInstance } from "../../hooks/useNEAR";
+import usePopupResult from "../../hooks/usePopupResult";
 import { parseTransactionsToSign } from "../../utils/nearTransaction";
 import { formatBalance } from "../../utils/number";
 import { shortenAddress } from "../../utils/stringsFunction";
@@ -30,7 +32,7 @@ export function ApproveNearTransactionModal(props) {
   } = sign;
 
   const url = new URL(callbackUrl);
-
+  const [isLoading, setIsLoading] = useState(false);
   const formatedTotalAmount =
     nearAPI.utils.format.formatNearAmount(totalAmount);
 
@@ -42,6 +44,11 @@ export function ApproveNearTransactionModal(props) {
       ? formatBalance((gasLimitFloat * price).toString())
       : "< 0.0001";
   const maxFee = gasLimitFloat > 0.00001 ? gasLimitFloat : "< 0.00001";
+
+  const handleApprove = () => {
+    setIsLoading(true);
+    closeModal(true);
+  };
   return (
     <Actionsheet isOpen={isOpen} onClose={() => closeModal(false)}>
       <Actionsheet.Content style={tw`bg-white dark:bg-[#18191A]`}>
@@ -96,7 +103,11 @@ export function ApproveNearTransactionModal(props) {
             </Button>
           </View>
           <View style={tw`w-1/2 px-2`}>
-            <Button variant="primary" onPress={() => closeModal(true)}>
+            <Button
+              loading={isLoading}
+              variant="primary"
+              onPress={handleApprove}
+            >
               Approval
             </Button>
           </View>
@@ -113,6 +124,7 @@ interface INearApproveAccessModal {
 export default function useNearApproveAccessModal(
   props: INearApproveAccessModal
 ) {
+  const popupResult = usePopupResult();
   const { redirect } = props;
   const { isOpen, onOpen, onClose } = useDisclose();
   const [sign, setSign] = useState<any>({
@@ -126,7 +138,6 @@ export default function useNearApproveAccessModal(
   const [account, setAccount] = useState<nearAPI.Account>();
   const [accountId, setAccountId] = useState<string>();
   const [networkId, setNetworkId] = useState<string>();
-
   const listWallets = useRecoilValue(listWalletsState);
 
   const nearWallets = listWallets.map((wallet) => {
@@ -215,9 +226,20 @@ export default function useNearApproveAccessModal(
               actions,
             }));
           } catch (error) {
+            let messageErr;
             if (error.message.includes("Exceeded the prepaid gas")) {
+              messageErr = "Exceeded the prepaid gas";
             }
+            console.log(error.message?.kind?.ExecutionError);
 
+            onClose();
+            popupResult({
+              title:
+                messageErr ||
+                t("domain.error_an_error_occurred_please_try_again_later"),
+              isOpen: true,
+              type: "error",
+            });
             throw error;
           }
         } else {

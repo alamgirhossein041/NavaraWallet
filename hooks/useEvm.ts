@@ -1,10 +1,10 @@
-import {ethers} from 'ethers';
-import {useState, useEffect} from 'react';
-import {DEVIVERATION_PATH} from '../configs/bcNetworks';
-import {NETWORKS, NETWORK_ENVIRONMENT_ENUM} from '../enum/bcEnum';
-import {WalletInterface} from '../data/types';
-import {hdkey} from 'ethereumjs-wallet';
-import {getNetworkConfig, useBcNetworks} from './useBcNetworks';
+import { hdkey } from "ethereumjs-wallet";
+import { ethers } from "ethers";
+import { useEffect, useState } from "react";
+import { DEVIVERATION_PATH } from "../configs/bcNetworks";
+import { WalletInterface } from "../data/types";
+import { NETWORKS, NETWORK_ENVIRONMENT_ENUM } from "../enum/bcEnum";
+import { getNetworkConfig, useBcNetworks } from "./useBcNetworks";
 /**
  * @dev Create Wallet from Mnemonic
  * @param mnemonic = Mnemonic phraseQ
@@ -18,7 +18,7 @@ export const createEthereumWallet = (seed: Buffer, accountIndex = 0) => {
   const wallet = hdwallet.derivePath(path).getWallet();
   const address = wallet.getAddressString();
   const privateKey = wallet.getPrivateKeyString();
-  const publicKey = wallet.getPublicKey().toString('hex');
+  const publicKey = wallet.getPublicKey().toString("hex");
   return {
     network: NETWORKS.ETHEREUM,
     publicKey: publicKey,
@@ -31,7 +31,7 @@ export const createEthereumWallet = (seed: Buffer, accountIndex = 0) => {
 export const getEthereumBalance = async (
   address: string,
   network: NETWORKS,
-  env: NETWORK_ENVIRONMENT_ENUM,
+  env: NETWORK_ENVIRONMENT_ENUM
 ) => {
   const NETWORK_CONFIG = getNetworkConfig(env);
   const config = NETWORK_CONFIG[network];
@@ -49,7 +49,7 @@ export const getEthereumBalance = async (
 };
 
 const useEvm = (network: NETWORKS, privateKey: string): WalletInterface => {
-  const {NETWORK_CONFIG} = useBcNetworks();
+  const { NETWORK_CONFIG } = useBcNetworks();
   const config = NETWORK_CONFIG[network];
   const [provider, setProvider] = useState<ethers.providers.JsonRpcProvider>();
   const [wallet, setWallet] = useState<ethers.Wallet>();
@@ -59,7 +59,7 @@ const useEvm = (network: NETWORKS, privateKey: string): WalletInterface => {
   useEffect(() => {
     try {
       if (!privateKey) {
-        setError('privateKey is null');
+        setError("privateKey is null");
         return;
       }
       let walletPrivateKey = privateKey;
@@ -80,7 +80,7 @@ const useEvm = (network: NETWORKS, privateKey: string): WalletInterface => {
       const balanceInEth = ethers.utils.formatEther(balance);
       return balanceInEth;
     }
-    return '0';
+    return "0";
   };
 
   const transfer = async (receiver: string, amount: string) => {
@@ -99,7 +99,7 @@ const useEvm = (network: NETWORKS, privateKey: string): WalletInterface => {
     if (provider) {
       return await provider.getGasPrice().toString();
     }
-    return '0';
+    return "0";
   };
 
   const estimateGas = async ({
@@ -112,11 +112,11 @@ const useEvm = (network: NETWORKS, privateKey: string): WalletInterface => {
     if (provider) {
       let gas = await provider.estimateGas({
         to: receiver,
-        data: '0xd0e30db0',
         value: ethers.utils.parseEther(amount.toString()),
       });
-
-      return ethers.utils.formatEther(gas);
+      let gasPrice = await provider.getGasPrice();
+      let gasFee = gas.mul(gasPrice);
+      return ethers.utils.formatEther(gasFee);
     }
   };
 

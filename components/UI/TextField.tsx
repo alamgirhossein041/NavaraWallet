@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import {
   Animated,
   Keyboard,
@@ -29,10 +35,9 @@ export interface ITextFieldProps extends TextInputProps {
   padding?: string;
   placeholder?: string;
   err?: string | boolean;
-  autoComplete?: any;
 }
 
-const TextField = (props: ITextFieldProps) => {
+const TextField = forwardRef((props: ITextFieldProps, ref) => {
   const {
     type,
     labelStyle,
@@ -46,7 +51,6 @@ const TextField = (props: ITextFieldProps) => {
     iconPosition = "left",
     onIconPress = () => {},
     maxLength = 100,
-    autoComplete = "off",
   } = props;
 
   const [hidePassword, setHidePassword] = useState(type === "password");
@@ -54,6 +58,13 @@ const TextField = (props: ITextFieldProps) => {
   const labelTop = useRef(new Animated.Value(0)).current;
   const labelLeft = useRef(new Animated.Value(0)).current;
   const labelOpacity = useRef(new Animated.Value(0.4)).current;
+  const internalInputRef = useRef(null);
+
+  useImperativeHandle(ref, () => ({
+    focus: () => {
+      setTimeout(() => internalInputRef.current.focus(), 100);
+    },
+  }));
 
   const topValue = labelTop.interpolate({
     inputRange: [0, 1],
@@ -114,6 +125,7 @@ const TextField = (props: ITextFieldProps) => {
       }).start();
     }
   }, [props, focused]);
+
   return (
     <View style={tw`w-full my-1`}>
       <View
@@ -125,7 +137,6 @@ const TextField = (props: ITextFieldProps) => {
           <PressableAnimated onPress={onIconPress}>{icon}</PressableAnimated>
         )}
         <TextInput
-          {...props}
           onBlur={() => {
             Keyboard.dismiss();
             setFocused(false);
@@ -142,7 +153,9 @@ const TextField = (props: ITextFieldProps) => {
           value={value}
           onFocus={() => setFocused(true)}
           maxLength={maxLength}
-          autoComplete={autoComplete}
+          autoComplete="off"
+          ref={internalInputRef}
+          {...props}
         />
         <Animated.Text
           style={[
@@ -187,6 +200,6 @@ const TextField = (props: ITextFieldProps) => {
       )}
     </View>
   );
-};
+});
 
 export default TextField;

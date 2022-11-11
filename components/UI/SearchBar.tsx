@@ -1,4 +1,5 @@
 import React from "react";
+import { View } from "react-native";
 import IconSearch from "../../assets/icons/icon-search.svg";
 import { secondaryGray } from "../../configs/theme";
 import { tw } from "../../utils/tailwind";
@@ -41,7 +42,13 @@ const SearchBar = (props: ISearchBar) => {
     value,
     onChangeText = () => {},
     onListFiltered = () => {},
-    icon = <IconSearch style={tw`mr-2`} />,
+    icon = (
+      <View
+        style={tw`flex justify-center items-center select-none dark:bg-gray-500   p-3 m-2 rounded-full shadow h-6 w-6 `}
+      >
+        <IconSearch />
+      </View>
+    ),
     style,
     placeholder,
     list = [], //searchList must be a string have no setState

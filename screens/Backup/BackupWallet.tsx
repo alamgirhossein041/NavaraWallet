@@ -1,7 +1,7 @@
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { cloneDeep } from "lodash";
 import { Switch } from "native-base";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { ScrollView, Text, View } from "react-native";
 import base64 from "react-native-base64";
@@ -34,13 +34,7 @@ const BackupWallet = ({ navigation, route }) => {
   const [loading, setLoading] = useState(false);
   const popupResult = usePopupResult();
   const { walletController } = useDatabase();
-  const {
-    control,
-    setValue,
-    getValues,
-    watch,
-    formState: { errors },
-  } = useForm({
+  const { control, setValue, getValues } = useForm({
     defaultValues: {
       fileName: "",
       password: "",
@@ -205,14 +199,13 @@ const BackupWallet = ({ navigation, route }) => {
       label: "Password Hint",
     },
   ];
+  const textFieldRef = useRef([]);
 
   return (
     <View
       style={tw`flex flex-col items-center justify-between w-full h-full px-4 pt-10 `}
     >
-      <Text style={tw`w-full dark:text-white`}>
-        {storedAccessToken?.email}
-      </Text>
+      <Text style={tw`w-full dark:text-white`}>{storedAccessToken?.email}</Text>
       <ScrollView style={tw`flex`}>
         {textFields.map((item, index) => {
           if (isAppPassword && index > 0) {
@@ -224,11 +217,22 @@ const BackupWallet = ({ navigation, route }) => {
               control={control}
               render={({ field: { onChange, value } }) => (
                 <TextField
+                  ref={(el) => (textFieldRef.current[index] = el)}
                   type={item.type}
                   value={value}
                   labelStyle={` `}
                   onChangeText={onChange}
                   label={item.label}
+                  returnKeyType={
+                    isAppPassword || item.name === "passwordHint"
+                      ? "done"
+                      : "next"
+                  }
+                  onSubmitEditing={() => {
+                    if (!isAppPassword && item.name !== "passwordHint") {
+                      textFieldRef.current[index + 1]?.focus();
+                    }
+                  }}
                 />
               )}
               name={item.name as nameType}
@@ -237,7 +241,7 @@ const BackupWallet = ({ navigation, route }) => {
         })}
       </ScrollView>
       <View style={tw`absolute w-full bottom-5`}>
-        <View style={tw`flex-row items-center justify-between w-full mb-5`}>
+        <View style={tw`flex-row items-center justify-between w-full`}>
           <Text style={tw`font-semibold dark:text-white`}>
             Use App's Password for encryption
           </Text>
@@ -248,7 +252,12 @@ const BackupWallet = ({ navigation, route }) => {
             value={isAppPassword}
           />
         </View>
-        <Button fullWidth onPress={handleOnPress} loading={loading}>
+        <Button
+          fullWidth
+          hideOnKeyboard
+          onPress={handleOnPress}
+          loading={loading}
+        >
           Backup
         </Button>
       </View>

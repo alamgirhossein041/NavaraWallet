@@ -1,1 +1,1 @@
-export const apiUrl = 'https://navara.5labs.io';
+export const apiUrl = "https://api.navara.network";

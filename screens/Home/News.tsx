@@ -65,10 +65,6 @@ const News = (props: INewsProps) => {
     // createTabBrowser({url: item.link, title: NEW_TAB});
   };
 
-  if (isError) {
-    return;
-  }
-
   const isCloseToBottom = ({
     layoutMeasurement,
     contentOffset,
@@ -92,7 +88,7 @@ const News = (props: INewsProps) => {
         }
       }}
       scrollEventThrottle={400}
-      style={tw`dark:text-white mb-25`}
+      style={tw`dark:text-white ios:mb-50 mb-25`}
     >
       <Text
         style={tw`mx-3 mt-5 text-xl font-semibold text-black dark:text-white`}

@@ -124,6 +124,7 @@ export const Language = () => {
     <View>
       <View style={tw`w-full flex items-center justify-between px-4 `}>
         <SearchBar
+          style={tw`dark:text-white p-2`}
           placeholder={t("search_bar.search_language")}
           list={listLanguage}
           filterProperty={["name"]}

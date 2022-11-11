@@ -66,27 +66,28 @@ const PricesChart = ({ chain, next, caching = false }: IChainItem) => {
       });
 
       const tokenId = resTokenId[0]?.id;
+      if (!!tokenId) {
+        const url = `${COIN_GECKO_URL}${tokenId}/market_chart`;
+        const response = await axios.get(url, {
+          params: {
+            id: tokenId,
+            vs_currency: "usd",
+            days: "14",
+            interval: "daily",
+          },
+        });
 
-      const url = `${COIN_GECKO_URL}${tokenId}/market_chart`;
-      const response = await axios.get(url, {
-        params: {
-          id: tokenId,
-          vs_currency: "usd",
-          days: "14",
-          interval: "daily",
-        },
-      });
-
-      const priceData = await response?.data?.prices;
-      const _price: ChartData[] = priceData.map(
-        (item: any[], index: number) => {
-          return {
-            x: index,
-            y: item[1] as number,
-          };
-        }
-      );
-      return _price;
+        const priceData = await response?.data?.prices;
+        const _price: ChartData[] = priceData.map(
+          (item: any[], index: number) => {
+            return {
+              x: index,
+              y: item[1] as number,
+            };
+          }
+        );
+        return _price;
+      }
     }
   );
 
@@ -133,17 +134,17 @@ const PricesChart = ({ chain, next, caching = false }: IChainItem) => {
           </View>
         </View>
         <View>
-          <Text
-            style={tw`dark:text-white text-gray-800  text-base font-semibold`}
-          >
-            {capitalizeFirstLetter(chain?.network.split("_")[0])}
-          </Text>
           <View style={tw`flex-row items-center`}>
-            <Text style={tw`dark:text-white  text-xs text-gray-600 mr-1`}>
+            <Text
+              style={tw`dark:text-white  font-semibold text-[15px] text-black mr-1`}
+            >
               {chain?.symbol}
             </Text>
             {StatusIcon("")}
           </View>
+          <Text style={tw`dark:text-white text-gray-800 text-[13px] `}>
+            {capitalizeFirstLetter(chain?.network.split("_")[0])}
+          </Text>
         </View>
       </View>
       <View style={tw`w-1/2 flex-row items-start`}>

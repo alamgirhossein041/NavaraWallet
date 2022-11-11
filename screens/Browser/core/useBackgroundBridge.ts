@@ -80,6 +80,7 @@ export const useBackgroundBridge = (props) => {
     setSelectedAddress(wallet.address);
     setAccount(accountsList);
     const numApprovedHosts = Object.keys(approvedHosts).length;
+
     if (numApprovedHosts === 0) {
       sendNotification({
         method: NOTIFICATION_NAMES.ACCOUNTS_CHANGES,
@@ -114,7 +115,7 @@ export const useBackgroundBridge = (props) => {
   useEffect(() => {
     if (provider) {
       getGasPrice();
-      const interval = setInterval(getGasPrice, 30000);
+      const interval = setInterval(getGasPrice, 10000);
       return function () {
         clearInterval(interval);
       };
@@ -139,7 +140,7 @@ export const useBackgroundBridge = (props) => {
     reply: postMessage,
   });
 
-  const onMessage = async (data, origin) => {
+  const onMessage = async (data, host) => {
     const { data: payload } = data;
     const { method: rpcMethod } = data.data;
     let currentChainId = chainId;
@@ -161,7 +162,7 @@ export const useBackgroundBridge = (props) => {
         break;
       }
       case "eth_requestAccounts": {
-        const hostname = new URL(origin).hostname;
+        const hostname = new URL(host).hostname;
         if (!isApproveAccessModalOpen && !approvedHosts[hostname]) {
           openApproveAccessModal(data);
           requireReply = false;
@@ -281,7 +282,7 @@ export const useBackgroundBridge = (props) => {
         result,
         error
       );
-      postMessage(msg, origin);
+      postMessage(msg, host);
     }
     return;
   };

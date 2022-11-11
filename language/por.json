@@ -105,7 +105,7 @@
     "cancel": "Cancelar",
     "confirm": "Confirmar",
     "swap_successful": "Troque com sucesso!",
-    "swap_failed!": "A troca falhou!",
+    "swap_failed": "A troca falhou!",
     "done": "Feito"
   },
   "setting": {

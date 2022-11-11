@@ -1,7 +1,8 @@
 import ignoreWarnings from "ignore-warnings";
-import React, { useEffect } from "react";
-import { AppState, LogBox, View } from "react-native";
-import { useRecoilState } from "recoil";
+import React, { useEffect, useState } from "react";
+import { AppState, LogBox, Platform, View } from "react-native";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { appLockState } from "../../data/globalState/appLock";
 import { browserApprovedHost } from "../../data/globalState/browser";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { usePinCodeRequired } from "../../hooks/usePinCodeRequired";
@@ -9,18 +10,62 @@ import UpdateHistory from "../../screens/Browser/UpdateHistory";
 import { PinCodeRequired } from "../../screens/Settings/AppLock/PinCodeRequired";
 import { APPROVED_HOSTS } from "../../utils/storage";
 import { PopupResult } from "./PopupResult";
+
 const GetAppState = () => {
   const [lock] = usePinCodeRequired();
   const [_, setApprovedHosts] = useRecoilState(browserApprovedHost);
+  const applock = useRecoilValue(appLockState);
+
   const [approvedHostsFromLocalStorage] = useLocalStorage(APPROVED_HOSTS, {});
+  const [appIsBlurred, setAppIsBlurred] = useState(false);
+
   useEffect(() => {
-    const subscription = AppState.addEventListener("change", (nextAppState) => {
-      lock(nextAppState);
-    });
-    return () => {
-      subscription.remove();
-    };
-  }, [lock]);
+    if (Platform.OS === "android") {
+      let appState = AppState.currentState;
+      const blurSubscription = AppState.addEventListener("blur", () => {
+        if (!appIsBlurred) {
+          appState = "inactive";
+          setAppIsBlurred(true);
+        }
+      });
+      // const focusSubscription = AppState.addEventListener("focus", () => {
+      //   console.log("focus");
+      //   if (appIsBlurred) {
+      //     setAppIsBlurred(false);
+      //   }
+      // });
+
+      const changeSubscription = AppState.addEventListener(
+        "change",
+        (nextAppState) => {
+          if (appState !== "inactive") {
+            lock(nextAppState);
+          }
+        }
+      );
+
+      return () => {
+        blurSubscription.remove();
+        changeSubscription.remove();
+      };
+    } else {
+      const changeSubscription = AppState.addEventListener(
+        "change",
+        (nextAppState) => {
+          if (nextAppState === "active") {
+            setAppIsBlurred(false);
+          } else if (nextAppState === "inactive") {
+            setAppIsBlurred(true);
+          }
+          lock(nextAppState);
+        }
+      );
+
+      return () => {
+        changeSubscription.remove();
+      };
+    }
+  }, [appIsBlurred, lock]);
 
   useEffect(() => {
     if (approvedHostsFromLocalStorage) {
@@ -43,6 +88,7 @@ const GetAppState = () => {
       <PopupResult />
       <PinCodeRequired />
       <UpdateHistory />
+      {/* <SplashModal appIsBlurred={appIsBlurred && applock?.isLock === false} /> */}
     </View>
   );
 };

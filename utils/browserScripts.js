@@ -119,7 +119,9 @@ export const JS_WINDOW_INFORMATION = `
 export const JS_WEBVIEW_URL = `
   (function () {
     ${getWebviewUrl}
+
   })();
+  true;
 `;
 
 export const JS_DESELECT_TEXT = `if (window.getSelection) {window.getSelection().removeAllRanges();}

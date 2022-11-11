@@ -4,11 +4,9 @@ import { Image, Text, View } from "react-native";
 import { LockClosedIcon } from "react-native-heroicons/solid";
 import Button from "../../components/UI/Button";
 import { useBrowserActions } from "../../data/globalState/browser/browser.actions";
-import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { useWalletSelected } from "../../hooks/useWalletSelected";
 import getAvatar from "../../utils/getAvatar";
 import getDomainFromUrl from "../../utils/getDomainFromUrl";
-import { APPROVED_HOSTS } from "../../utils/storage";
 import { shortenAddress } from "../../utils/stringsFunction";
 import { tw } from "../../utils/tailwind";
 import { createResponseMessage } from "../../utils/web3Message";
@@ -89,11 +87,15 @@ export default function useApproveAccessModal(props: IGrantAccessWeb3Hook) {
   const [origin, setOrigin] = useState<string>();
 
   const openModal = (request: any) => {
-    const { id: requestId, jsonrpc } = request.data;
+    const {
+      data: { id: requestId, jsonrpc },
+      name,
+      origin,
+    } = request;
     setId(requestId);
     setJsonrpcVersion(jsonrpc);
-    setProviderName(request.name);
-    setOrigin(request.origin);
+    setProviderName(name);
+    setOrigin(origin);
     onOpen();
   };
 

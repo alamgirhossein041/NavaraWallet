@@ -30,6 +30,7 @@ import { useTranslation } from "react-i18next";
 
 import { SelectListChains } from "../../components/UI/SelectListChains";
 import { validateAccountId } from "../../hooks/useNEAR";
+import { isSameNetwork } from "../../utils/network";
 import { shortenAddress } from "../../utils/stringsFunction";
 import { tw } from "../../utils/tailwind";
 import ScanQR from "./ScanQR";
@@ -40,7 +41,9 @@ const validateToken = async (
   env: NETWORK_ENVIRONMENT_ENUM
 ): Promise<boolean> => {
   let validatingNetwork = network;
-  if (network === NETWORKS.NEAR) {
+  if (isSameNetwork(network, NETWORKS.NEAR)) {
+    console.log(address, network, env, await validateAccountId(address, env));
+
     return await validateAccountId(address, env);
   } else if (EVM_CHAINS.includes(network)) {
     validatingNetwork = NETWORKS.ETHEREUM;
@@ -123,7 +126,7 @@ const ViewSendingToken = ({ route, navigation }: any) => {
     (params: any) => {
       const { network, input } = params;
       if (
-        network === NETWORKS.NEAR.toLocaleLowerCase() &&
+        isSameNetwork(network, NETWORKS.NEAR) &&
         !input.includes(".nns.one")
       ) {
         return validateAccountId(input, env).then((isValid) =>
@@ -190,33 +193,15 @@ const ViewSendingToken = ({ route, navigation }: any) => {
     }
   );
 
-  const handleResultQrScan = async (input: string) => {
-    setValue("receiver", input);
-    if (input.includes(".")) {
-      requestGetAddress.mutate({
-        input,
-        network: token.symbol,
-      } as any);
-      return;
-    } else if (await validateToken(input, token.network, env)) {
-      requestGetDomain.mutate({
-        input,
-        network: token.symbol,
-      } as any);
-    } else {
-      setErr({
-        ...err,
-        address: true,
-      });
-    }
-    setValue("receiver", input);
-  };
-
   const fetchCopiedText = async () => {
     const text = await Clipboard.getString();
     setValue("receiver", text);
     handleCheckReceiver();
   };
+
+  /**
+   * Reset all state
+   */
   const clearState = () => {
     setDomainChecked(false);
     setValue("receiver", "");
@@ -228,24 +213,44 @@ const ViewSendingToken = ({ route, navigation }: any) => {
     setIsScam(false);
   };
 
+  /**
+   * Handle qr code result
+   * @param input
+   * @returns void
+   */
+  const handleResultQrScan = async (input: string) => {
+    setValue("receiver", input);
+    handleCheckReceiver();
+    return;
+  };
+
+  /**
+   * Handle check address / domain input
+   * @returns void
+   */
   const handleCheckReceiver = async () => {
     resetErr();
-
+    const input = watch("receiver") || "";
     // check is domain
-    if (watch("receiver").includes(".")) {
+    if (input.includes(".")) {
       requestGetAddress.mutate({
-        input: watch("receiver"),
+        input: input,
         network: token.symbol,
       } as any);
       return;
     }
 
-    if (await validateToken(watch("receiver"), token.network, env)) {
+    if (await validateToken(input, token.network, env)) {
       requestGetDomain.mutate({
-        input: watch("receiver").trim(),
+        input: input.trim(),
         network: token.symbol,
       } as any);
-      setReceiver(watch("receiver"));
+      setReceiver(input);
+    } else {
+      setErr({
+        ...err,
+        address: true,
+      });
     }
   };
 
@@ -409,10 +414,10 @@ const ViewSendingToken = ({ route, navigation }: any) => {
               </Text>
             </View>
           </View>
-          <Text style={tw`dark:text-white  text-gray-400  mx-1`}>
+          {/* <Text style={tw`dark:text-white  text-gray-400  mx-1`}>
             {t("send.recipient_will_receive")} {token.symbol}{" "}
             {t("send.network_as")} {token.symbol}
-          </Text>
+          </Text> */}
         </View>
 
         <View style={tw`flex flex-row items-center justify-between m-1`}>

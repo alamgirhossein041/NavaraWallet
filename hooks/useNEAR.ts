@@ -1,20 +1,19 @@
-import {useState, useEffect} from 'react';
-import {INearInstance, WalletInterface, WalletProps} from '../data/types';
-import {DEVIVERATION_PATH} from '../configs/bcNetworks';
-import * as nearAPI from 'near-api-js';
-import BN from 'bn.js';
-import axios from 'axios';
-import {NETWORKS, NETWORK_ENVIRONMENT_ENUM} from '../enum/bcEnum';
-import {derivePath} from 'near-hd-key';
-import bs58 from 'bs58';
-import nacl from 'tweetnacl';
-import {getNearConfig, useBcNetworks} from './useBcNetworks';
-import { NEAR_MAINNET_CONFIG } from '../configs/bcMainnets';
-import { NEAR_TESTNET_CONFIG } from '../configs/bcTestnets';
+import axios from "axios";
+import BN from "bn.js";
+import bs58 from "bs58";
+import * as nearAPI from "near-api-js";
+import { derivePath } from "near-hd-key";
+import { useEffect, useState } from "react";
+import nacl from "tweetnacl";
+import { NEAR_MAINNET_CONFIG } from "../configs/bcMainnets";
+import { DEVIVERATION_PATH } from "../configs/bcNetworks";
+import { NEAR_TESTNET_CONFIG } from "../configs/bcTestnets";
+import { INearInstance, WalletInterface } from "../data/types";
+import { NETWORKS, NETWORK_ENVIRONMENT_ENUM } from "../enum/bcEnum";
+import { getNearConfig, useBcNetworks } from "./useBcNetworks";
 
 const ACCOUNT_ID_REGEX =
   /^(([a-z\d]+[-_])*[a-z\d]+\.)*([a-z\d]+[-_])*[a-z\d]+$/;
-
 
 async function getAccountIds(publicKey: string, helperUrl: string) {
   try {
@@ -29,27 +28,30 @@ async function getAccountIds(publicKey: string, helperUrl: string) {
 function buf2hex(buffer: ArrayBuffer) {
   // buffer is an ArrayBuffer
   return [...new Uint8Array(buffer)]
-    .map(x => x.toString(16).padStart(2, '0'))
-    .join('');
+    .map((x) => x.toString(16).padStart(2, "0"))
+    .join("");
 }
 
-export const createNearWallet = async (
-  seed: Buffer,
-  accountIndex = 0
-) => {
+export const createNearWallet = async (seed: Buffer, accountIndex = 0) => {
   const path = DEVIVERATION_PATH[NETWORKS.NEAR](accountIndex);
-  const {key} = derivePath(path, seed.toString('hex'));
+  const { key } = derivePath(path, seed.toString("hex"));
 
   const keyPair = nacl.sign.keyPair.fromSeed(key);
 
-  const publicKey = 'ed25519:' + bs58.encode(Buffer.from(keyPair.publicKey));
-  const privateKey = 'ed25519:' + bs58.encode(Buffer.from(keyPair.secretKey));
+  const publicKey = "ed25519:" + bs58.encode(Buffer.from(keyPair.publicKey));
+  const privateKey = "ed25519:" + bs58.encode(Buffer.from(keyPair.secretKey));
 
   const implicitBuffer = nearAPI.utils.PublicKey.fromString(publicKey).data;
   const implicitAccountId = buf2hex(implicitBuffer);
 
-  const accountIds = await getAccountIds(publicKey, NEAR_MAINNET_CONFIG.helperUrl);
-  const testnetAccountIds = await getAccountIds(publicKey, NEAR_TESTNET_CONFIG.helperUrl)
+  const accountIds = await getAccountIds(
+    publicKey,
+    NEAR_MAINNET_CONFIG.helperUrl
+  );
+  const testnetAccountIds = await getAccountIds(
+    publicKey,
+    NEAR_TESTNET_CONFIG.helperUrl
+  );
 
   const keyPairResult = {
     address: implicitAccountId,
@@ -63,14 +65,14 @@ export const createNearWallet = async (
   if (testnetAccountIds.length) {
     keyPairResult.testnetAddress = testnetAccountIds[0];
   }
-  return {...keyPairResult, network: NETWORKS.NEAR};
+  return { ...keyPairResult, network: NETWORKS.NEAR };
 };
 
 export const getNearBalance = async (
   address: string,
-  env: NETWORK_ENVIRONMENT_ENUM,
+  env: NETWORK_ENVIRONMENT_ENUM
 ) => {
-  const {keyStores, connect} = nearAPI;
+  const { keyStores, connect } = nearAPI;
   const keyStore = new keyStores.InMemoryKeyStore();
   const NEAR_CONFIG = getNearConfig(env);
 
@@ -85,10 +87,10 @@ export const getNearBalance = async (
     const account = await near.account(address);
     const totalBalance = await account.getAccountBalance();
     balance = nearAPI.utils.format.formatNearAmount(
-      totalBalance?.available || '0',
+      totalBalance?.available || "0"
     );
   } catch (e) {
-    balance = '0';
+    balance = "0";
   }
   return {
     address,
@@ -97,23 +99,23 @@ export const getNearBalance = async (
   };
 };
 
-const isImplicitAccount = accountId =>
-  accountId.length === 64 && !accountId.includes('.');
+const isImplicitAccount = (accountId) =>
+  accountId.length === 64 && !accountId.includes(".");
 
-const isLegitAccountId = accountId => {
+const isLegitAccountId = (accountId) => {
   return ACCOUNT_ID_REGEX.test(accountId);
 };
 
 export const validateAccountId = async (
   accountId: string,
-  env: NETWORK_ENVIRONMENT_ENUM,
+  env: NETWORK_ENVIRONMENT_ENUM
 ): Promise<boolean> => {
   try {
     if (!accountId) return false;
     if (!isLegitAccountId(accountId)) {
       return false;
     }
-    const {keyStores, connect} = nearAPI;
+    const { keyStores, connect } = nearAPI;
     const keyStore = new keyStores.InMemoryKeyStore();
     const NEAR_CONFIG = getNearConfig(env);
 
@@ -124,11 +126,12 @@ export const validateAccountId = async (
     };
     const near = await connect(config);
     const account = await near.account(accountId);
+    await account.state();
     return true;
   } catch (e) {
     if (
       isImplicitAccount(accountId) &&
-      e.toString().includes('does not exist while viewing')
+      e.toString().includes("does not exist while viewing")
     ) {
       return true;
     }
@@ -136,46 +139,47 @@ export const validateAccountId = async (
   }
 };
 
-export const createNearInstance = async (privateKey: string, NEAR_CONFIG: any): Promise<INearInstance> => {
-    const {keyStores, KeyPair, connect} = nearAPI;
-    const keyStore = new keyStores.InMemoryKeyStore();
-    const keyPair = KeyPair.fromString(privateKey);
-    const publicKey = keyPair.getPublicKey().toString();
+export const createNearInstance = async (
+  privateKey: string,
+  NEAR_CONFIG: any
+): Promise<INearInstance> => {
+  const { keyStores, KeyPair, connect } = nearAPI;
+  const keyStore = new keyStores.InMemoryKeyStore();
+  const keyPair = KeyPair.fromString(privateKey);
+  const publicKey = keyPair.getPublicKey().toString();
 
-    const implicitBuffer = nearAPI.utils.PublicKey.fromString(
-      publicKey,
-    ).data;
-    const implicitAccountId = buf2hex(implicitBuffer);
+  const implicitBuffer = nearAPI.utils.PublicKey.fromString(publicKey).data;
+  const implicitAccountId = buf2hex(implicitBuffer);
 
-    const accountIds = await getAccountIds(
-      publicKey,
-      NEAR_CONFIG.helperUrl,
-    );
+  const accountIds = await getAccountIds(publicKey, NEAR_CONFIG.helperUrl);
 
-    const accountId = accountIds[0] ? accountIds[0] : implicitAccountId;
+  const accountId = accountIds[0] ? accountIds[0] : implicitAccountId;
 
-    await keyStore.setKey(NEAR_CONFIG.networkId, accountId, keyPair);
+  await keyStore.setKey(NEAR_CONFIG.networkId, accountId, keyPair);
 
-    const config = {
-      ...NEAR_CONFIG,
-      keyStore,
-      headers: {},
-    };
-    const near = await connect(config);
+  const config = {
+    ...NEAR_CONFIG,
+    keyStore,
+    headers: {},
+  };
+  const near = await connect(config);
 
-    return {accountId, near, keyStore, publicKey}
-}
+  return { accountId, near, keyStore, publicKey };
+};
 
 const useNEAR = (privateKey: string): WalletInterface => {
   const [error, setError] = useState<string>();
-  const [address, setAddress] = useState('');
+  const [address, setAddress] = useState("");
   const [near, setNear] = useState<nearAPI.Near>();
-  const {NEAR_CONFIG} = useBcNetworks();
+  const { NEAR_CONFIG } = useBcNetworks();
 
   useEffect(() => {
     (async () => {
       try {
-        const {accountId, near} = await createNearInstance(privateKey, NEAR_CONFIG)
+        const { accountId, near } = await createNearInstance(
+          privateKey,
+          NEAR_CONFIG
+        );
         setAddress(accountId);
         setNear(near);
       } catch (error) {}
@@ -186,9 +190,9 @@ const useNEAR = (privateKey: string): WalletInterface => {
     try {
       const account = await near?.account(publicKey);
       const balance = await account?.getAccountBalance();
-      return nearAPI.utils.format.formatNearAmount(balance?.available || '0');
+      return nearAPI.utils.format.formatNearAmount(balance?.available || "0");
     } catch (e) {
-      return '0';
+      return "0";
     }
   };
 
@@ -204,7 +208,7 @@ const useNEAR = (privateKey: string): WalletInterface => {
   };
 
   const estimateGas = async () => {
-    return '0.000045';
+    return "0.000045";
   };
 
   return {

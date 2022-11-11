@@ -70,11 +70,13 @@ const WalletDashboard = () => {
             setTabSelected={(index) => setTabSelected(index)}
           />
           {tabSelected === 0 ? (
-            <ListChainsChart next="DetailChain" />
+            <View>
+              <ListChainsChart next="DetailChain" />
+              <News keyword="blockchain" />
+            </View>
           ) : (
             <ListNFT />
           )}
-          {!reloading && <News keyword="blockchain" />}
         </ScrollView>
       </View>
     </View>

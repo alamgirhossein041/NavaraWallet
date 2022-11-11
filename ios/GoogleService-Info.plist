@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>210953684920-0krjsjs7emopu816dmmv2ljtmtioifmv.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.210953684920-0krjsjs7emopu816dmmv2ljtmtioifmv</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>210953684920-qeom8m93e85cq6q6p9r38tm9p83fqopa.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDgV-aMMuvoaciKCG9DKbXIFLt0miiCfoY</string>
+	<key>GCM_SENDER_ID</key>
+	<string>210953684920</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>network.navara</string>
+	<key>PROJECT_ID</key>
+	<string>navara-network</string>
+	<key>STORAGE_BUCKET</key>
+	<string>navara-network.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:210953684920:ios:88c46dee32ccd6feac714d</string>
+</dict>
+</plist>

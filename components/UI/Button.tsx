@@ -8,8 +8,8 @@
  * @example
  */
 import { Spinner, View } from "native-base";
-import React from "react";
-import { Text, TouchableHighlight } from "react-native";
+import React, { useEffect } from "react";
+import { Keyboard, Text, TouchableHighlight } from "react-native";
 import { underLayPrimaryColor } from "../../configs/theme";
 import { tw } from "../../utils/tailwind";
 import PressableAnimated from "./PressableAnimated";
@@ -22,6 +22,7 @@ type ButtonProps = {
   loading?: boolean;
   iconRight?: JSX.Element;
   variant?: "primary" | "secondary" | "outlined" | "danger" | "text";
+  hideOnKeyboard?: boolean;
 };
 
 const Button = ({
@@ -32,7 +33,32 @@ const Button = ({
   loading = false,
   iconRight = <></>,
   variant = "primary",
+  hideOnKeyboard = false,
 }: ButtonProps) => {
+  const [keyboardShow, setKeyboardShow] = React.useState(false);
+
+  useEffect(() => {
+    if (hideOnKeyboard) {
+      const keyboardShowListener = Keyboard.addListener(
+        "keyboardDidShow",
+        () => {
+          setKeyboardShow(true);
+        }
+      );
+      const keyboardHideListener = Keyboard.addListener(
+        "keyboardDidHide",
+        () => {
+          setKeyboardShow(false);
+        }
+      );
+
+      return () => {
+        keyboardShowListener.remove();
+        keyboardHideListener.remove();
+      };
+    }
+  }, [hideOnKeyboard]);
+
   const style = {
     primary: {
       value: tw`bg-blue-500 border-blue-500`,
@@ -73,7 +99,9 @@ const Button = ({
       style={[
         tw`flex flex-row items-center justify-center w-64 p-4 mt-2 border-2 rounded-2xl`,
         disabled || loading ? style.disabled.value : style[variant].value,
-        tw`${fullWidth ? "w-full" : "w-auto"}`,
+        tw`${fullWidth ? "w-full" : "w-auto"}
+        ${keyboardShow && hideOnKeyboard && "hidden"}
+        `,
       ]}
       onPress={onPress}
       disabled={disabled || loading}

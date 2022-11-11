@@ -13,6 +13,10 @@ interface IWalletsActions {
    * @param id: id of wallet to remove
    */
   remove: (id: string) => Promise<void>;
+  /**
+   * get index of wallet by createdAt
+   */
+  createdIndex: (id: string) => number;
 }
 
 const useWalletsActions = (): IWalletsActions => {
@@ -30,6 +34,15 @@ const useWalletsActions = (): IWalletsActions => {
 
       // Set default wallet selected index = 0 (first)
       setIdWalletSelected(0);
+    },
+
+    createdIndex: (id: string) => {
+      const sorted = [...wallets].sort(
+        (a, b) => Number(new Date(a.createdAt)) - Number(new Date(b.createdAt))
+      );
+
+      const index = sorted.findIndex((wallet) => wallet.id === id);
+      return index;
     },
   };
   return actions;

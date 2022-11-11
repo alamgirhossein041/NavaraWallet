@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
-import { primaryColor } from "../../configs/theme";
 import useSeedPhraseService from "../../hooks/useSeedPhrase";
 import ScanQR from "../../screens/SendToken/ScanQR";
 import { tw } from "../../utils/tailwind";
@@ -94,14 +93,14 @@ const ImportSeedPhrase = ({ navigation, route }) => {
             }}
             render={({ field: { onChange, value } }) => (
               <TextField
-                multiline
-                style={tw`h-35`}
-                styleText={`text-[${primaryColor}]`}
+                autoFocus
+                style={tw`py-10 dark:text-white `}
                 type="text"
                 value={value.toLowerCase().replace(/\s+/g, " ")}
                 onChangeText={onChange}
                 label={t("import_seedphrase.seedphrase")}
                 err={!!errors.seedPhrase}
+                numberOfLines={5}
               />
             )}
             name="seedPhrase"
@@ -129,9 +128,7 @@ const ImportSeedPhrase = ({ navigation, route }) => {
         )}
         <View style={tw`flex-row items-center justify-end my-1`}>
           <TouchableOpacity style={tw`mx-3`} onPress={fetchCopiedText}>
-            <Text
-              style={tw`font-bold uppercase dark:text-white`}
-            >
+            <Text style={tw`font-bold uppercase dark:text-white`}>
               {t("import_seedphrase.paste")}
             </Text>
           </TouchableOpacity>
@@ -173,6 +170,7 @@ const ImportSeedPhrase = ({ navigation, route }) => {
 
       <View style={tw`absolute w-full mb-5 bottom-5`}>
         <Button
+          hideOnKeyboard
           onPress={handleSubmit(onSubmit)}
           disabled={
             !confirmStep.theFirst ||

@@ -9,7 +9,6 @@ import IconCopy from "../../assets/icons/icon-copy.svg";
 import IconDetailWallet from "../../assets/icons/icon-detail-wallet.svg";
 import IconGetDomain from "../../assets/icons/icon-get-domain.svg";
 import ActionSheetItem from "../../components/UI/ActionSheetItem";
-import useWalletsActions from "../../data/globalState/listWallets/listWallets.actions";
 import { tw } from "../../utils/tailwind";
 import toastr from "../../utils/toastr";
 
@@ -38,7 +37,6 @@ const RenderDomain = ({ data, index }: any) => {
   const nameWallet =
     data.name === null ? `Wallet ${index + 1}` : `${data.name}`;
   // const nameWallet = walletSelected&&walletSelected?.data.name
-  const walletActions = useWalletsActions();
   const navigation = useNavigation();
   const handleDetailWallet = () => {
     //
@@ -47,7 +45,7 @@ const RenderDomain = ({ data, index }: any) => {
       "DetailWallet" as never,
       {
         index,
-        data: walletActions.get()[index],
+        data,
       } as never
     );
   };

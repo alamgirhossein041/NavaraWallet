@@ -63,7 +63,7 @@ export default function DappView(props: IDappProps) {
         <Text
           style={tw`mx-3 mt-5 mb-3 text-xl font-semibold text-black dark:text-white`}
         >
-          Top {chain} Dapps
+          Top {chain.split("_")[0]} Dapps
         </Text>
       )}
 

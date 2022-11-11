@@ -1,11 +1,13 @@
 import { ethers } from "ethers";
+import { t } from "i18next";
 import { Actionsheet, useDisclose } from "native-base";
 import React, { useCallback, useEffect, useState } from "react";
-import { Alert, Image, Text, TouchableOpacity, View } from "react-native";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 import { DuplicateIcon } from "react-native-heroicons/outline";
 import { LockClosedIcon } from "react-native-heroicons/solid";
 import Button from "../../components/UI/Button";
 import { primaryColor } from "../../configs/theme";
+import usePopupResult from "../../hooks/usePopupResult";
 import { useWalletSelected } from "../../hooks/useWalletSelected";
 import getAvatar from "../../utils/getAvatar";
 import getDomainFromUrl from "../../utils/getDomainFromUrl";
@@ -21,11 +23,12 @@ interface IConfirmTransactionModalProps {
   closeModal: (approval: boolean) => void;
   selectedAddress: string;
   transaction: any;
-  gasPrice: ethers.utils.BigNumber;
   favicon: string;
+  provider: ethers.providers.BaseProvider;
+  gasPrice: ethers.utils.BigNumber;
 }
 
-const MAX_FEE_RATE = 1.125;
+const MAX_FEE_RATE = 1.13;
 
 export function ConfirmTransactionModal(props: IConfirmTransactionModalProps) {
   const {
@@ -34,24 +37,38 @@ export function ConfirmTransactionModal(props: IConfirmTransactionModalProps) {
     closeModal,
     selectedAddress,
     transaction,
-    gasPrice,
     favicon,
+    provider,
+    gasPrice,
   } = props;
   const shortenSelectedAddress = shortenAddress(selectedAddress);
   const { data: selectedWallet, index: walletIndex } = useWalletSelected();
   const [baseFee, setBaseFee] = useState<string>("0");
   const [maxFee, setMaxFee] = useState<string>("0");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const estimateGasFee = async (tx) => {
+    try {
+      const gas = new ethers.utils.BigNumber(tx.gas);
+      const gasFee = gas.mul(gasPrice);
+      const gasBase = ethers.utils.formatEther(gasFee);
+      const maxGasFee = parseFloat(gasBase) * MAX_FEE_RATE;
+      setMaxFee(formatBalance(maxGasFee.toString()));
+      setBaseFee(formatBalance(gasBase.toString()));
+    } catch (e) {
+      setMaxFee("(non estimated)");
+      setBaseFee("(non estimated)");
+    }
+  };
 
   useEffect(() => {
-    if (transaction && gasPrice) {
-      let gasFee = gasPrice?.mul(transaction?.gas);
-      let base = ethers.utils.formatEther(gasFee);
+    estimateGasFee(transaction);
+  }, [transaction, provider, gasPrice]);
 
-      let max = parseFloat(base) * MAX_FEE_RATE;
-      setBaseFee(base);
-      setMaxFee(max.toString());
-    }
-  }, [transaction, gasPrice]);
+  const handleApprove = () => {
+    setIsLoading(true);
+    closeModal(true);
+  };
 
   return (
     <Actionsheet isOpen={isOpen} onClose={() => closeModal(false)}>
@@ -110,15 +127,13 @@ export function ConfirmTransactionModal(props: IConfirmTransactionModalProps) {
         >
           <View style={tw`flex-row justify-between w-full mb-2`}>
             <Text style={tw`font-bold`}>Gas fee estimate</Text>
-            <Text style={tw`font-bold text-blue-500`}>
-              {formatBalance(baseFee)} ETH
-            </Text>
+            <Text style={tw`font-bold text-blue-500`}>{baseFee} ETH</Text>
           </View>
           <View style={tw`flex-row justify-between w-full`}>
             <Text style={tw`font-bold`} />
             <View style={tw`flex-row`}>
               <Text style={tw`font-bold`}>Max fee: </Text>
-              <Text style={tw``}>{formatBalance(maxFee)} ETH</Text>
+              <Text style={tw``}>{maxFee} ETH</Text>
             </View>
           </View>
         </View>
@@ -127,8 +142,7 @@ export function ConfirmTransactionModal(props: IConfirmTransactionModalProps) {
             style={tw`mb-5 rounded-lg bg-red-100 w-full text-center p-1 border-red-700 border`}
           >
             <Text style={tw`text-center`}>
-              You need an additional {formatBalance(maxFee)} ETH to complete
-              this transaction
+              You need an additional {maxFee} ETH to complete this transaction
             </Text>
           </View>
         )}
@@ -139,7 +153,11 @@ export function ConfirmTransactionModal(props: IConfirmTransactionModalProps) {
             </Button>
           </View>
           <View style={tw`w-1/2 px-2`}>
-            <Button variant="primary" onPress={() => closeModal(true)}>
+            <Button
+              variant="primary"
+              loading={isLoading}
+              onPress={handleApprove}
+            >
               Approve
             </Button>
           </View>
@@ -158,21 +176,23 @@ interface IConfirmTransactionHook {
 export default function useConfirmTransactionModal(
   props: IConfirmTransactionHook
 ) {
-  const { reply, wallet } = props;
+  const { reply, wallet, provider } = props;
   const { isOpen, onOpen, onClose } = useDisclose();
   const [id, setId] = useState();
   const [jsonrpcVersion, setJsonrpcVersion] = useState("2.0");
   const [providerName, setProviderName] = useState<string>();
   const [origin, setOrigin] = useState<string>();
   const [transaction, setTransaction] = useState<any>();
+  const popupResult = usePopupResult();
+
   const Modal = useCallback(
     ({
       url,
       closeModal,
       selectedAddress,
       selectedWallet,
-      gasPrice,
       favicon,
+      gasPrice,
     }) => {
       return (
         <ConfirmTransactionModal
@@ -183,11 +203,12 @@ export default function useConfirmTransactionModal(
           selectedWallet={selectedWallet}
           selectedAddress={selectedAddress}
           transaction={transaction}
+          provider={provider}
           gasPrice={gasPrice}
         />
       );
     },
-    [isOpen, transaction]
+    [isOpen, transaction, provider]
   );
 
   const openModal = async (request) => {
@@ -227,13 +248,18 @@ export default function useConfirmTransactionModal(
         error
       );
       reply(msg, origin);
+
       onClose();
     } catch (e) {
-      Alert.alert(e.message);
-      error = {
-        code: 32603,
-        message: e.message,
-      };
+      onClose();
+      popupResult({
+        title:
+          e.message ||
+          t("domain.error_an_error_occurred_please_try_again_later"),
+        isOpen: true,
+        type: "error",
+      });
+      throw e;
     }
   };
 

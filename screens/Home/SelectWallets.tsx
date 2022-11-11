@@ -1,5 +1,5 @@
 import { useLinkTo } from "@react-navigation/native";
-import React from "react";
+import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Dimensions,
@@ -18,7 +18,7 @@ import {
   idWalletSelected,
   listWalletsState,
 } from "../../data/globalState/listWallets";
-import { useWalletSelected } from "../../hooks/useWalletSelected";
+import { localStorage, SELECTED_WALLET } from "../../utils/storage";
 import { tw } from "../../utils/tailwind";
 import CardWallet from "./CardWallet";
 
@@ -26,20 +26,24 @@ const SelectWallets = () => {
   const listWallets = useRecoilValue(listWalletsState);
   const [indexWalletSelected, setIndexWalletSelected] =
     useRecoilState(idWalletSelected);
-  const walletSelected = useWalletSelected();
 
   const { width: viewportWidth } = Dimensions.get("window");
 
-  // useEffect(() => {
-  //   (async () => {
-  //     const wallets: any = (await localStorage.get(SELECTED_WALLET)) || [];
-  //     setIndexWalletSeleted(wallets);
-  //   })();
-  // }, []);
+  useEffect(() => {
+    (async () => {
+      const wallets: any = (await localStorage.get(SELECTED_WALLET)) || 0;
+      if (wallets !== 0) {
+        setIndexWalletSelected(wallets);
+      }
+    })();
+  }, []);
 
-  // useEffect(() => {
-  //   localStorage.set(SELECTED_WALLET, indexSelectedWallet);
-  // }, [indexSelectedWallet]);
+  const handleSelectWallet = (index: number) => {
+    if (indexWalletSelected !== index && index !== 0) {
+      setIndexWalletSelected(index);
+      localStorage.set(SELECTED_WALLET, index);
+    }
+  };
 
   return (
     <View style={tw`relative mb-5 h-55`}>
@@ -52,11 +56,10 @@ const SelectWallets = () => {
             data={listWallets}
             sliderWidth={viewportWidth}
             itemWidth={viewportWidth - 45}
-            renderItem={({ item, index }: { item: Wallet; index }) => (
-              //
-              <CardWallet wallet={item} index={index} />
+            renderItem={({ item }: { item: Wallet }) => (
+              <CardWallet wallet={item} />
             )}
-            onSnapToItem={(index) => setIndexWalletSelected(index)}
+            onSnapToItem={handleSelectWallet}
           />
         </View>
       </SafeAreaView>

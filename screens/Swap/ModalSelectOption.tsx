@@ -105,6 +105,7 @@ const ActionsheetSelectOption = ({
         >
           {filterType === "normal" && (
             <SearchBar
+              style={tw`dark:text-white p-2`}
               placeholder={t("swap.search_symbol")}
               list={options}
               filterProperty={["label", "value"]}

@@ -1,13 +1,9 @@
+import { useNavigation } from "@react-navigation/native";
 import { Actionsheet, useDisclose } from "native-base";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Pressable,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import DraggableFlatList from "react-native-draggable-flatlist";
 import { PlusIcon } from "react-native-heroicons/outline";
 import { DotsHorizontalIcon } from "react-native-heroicons/solid";
 import { useRecoilState } from "recoil";
@@ -15,8 +11,10 @@ import IconImport from "../../assets/icons/icon-folder-add.svg";
 import IconCloudRestore from "../../assets/icons/icon-folder-cloud.svg";
 import WalletAdd from "../../assets/icons/icon-wallet-add.svg";
 import ActionSheetItem from "../../components/UI/ActionSheetItem";
+import PressableAnimated from "../../components/UI/PressableAnimated";
 import { primaryColor } from "../../configs/theme";
 import { listWalletsState } from "../../data/globalState/listWallets";
+import useWalletsActions from "../../data/globalState/listWallets/listWallets.actions";
 import { tw } from "../../utils/tailwind";
 import CardWallet from "../Home/CardWallet";
 
@@ -29,21 +27,13 @@ const Wallets = ({ navigation }) => {
       </TouchableOpacity>
     ),
   });
-  const onWalletPress = (index) => {
-    if (listWallets && listWallets.length > 0) {
-      navigation.navigate("DetailWallet", {
-        index,
-        data: listWallets[index],
-      });
-    }
-    // onOpen()
-  };
 
-  const [listWallets] = useRecoilState(listWalletsState);
+  const [listWallets, setListWallets] = useRecoilState(listWalletsState);
 
   // const handleOpenCreateWallet=()=>{
   //   isOpen()
   // }
+
   const { t } = useTranslation();
 
   const actionSheetCreateWallet = (
@@ -62,7 +52,7 @@ const Wallets = ({ navigation }) => {
               stroke={primaryColor}
               style={tw`mr-2`}
             />
-            <Text style={tw`dark:text-white text-black    font-bold`}>
+            <Text style={tw`font-bold text-black dark:text-white`}>
               {t("manage_wallets.create_a_new_wallet")}
             </Text>
           </View>
@@ -80,7 +70,7 @@ const Wallets = ({ navigation }) => {
               stroke={primaryColor}
               style={tw`mr-2`}
             />
-            <Text style={tw`dark:text-white text-black   font-bold`}>
+            <Text style={tw`font-bold text-black dark:text-white`}>
               {t("manage_wallets.import_wallet")}
             </Text>
           </View>
@@ -98,7 +88,7 @@ const Wallets = ({ navigation }) => {
               stroke={primaryColor}
               style={tw`mr-2`}
             />
-            <Text style={tw`dark:text-white  text-black   font-bold`}>
+            <Text style={tw`font-bold text-black dark:text-white`}>
               {t("manage_wallets.restore_wallet_from_cloud")}
             </Text>
           </View>
@@ -108,42 +98,59 @@ const Wallets = ({ navigation }) => {
   );
 
   return (
-    <ScrollView style={tw`bg-white dark:bg-[#18191A] px-4 py-1`}>
-      <View style={tw` flex flex-col justify-between`}>
-        <View>
-          <View style={tw``}>
-            {listWallets &&
-              listWallets.map((wallet, index) => (
-                //
-                <Pressable
-                  onPress={() => onWalletPress(index)}
-                  key={wallet.id}
-                  style={tw`mb-3`}
-                >
-                  <View
-                    style={tw`flex flex-row mx-5 justify-between items-center mb-1`}
-                  >
-                    <Text style={tw`dark:text-white  font-bold `}>
-                      {wallet.name === null
-                        ? `Wallet ${index + 1}`
-                        : `${wallet.name}`}
-                    </Text>
-                    <TouchableOpacity onPress={() => onWalletPress(index)}>
-                      <DotsHorizontalIcon color="gray" />
-                    </TouchableOpacity>
-                  </View>
-
-                  <View style={tw``}>
-                    <CardWallet wallet={wallet} index={index} />
-                  </View>
-                </Pressable>
-              ))}
-          </View>
-        </View>
+    <ScrollView style={tw`bg-white dark:bg-[#18191A] py-1`}>
+      <View style={tw`flex flex-col justify-between `}>
+        {listWallets && (
+          <DraggableFlatList
+            data={listWallets}
+            renderItem={RenderWallet}
+            keyExtractor={(item) => item.id}
+            onDragEnd={({ data }) => setListWallets(data)}
+          />
+        )}
         {/* ActionSheet create walllet */}
         {actionSheetCreateWallet}
       </View>
     </ScrollView>
+  );
+};
+
+const RenderWallet = ({ item: wallet, drag, isActive }) => {
+  const navigation = useNavigation();
+  const createdIndex = useWalletsActions().createdIndex(wallet.id);
+
+  const onWalletPress = () => {
+    navigation.navigate(
+      "DetailWallet" as never,
+      {
+        index: createdIndex,
+        data: wallet,
+      } as never
+    );
+
+    // onOpen()
+  };
+
+  return (
+    <PressableAnimated
+      onLongPress={drag}
+      disabled={isActive}
+      onPress={() => onWalletPress()}
+      key={wallet.id}
+      style={tw`px-4 mb-3`}
+    >
+      <View style={tw`flex flex-row items-center justify-between mx-5 mb-1`}>
+        <Text style={tw`font-bold dark:text-white `}>
+          {wallet.name === null
+            ? `Wallet ${createdIndex + 1}`
+            : `${wallet.name}`}
+        </Text>
+        <TouchableOpacity onPress={() => onWalletPress()}>
+          <DotsHorizontalIcon color="gray" />
+        </TouchableOpacity>
+      </View>
+      <CardWallet wallet={wallet} />
+    </PressableAnimated>
   );
 };
 

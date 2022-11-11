@@ -4,7 +4,7 @@
     "receive": "Receive",
     "swap": "Swap",
     "history": "History",
-    "assets_by_chains": "Assets by chains",
+    "assets_by_chains": "Assets",
     "news": "Latest News",
     "token": "Token",
     "nft": "NFT",
@@ -107,7 +107,7 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "swap_successful": "Swap successful!",
-    "swap_failed!": "Swap failed!",
+    "swap_failed": "Swap failed!",
     "done": "Done"
   },
   "setting": {

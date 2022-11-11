@@ -1,5 +1,6 @@
-import React, { ComponentType } from 'react';
-import { Animated, Pressable, StyleProp, ViewStyle } from 'react-native';
+import React, { ComponentType } from "react";
+import { Animated, Pressable, StyleProp, ViewStyle } from "react-native";
+import { triggerHapticFeedback } from "./PressableHapticFeedback";
 
 interface IScaleAnimationProps {
   /**
@@ -9,6 +10,7 @@ interface IScaleAnimationProps {
   onPress?: () => void;
   onPressIn?: () => void;
   onPressOut?: () => void;
+  onLongPress?: () => void;
   delay?: number;
   children?: JSX.Element[] | JSX.Element;
   style?: StyleProp<ViewStyle>;
@@ -36,6 +38,7 @@ const PressableAnimated = ({
   onPress = () => {},
   onPressIn = () => {},
   onPressOut = () => {},
+  onLongPress = () => {},
   component = Pressable,
   children,
   style,
@@ -45,7 +48,7 @@ const PressableAnimated = ({
   const animation = new Animated.Value(0);
   const inputRange = [0, 1];
   const outputRange = [1, scaleValue];
-  const scale = animation.interpolate({inputRange, outputRange});
+  const scale = animation.interpolate({ inputRange, outputRange });
   const AnimatedPressable = Animated.createAnimatedComponent(component);
 
   const onPressInHandler = () => {
@@ -56,7 +59,7 @@ const PressableAnimated = ({
 
     onPressIn();
   };
-  const onPressOutHandler = () => {
+  const onPressOutHandler = async () => {
     Animated.spring(animation, {
       toValue: 0,
       useNativeDriver: true,
@@ -64,14 +67,27 @@ const PressableAnimated = ({
 
     onPressOut();
   };
+  const onLongPressHandler = async () => {
+    Animated.spring(animation, {
+      toValue: 0,
+      useNativeDriver: true,
+    }).start();
+
+    setTimeout(() => {
+      triggerHapticFeedback();
+      onLongPress();
+    }, delay);
+  };
 
   return (
     <AnimatedPressable
-      style={[style, {transform: [{scale}]}]}
+      style={[style, { transform: [{ scale }] }]}
       onPressIn={onPressInHandler}
       onPressOut={onPressOutHandler}
+      onLongPress={onLongPressHandler}
       onPress={() => setTimeout(() => onPress(), delay)}
-      {...props}>
+      {...props}
+    >
       <>{children}</>
     </AnimatedPressable>
   );

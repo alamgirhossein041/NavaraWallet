@@ -1,11 +1,11 @@
-import {useNavigation} from '@react-navigation/native';
-import React from 'react';
-import {Text, TouchableOpacity, View} from 'react-native';
-import {useRecoilState} from 'recoil';
-import Logo from '../../assets/logo/logo.svg';
-import {walletEnvironmentState} from '../../data/globalState/userData';
-import {ENVIRONMENT} from '../../global.config';
-import {tw} from '../../utils/tailwind';
+import { useNavigation } from "@react-navigation/native";
+import React from "react";
+import { Text, TouchableOpacity, View } from "react-native";
+import { useRecoilState } from "recoil";
+import Logo from "../../assets/logo/logo.svg";
+import { walletEnvironmentState } from "../../data/globalState/userData";
+import { ENVIRONMENT } from "../../global.config";
+import { tw } from "../../utils/tailwind";
 export default function HeaderHome() {
   const navigation = useNavigation();
   const [walletEnvironment] = useRecoilState(walletEnvironmentState);
@@ -18,19 +18,23 @@ export default function HeaderHome() {
             Navara
           </Text>
         </View>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Profile' as never)}
-          style={tw`flex-row items-center p-1 text-xs bg-black rounded borders`}>
-          <Text style={tw`text-xs font-bold text-white`}>
-            {walletEnvironment == ENVIRONMENT.PRODUCTION
-              ? 'Mainnet'
-              : 'Testnet'}
-          </Text>
+        <View style={tw`flex-row`}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Profile" as never)}
+            style={tw`flex-row items-center p-1 mx-3 text-xs bg-black rounded borders`}
+          >
+            <Text style={tw`text-xs font-bold text-white`}>
+              {walletEnvironment == ENVIRONMENT.PRODUCTION
+                ? "Mainnet"
+                : "Testnet"}
+            </Text>
 
-          {/* <TouchableOpacity>
+            {/* <TouchableOpacity>
           <IconNotification width={25} height={25} onPress={()=>{navigation.navigate("Notification")}}/>
         </TouchableOpacity> */}
-        </TouchableOpacity>
+          </TouchableOpacity>
+          {/* <Notification /> */}
+        </View>
       </View>
     </View>
   );

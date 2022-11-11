@@ -1,6 +1,6 @@
 {
   "name": "navara",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -15,6 +15,8 @@
   "dependencies": {
     "@react-native-clipboard/clipboard": "^1.10.0",
     "@react-native-community/cameraroll": "^4.1.2",
+    "@react-native-firebase/app": "^15.4.0",
+    "@react-native-firebase/messaging": "^15.4.0",
     "@react-native-google-signin/google-signin": "^7.2.2",
     "@react-navigation/material-top-tabs": "^6.2.1",
     "@sentry/react-native": "^4.2.3",
@@ -56,19 +58,22 @@
     "react-native-clipboard": "^0.0.5",
     "react-native-default-preference": "^1.4.4",
     "react-native-device-info": "^9.0.2",
+    "react-native-draggable-flatlist": "^3.1.2",
     "react-native-event-listeners": "^1.0.7",
+    "react-native-haptic-feedback": "^1.14.0",
     "react-native-keychain": "^8.1.1",
     "react-native-pager-view": "^5.4.25",
     "react-native-permissions": "^3.3.1",
     "react-native-progress": "^5.0.0",
     "react-native-qrcode-scanner": "^1.5.5",
+    "react-native-reanimated": "^2.10.0",
     "react-native-share": "^7.6.4",
     "react-native-snap-carousel": "^3.9.1",
     "react-native-sqlite-storage": "^6.0.1",
     "react-native-tab-view": "^3.1.1",
     "react-native-uuid": "^2.0.1",
     "react-native-view-shot": "^3.3.0",
-    "react-native-webview": "^11.22.4",
+    "react-native-webview": "11.13.0",
     "rn-nodeify": "^10.3.0",
     "semver": "^7.3.7",
     "text-encoding-polyfill": "^0.6.7",
@@ -135,15 +140,18 @@
     "is-stream": "^3.0.0",
     "isomorphic-webcrypto": "^2.3.8",
     "jest": "^26.6.3",
+    "lint-staged": "^13.0.3",
     "lodash": "^4.17.21",
     "metro-react-native-babel-preset": "^0.67.0",
     "native-base": "^3.4.4",
     "near-api-js": "^0.44.2",
     "near-seed-phrase": "^0.2.0",
+    "organize-imports-cli": "^0.10.0",
     "patch-package": "^6.4.7",
     "path": "^0.12.7",
     "path-browserify": "^0.0.0",
     "postinstall-prepare": "^2.0.0",
+    "prettier": "^2.7.1",
     "querystring-es3": "^0.2.1",
     "react": "17.0.1",
     "react-dom": "17.0.1",
@@ -207,5 +215,12 @@
     "path": "path-browserify",
     "fs": "react-native-level-fs",
     "crypto": "react-native-crypto"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "organize-imports-cli",
+      "prettier --write",
+      "git add ."
+    ]
   }
 }

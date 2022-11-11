@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, Switch, Text, View } from "react-native";
-import { getReadableVersion } from "react-native-device-info";
+import { getBuildNumber, getVersion } from "react-native-device-info";
 import { BeakerIcon } from "react-native-heroicons/solid";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRecoilState } from "recoil";
@@ -19,7 +19,6 @@ import { tw } from "../../utils/tailwind";
 import toastr from "../../utils/toastr";
 
 const Menu = ({ navigation }) => {
-  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const [listWallets] = useRecoilState(listWalletsState);
   useDeviceContext(tw, { withDeviceColorScheme: false });
@@ -31,7 +30,8 @@ const Menu = ({ navigation }) => {
    * Hanlde swtich testnet / mainnet
    */
   const [isLoading, setIsLoading] = useState(false);
-  const handelChangeTestNet = async (isTestnet: boolean) => {
+
+  const handleChangeTestnet = async (isTestnet: boolean) => {
     setIsLoading(true);
     try {
       const newEnvironment = isTestnet
@@ -39,12 +39,14 @@ const Menu = ({ navigation }) => {
         : ENVIRONMENT.PRODUCTION;
       setWalletEnvironment(newEnvironment);
       await localStorage.set(NETWORKS_ENVIRONMENT, newEnvironment);
+      navigation.navigate("WalletDashboard");
     } catch (error) {
       toastr.error("Error");
     }
     setIsLoading(false);
   };
 
+  const { t } = useTranslation();
   const menu = [
     {
       group: `${t("setting.wallets")}`,
@@ -76,11 +78,12 @@ const Menu = ({ navigation }) => {
               ? `${t("setting.using_testnet")}`
               : `${t("setting.try_testnet")}`
           } `,
+
           value: (
             <Switch
               trackColor={{ false: primaryGray, true: primaryColor }}
               thumbColor="white"
-              onValueChange={handelChangeTestNet}
+              onValueChange={handleChangeTestnet}
               value={walletEnvironment === ENVIRONMENT.DEVELOPMENT}
               disabled={isLoading}
             />
@@ -119,31 +122,6 @@ const Menu = ({ navigation }) => {
     {
       group: `${t("setting.app_security")}`,
       items: [
-        // {
-        //   icon: colorMode === 'light' ? (
-        //     <SunIcon width="100%" height="100%" fill="orange" />
-        //   ) : (
-        //     <MoonIcon width="100%" height="100%" fill="gray" />
-        //   ),
-        //   name: colorMode === 'light' ? 'Light Mode' : 'Dark Mode',
-        //   onPress: () => {
-        //     toggleColorMode();
-        //   },
-        //   value: <></>,
-        //   next: false,
-        // },
-        // DEVELOPMENT OPTIONS
-        // {
-        //   icon: (
-        //     <IconKey width="100%" height="100%" fill={primaryColor} />
-        //   ),
-        //   name: 'Developer Options',
-        //   onPress: () => {
-        //     navigation.navigate('NetworksEnvironment');
-        //   },
-        //   value: '',
-        //   next: true,
-        // },
         {
           icon: <IconLock />,
           name: `${t("setting.app_lock")}`,
@@ -244,7 +222,7 @@ const Menu = ({ navigation }) => {
         <Text
           style={tw`w-full mt-10 text-center text-gray-400 dark:text-gray-100`}
         >
-          Version: {getReadableVersion()}
+          Version: {getVersion()} ({getBuildNumber()})
         </Text>
       </ScrollView>
     </View>

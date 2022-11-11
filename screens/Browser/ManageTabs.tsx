@@ -31,7 +31,7 @@ const ManageTabs = ({ navigation, route }) => {
   const { imageURI } = route.params;
 
   useEffect(() => {
-    if (imageURI) {
+    if (imageURI && browser[currentTab]) {
       const dataUpdate = cloneDeep(browser);
       dataUpdate[currentTab].screenShot = imageURI;
       setBrowser(dataUpdate);
@@ -105,7 +105,7 @@ const ManageTabs = ({ navigation, route }) => {
                       borderBottomLeftRadius={11}
                       borderBottomRightRadius={11}
                       style={tw`flex-1 w-full z-1`}
-                      source={{ uri: tab.screenShot }}
+                      source={{ uri: tab?.screenShot }}
                       resizeMode="cover"
                     ></ImageBackground>
                   </PressableAnimated>

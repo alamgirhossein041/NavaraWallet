@@ -26,6 +26,7 @@ const ManageChains = () => {
   return (
     <ScrollView style={tw`flex flex-col w-full p-3 `}>
       <SearchBar
+        style={tw`dark:text-white p-2`}
         placeholder={t("search_bar.search")}
         list={listNetworks}
         onListFiltered={(list: string[]) => {

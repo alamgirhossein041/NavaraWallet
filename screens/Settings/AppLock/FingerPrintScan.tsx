@@ -12,10 +12,15 @@ const rnBiometrics = new ReactNativeBiometrics({
 });
 
 export const checkStateScanFingerNative = async (): Promise<boolean> => {
-  const result = await rnBiometrics.simplePrompt({
-    promptMessage: "Scan your finger",
-  });
-  return result.success;
+  try {
+    const result = await rnBiometrics.simplePrompt({
+      promptMessage: "Scan your finger",
+    });
+    return result.success;
+  } catch (error) {
+    console.warn(error);
+    return false;
+  }
 };
 
 const FingerPrint: FunctionComponent = () => {

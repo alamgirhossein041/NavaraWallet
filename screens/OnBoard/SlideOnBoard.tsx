@@ -1,79 +1,86 @@
-import { Text } from "native-base";
-import React, { useEffect, useRef } from "react";
-import { Image, View } from "react-native";
-import PagerView from "react-native-pager-view";
-import imageOnBoard1 from "../../assets/logo/onboard-1.png";
-import imageOnBoard2 from "../../assets/logo/onboard-2.png";
-import imageOnBoard3 from "../../assets/logo/onboard-3.png";
+import React, { useRef, useState } from "react";
+import { Dimensions, Text, View } from "react-native";
+import Carousel, { Pagination } from "react-native-snap-carousel";
+import ImageOnBoard1 from "../../assets/logo/onboard-1.svg";
+import ImageOnBoard2 from "../../assets/logo/onboard-2.svg";
+import ImageOnBoard3 from "../../assets/logo/onboard-3.svg";
 import Button from "../../components/UI/Button";
 import { primaryColor, primaryGray } from "../../configs/theme";
 import { tw } from "../../utils/tailwind";
 const SlideOnBoard = ({ navigation }) => {
-  const [slideIndex, setSlide] = React.useState(0);
   const onboard = [
     {
-      img: imageOnBoard1,
+      img: <ImageOnBoard1 />,
       title: "Simple & Secure Crypto Wallet",
       desc: `Navara is the key to your manage your assets with simple & secure by design`,
     },
     {
-      img: imageOnBoard2,
+      img: <ImageOnBoard2 />,
       title: "Secure Web3 Browser",
       desc: "Navara give you an web3 adblock browser with security & privacy in mind. You can access DApp of any networks",
     },
     {
-      img: imageOnBoard3,
+      img: <ImageOnBoard3 />,
       title: "Free Unique Web3 Name",
       desc: "Navara give you a free unique domain name, one name for all address, no more copying and pasting long addresses",
     },
   ];
 
-  const slideRef = useRef(null);
-  useEffect(() => {
-    const autoChangeSlide = setInterval(() => {
-      setSlide((currentSlide) => {
-        return currentSlide === 2 ? 0 : currentSlide + 1;
-      });
-    }, 2000);
-    return () => {
-      clearInterval(autoChangeSlide);
-    };
-  }, []);
+  const SLIDER_WIDTH = Dimensions.get("window").width + 8;
+  const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.9);
 
-  useEffect(() => {
-    const { current } = slideRef;
-    current.setPage(slideIndex);
-  }, [slideIndex]);
-  return (
-    <View style={tw`relative h-full pt-10 `}>
-      <PagerView
-        ref={slideRef}
-        overdrag
-        style={tw`flex-1`}
-        initialPage={slideIndex}
-      >
-        {onboard.map((slide, index) => (
-          <View style={tw`flex-col justify-center px-5`}>
-            <View style={tw`items-center justify-center mb-5`}>
-              <Image source={onboard[index].img} width={15} height={15} />
-            </View>
-            <View style={tw`mb-5`}>
-              <Text
-                style={tw`text-3xl font-bold text-center text-gray-500 dark:text-white `}
-              >
-                {slide.title}
-              </Text>
-            </View>
-            <Text style={tw`text-center text-gray-500 dark:text-white `}>
-              {slide.desc}
-            </Text>
-          </View>
-        ))}
-      </PagerView>
-      <View style={tw`flex-col items-center justify-around p-5 h-1/3`}>
-        <View style={tw`items-center my-5`}>
-          <DotSlide highlight={slideIndex} />
+  const [index, setIndex] = useState(0);
+  const isCarousel = useRef(null);
+  const renderItem = ({ slide, index }) => {
+    return (
+      <View style={tw`flex-col justify-center `}>
+        <View style={tw`items-center justify-center w-auto h-64 mt-20 mb-10`}>
+          {onboard[index].img}
         </View>
+        <View style={tw`py-5`}>
+          <Text
+            style={tw`text-3xl font-bold text-center text-black dark:text-white `}
+          >
+            {onboard[index].title}
+          </Text>
+        </View>
+        <Text style={tw`mb-5 text-center text-gray-500 dark:text-white `}>
+          {onboard[index].desc}
+        </Text>
+      </View>
+    );
+  };
+  return (
+    <View style={tw`relative flex flex-col h-full android:my-3 ios:my-3`}>
+      <Carousel
+        layout={"default"}
+        data={onboard}
+        renderItem={renderItem}
+        sliderWidth={SLIDER_WIDTH}
+        itemWidth={ITEM_WIDTH}
+        onSnapToItem={(index) => setIndex(index)}
+      />
+      <Pagination
+        dotsLength={onboard.length}
+        activeDotIndex={index}
+        carouselRef={isCarousel}
+        dotStyle={{
+          width: 10,
+          height: 10,
+          borderRadius: 10,
+          marginHorizontal: 5,
+          backgroundColor: primaryColor,
+        }}
+        tappableDots={true}
+        inactiveDotStyle={{
+          backgroundColor: primaryGray,
+          // Define styles for inactive dots here
+        }}
+        inactiveDotOpacity={0.3}
+        inactiveDotScale={0.5}
+      />
+
+      <View style={tw`flex-col items-center justify-around px-2 my-5`}>
         <Button
           fullWidth
           onPress={() => {
@@ -96,19 +103,4 @@ const SlideOnBoard = ({ navigation }) => {
   );
 };
 
-const DotSlide = ({ highlight }: { highlight: number }) => {
-  const dots = [0, 1, 2];
-  return (
-    <View style={tw`flex flex-row`}>
-      {dots.map((dot, index) => (
-        <View
-          key={index}
-          style={tw`bg-[${
-            highlight === dot ? primaryColor : primaryGray
-          }] mr-2 h-2 w-2 rounded-full`}
-        ></View>
-      ))}
-    </View>
-  );
-};
 export default SlideOnBoard;

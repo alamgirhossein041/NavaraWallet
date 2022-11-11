@@ -10,6 +10,7 @@ export default function WebviewProgressBar(props) {
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 50,
+      useNativeDriver: true,
     }).start();
   };
 
@@ -18,6 +19,7 @@ export default function WebviewProgressBar(props) {
     Animated.timing(fadeAnim, {
       toValue: 0,
       duration: 50,
+      useNativeDriver: true,
     }).start();
   };
 
@@ -38,7 +40,6 @@ export default function WebviewProgressBar(props) {
         height={3}
         borderRadius={0}
         borderWidth={0}
-        useNativeDriver
       />
     </Animated.View>
   );

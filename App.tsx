@@ -6,6 +6,7 @@ import { extendTheme, NativeBaseProvider } from "native-base";
 import React from "react";
 import { useColorScheme } from "react-native";
 import "react-native-gesture-handler";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-url-polyfill/auto";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { RecoilRoot } from "recoil";
@@ -58,14 +59,16 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <RecoilRoot>
-        <NavigationContainer
-          theme={scheme === "dark" ? DarkThemeCustom : LightThemeCustom}
-        >
-          <NativeBaseProvider theme={customTheme}>
-            <GetAppState />
-            {netInfo.isConnected === false ? <Offline /> : <AppRoutes />}
-          </NativeBaseProvider>
-        </NavigationContainer>
+        <GestureHandlerRootView style={tw`flex-1`}>
+          <NavigationContainer
+            theme={scheme === "dark" ? DarkThemeCustom : LightThemeCustom}
+          >
+            <NativeBaseProvider theme={customTheme}>
+              <GetAppState />
+              {netInfo.isConnected === false ? <Offline /> : <AppRoutes />}
+            </NativeBaseProvider>
+          </NavigationContainer>
+        </GestureHandlerRootView>
       </RecoilRoot>
     </QueryClientProvider>
   );

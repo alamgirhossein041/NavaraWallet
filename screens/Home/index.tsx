@@ -12,7 +12,7 @@ import GetYourDomain from "../Domain/CreateDomain";
 import { Rewards } from "../Domain/Rewards";
 import DetailWallet from "../ManageWallets/DetailWallet";
 import PrivacySeedPhrase from "../ManageWallets/privacySeedPhrase";
-import Notification from "../Notification/Notification";
+import Notification from "../Notification";
 import WalletID from "../OnBoard/CreateWallet";
 import ReceiveToken from "../ReceiveToken";
 import ReceiveSpecificToken from "../ReceiveToken/ReceiveSpecificToken";
