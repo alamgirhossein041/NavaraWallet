@@ -5,9 +5,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useRecoilState } from "recoil";
 import Logo from "../../../assets/logo/logo.svg";
 import PinCodeInput from "../../../components/UI/PinCodeInput";
+import { getFromKeychain, resetKeychain } from "../../../core/keychain";
 import { appLockState } from "../../../data/globalState/appLock";
 import { IAppLockState } from "../../../data/types";
-import { getFromKeychain, resetKeychain } from "../../../utils/keychain";
 import { localStorage, STORAGE_APP_LOCK } from "../../../utils/storage";
 import { tw } from "../../../utils/tailwind";
 

@@ -1,5 +1,11 @@
-import React, {ComponentType} from 'react';
-import {Animated, Easing, Pressable, StyleProp, ViewStyle} from 'react-native';
+import React, { ComponentType, useEffect } from "react";
+import {
+  Animated,
+  Easing,
+  Pressable,
+  StyleProp,
+  ViewStyle,
+} from "react-native";
 
 interface IScaleAnimationProps {
   /**
@@ -11,6 +17,7 @@ interface IScaleAnimationProps {
   delay?: number;
   children?: JSX.Element[] | JSX.Element;
   style?: StyleProp<ViewStyle>;
+  spinning?: boolean;
   /**
    *component to render inside the scale animation default is Pressable
    */
@@ -38,6 +45,7 @@ const PressableAnimatedSpin = ({
   children,
   style,
   delay = 150,
+  spinning = false,
   ...props
 }: IScaleAnimationProps): JSX.Element => {
   const AnimatedPressable = Animated.createAnimatedComponent(component);
@@ -45,7 +53,7 @@ const PressableAnimatedSpin = ({
 
   const spin = spinValue.interpolate({
     inputRange: [0, 1],
-    outputRange: ['360deg', '0deg'],
+    outputRange: ["360deg", "0deg"],
   });
 
   const onPressInHandler = () => {
@@ -70,6 +78,19 @@ const PressableAnimatedSpin = ({
     onPressOut();
   };
 
+  useEffect(() => {
+    if (spinning) {
+      Animated.loop(
+        Animated.timing(spinValue, {
+          toValue: 1,
+          duration: 1000,
+          easing: Easing.elastic(1),
+          useNativeDriver: true,
+        })
+      ).start();
+    }
+  }, [spinValue, spinning]);
+
   return (
     <AnimatedPressable
       style={[
@@ -85,7 +106,8 @@ const PressableAnimatedSpin = ({
       onPressIn={onPressInHandler}
       onPressOut={onPressOutHandler}
       onPress={() => setTimeout(() => onPress(), delay)}
-      {...props}>
+      {...props}
+    >
       <>{children}</>
     </AnimatedPressable>
   );

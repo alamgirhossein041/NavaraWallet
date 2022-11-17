@@ -14,6 +14,13 @@ import { underLayPrimaryColor } from "../../configs/theme";
 import { tw } from "../../utils/tailwind";
 import PressableAnimated from "./PressableAnimated";
 
+export type ButtonVariant =
+  | "primary"
+  | "secondary"
+  | "outlined"
+  | "danger"
+  | "text";
+
 type ButtonProps = {
   fullWidth?: boolean;
   onPress?: () => void;
@@ -21,7 +28,7 @@ type ButtonProps = {
   disabled?: boolean;
   loading?: boolean;
   iconRight?: JSX.Element;
-  variant?: "primary" | "secondary" | "outlined" | "danger" | "text";
+  variant?: ButtonVariant;
   hideOnKeyboard?: boolean;
 };
 

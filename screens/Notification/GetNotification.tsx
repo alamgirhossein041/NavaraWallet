@@ -43,7 +43,9 @@ export default function GetNotification() {
    */
   const handleRemoteMessage = (
     cloudMessage: FirebaseMessagingTypes.RemoteMessage
-  ) => {};
+  ) => {
+    console.info(cloudMessage);
+  };
 
   useEffect(() => {
     (async () => {

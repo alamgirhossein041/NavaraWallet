@@ -27,11 +27,12 @@ interface IApprovalNearAccessModalProps {
 
 export function ApprovalNearAccessModal(props: IApprovalNearAccessModalProps) {
   const { favicon, url, isOpen, closeModal, accountId } = props;
-
+  const [isConnecting, setIsConnecting] = useState(false);
   const { data: selectedWallet, index: walletIndex } = useWalletSelected();
 
   const handleCloseModal = (approval) => {
     closeModal(approval);
+    setIsConnecting(true);
   };
 
   const shortenSelectedAddress = shortenAddress(accountId);
@@ -92,7 +93,11 @@ export function ApprovalNearAccessModal(props: IApprovalNearAccessModalProps) {
             </Button>
           </View>
           <View style={tw`w-1/2 px-2`}>
-            <Button variant="primary" onPress={() => handleCloseModal(true)}>
+            <Button
+              loading={isConnecting}
+              variant="primary"
+              onPress={() => handleCloseModal(true)}
+            >
               Connect
             </Button>
           </View>
@@ -143,9 +148,9 @@ export default function useApprovalNearAccessModal(
     setNearInstance(near);
     setAccountId(accountId);
     const params = queryString.parse(url.search);
-    setContractId(params.contract_id.toString());
-    setSuccessUrl(params.success_url.toString());
-    setPublicKey(params.public_key.toString());
+    setContractId(params?.contract_id);
+    setSuccessUrl(params?.success_url);
+    setPublicKey(params?.public_key);
     setNearAccountPublicKey(publicKey);
     onOpen();
   };
@@ -153,13 +158,15 @@ export default function useApprovalNearAccessModal(
   const closeModal = async (approval: boolean) => {
     if (approval) {
       try {
-        const account = await nearInstance.account(accountId);
-        await account.addKey(
-          publicKey,
-          contractId,
-          [],
-          ACCESS_KEY_FUNDING_AMOUNT
-        );
+        if (contractId) {
+          const account = await nearInstance.account(accountId);
+          await account.addKey(
+            publicKey,
+            contractId,
+            [],
+            ACCESS_KEY_FUNDING_AMOUNT
+          );
+        }
         const availableKeys = [nearAccountPublicKey];
         const parsedUrl = new URL(successUrl);
         parsedUrl.searchParams.set("account_id", accountId);
@@ -169,11 +176,21 @@ export default function useApprovalNearAccessModal(
         parsedUrl.searchParams.set("all_keys", availableKeys.join(","));
         redirect(parsedUrl.href);
       } catch (e) {
-        popupResult({
-          isOpen: true,
-          type: "error",
-          title: "Account not exist",
-        });
+        if (e.message.includes("Can not sign transactions for account")) {
+          popupResult({
+            isOpen: true,
+            type: "error",
+            title: "Can not sign transactions for this account",
+          });
+        } else if (
+          e.message.includes("wouldn't have enough balance to cover storage,")
+        ) {
+          popupResult({
+            isOpen: true,
+            type: "error",
+            title: "Not enough balance to cover storage",
+          });
+        }
       }
     }
     onClose();

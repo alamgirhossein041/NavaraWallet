@@ -6,7 +6,8 @@ import {
   getConnection,
   getRepository,
 } from "typeorm/browser";
-import { getFromKeychain } from "../../utils/keychain";
+import { Config, names, uniqueNamesGenerator } from "unique-names-generator";
+import { getFromKeychain } from "../../core/keychain";
 import toastr from "../../utils/toastr";
 import { ChainWallet } from "./entities/chainWallet";
 import { BrowserFavorites } from "./entities/favoritesBrowser";
@@ -55,7 +56,10 @@ const useDatabase = () => {
       setupConnection();
     }
   }, []);
-
+  const config: Config = {
+    dictionaries: [names],
+  };
+  const characterName: string = uniqueNamesGenerator(config);
   const walletController = {
     createWallet: async (seedPhrase: string): Promise<Wallet> => {
       const walletRepository = getRepository(Wallet);
@@ -67,6 +71,7 @@ const useDatabase = () => {
       ).toString();
 
       newWallet.seedPhrase = password ? encryptedSeedPhrase : seedPhrase;
+      newWallet.name = `Wallet ${characterName}`;
       return walletRepository.save(newWallet);
     },
 

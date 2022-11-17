@@ -31,7 +31,7 @@ const usePinCodeRequired = () => {
     [appLock, setAppLock, unixTimeToLock]
   );
 
-  return [lock];
+  return { lock };
 };
 
 export { usePinCodeRequired };

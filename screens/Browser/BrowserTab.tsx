@@ -11,14 +11,15 @@ import ViewShot from "react-native-view-shot";
 import { WebView } from "react-native-webview";
 import { NEAR_MAINNET_CONFIG } from "../../configs/bcMainnets";
 import { NEAR_TESTNET_CONFIG } from "../../configs/bcTestnets";
+import { JS_WEBVIEW_URL } from "../../core/browserScripts";
+import { useEthereumBackgroundBridge } from "../../core/useEthereumBackgroundBridge";
 import { newTabDefaultData, NEW_TAB } from "../../data/globalState/browser";
+import { Web3Provider } from "../../enum";
 import { useWalletSelected } from "../../hooks/useWalletSelected";
-import { JS_WEBVIEW_URL } from "../../utils/browserScripts";
 import { tw } from "../../utils/tailwind";
 import AddressBar from "./AddressBar";
 import useApprovalNearAccessModal from "./ApprovalNearAccessModal";
 import useNearApprovalTransactionModal from "./ApprovalNearTransactionModal";
-import { useBackgroundBridge } from "./core/useBackgroundBridge";
 import HomePageBrowser from "./HomePageBrowser";
 import NavigationBarBrowser from "./NavigationBarBrowser";
 
@@ -97,18 +98,9 @@ const BrowserTab = (props) => {
     };
   }, []);
 
-  const backgroundBridge = useBackgroundBridge({
-    webviewRef
+  const ethereumBackgroundBridge = useEthereumBackgroundBridge({
+    webviewRef,
   });
-
-  const {
-    selectedAddress,
-    gasPrice,
-    ApproveAccessModal,
-    closeApproveAccessModal,
-    ConfirmTransactionModal,
-    closeConfirmTransactionModal,
-  } = backgroundBridge;
 
   /**
    * Handle go foward browser
@@ -195,7 +187,6 @@ const BrowserTab = (props) => {
         ? JSON.parse(nativeEvent.data)
         : nativeEvent.data;
     const { origin } = data;
-
     if (data.type) {
       const { type, payload } = data;
       switch (type) {
@@ -214,9 +205,22 @@ const BrowserTab = (props) => {
         }
       }
     }
-
     if (data.name) {
-      backgroundBridge.onMessage(data, origin);
+      switch (data.name) {
+        case Web3Provider.ETHEREUM: {
+          ethereumBackgroundBridge.onMessage(data, {
+            host: origin,
+            favicon: tab?.icon,
+          });
+          break;
+        }
+        case Web3Provider.SOLANA: {
+          break;
+        }
+        default: {
+          break;
+        }
+      }
     }
   };
 
@@ -246,8 +250,6 @@ const BrowserTab = (props) => {
    * @returns boolean
    */
   const onShouldStartLoadWithRequest = (event) => {
-    console.log(event);
-
     const { url } = event;
     if (url.startsWith(NEAR_MAINNET_CONFIG.walletUrl)) {
       nearRequestHandler(url, NEAR_MAINNET_CONFIG.networkId);
@@ -333,21 +335,6 @@ const BrowserTab = (props) => {
       />
       {tab && ( //Tab is loaded to run script auto confirm transaction modal
         <View>
-          <ApproveAccessModal
-            url={initialUrl}
-            closeModal={closeApproveAccessModal}
-            selectedAddress={selectedAddress}
-            selectedWallet={selectedWallet}
-            favicon={tab?.icon}
-          />
-          <ConfirmTransactionModal
-            url={initialUrl}
-            closeModal={closeConfirmTransactionModal}
-            selectedAddress={selectedAddress}
-            selectedWallet={selectedWallet}
-            gasPrice={gasPrice}
-            favicon={tab?.icon}
-          />
           <ApprovalNearAccessModal
             favicon={tab?.icon}
             url={initialUrl}

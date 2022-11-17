@@ -3,8 +3,8 @@ import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 import { useSetRecoilState } from "recoil";
 import PinCodeInput from "../../../components/UI/PinCodeInput";
+import { storeToKeychain } from "../../../core/keychain";
 import { appLockState } from "../../../data/globalState/appLock";
-import { storeToKeychain } from "../../../utils/keychain";
 import { localStorage, STORAGE_APP_LOCK } from "../../../utils/storage";
 import { tw } from "../../../utils/tailwind";
 
@@ -25,7 +25,7 @@ const EnableAppLock = ({ onSuccess }) => {
       openAt: new Date(),
       isLock: false,
       typeBioMetric: "none",
-      autoLockAfterSeconds: 0,
+      autoLockAfterSeconds: 30,
       transactionSigning: true,
     };
 

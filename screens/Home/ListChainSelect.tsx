@@ -8,6 +8,7 @@ import { CogIcon } from "react-native-heroicons/solid";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import Loading, { SkeletonFlatList } from "../../components/Skeleton/Loading";
 import { primaryColor } from "../../configs/theme";
+import updateBalanceForWallet from "../../core/updateBalanceForWallet";
 import { ChainWallet } from "../../data/database/entities/chainWallet";
 import { Wallet } from "../../data/database/entities/wallet";
 import {
@@ -18,7 +19,6 @@ import { walletEnvironmentState } from "../../data/globalState/userData";
 import { getNetworkEnvironment } from "../../hooks/useBcNetworks";
 import { useWalletSelected } from "../../hooks/useWalletSelected";
 import { tw } from "../../utils/tailwind";
-import updateBalanceForWallet from "../../utils/updateBalanceForWallet";
 import PricesChart from "./PricesChart";
 interface IListChains {
   next: string;

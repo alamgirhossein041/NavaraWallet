@@ -1,16 +1,19 @@
-import {cloneDeep} from 'lodash';
-import React from 'react';
-import {View} from 'react-native';
-import {useRecoilState} from 'recoil';
-import Logo from '../../../assets/logo/logo.svg';
-import useDatabase from '../../../data/database/useDatabase';
-import {listWalletsState} from '../../../data/globalState/listWallets';
-import {encryptAESWithKeychain, getFromKeychain} from '../../../utils/keychain';
-import {tw} from '../../../utils/tailwind';
-import EnableAppLock from './EnableAppLock';
+import { cloneDeep } from "lodash";
+import React from "react";
+import { View } from "react-native";
+import { useRecoilState } from "recoil";
+import Logo from "../../../assets/logo/logo.svg";
+import {
+  encryptAESWithKeychain,
+  getFromKeychain,
+} from "../../../core/keychain";
+import useDatabase from "../../../data/database/useDatabase";
+import { listWalletsState } from "../../../data/globalState/listWallets";
+import { tw } from "../../../utils/tailwind";
+import EnableAppLock from "./EnableAppLock";
 
-export default function EnableAppLockOnBoard({navigation, route}) {
-  const {walletController} = useDatabase();
+export default function EnableAppLockOnBoard({ navigation, route }) {
+  const { walletController } = useDatabase();
   const [listWallets, setListWallets] = useRecoilState(listWalletsState);
   //background Darkmode
 
@@ -33,15 +36,16 @@ export default function EnableAppLockOnBoard({navigation, route}) {
             };
           }
           return item;
-        }),
+        })
       );
     }
 
-    navigation.navigate('EnableBiometric');
+    navigation.navigate("EnableBiometric");
   };
   return (
     <View
-      style={tw`relative items-center w-full min-h-full px-3 bg-white dark:bg-[#18191A] `}>
+      style={tw`relative items-center w-full min-h-full px-3 bg-white dark:bg-[#18191A] `}
+    >
       <View style={tw`mt-10`}>
         <Logo width={120} height={120} />
       </View>

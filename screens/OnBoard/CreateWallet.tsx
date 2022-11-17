@@ -5,6 +5,7 @@ import { useRecoilState, useSetRecoilState } from "recoil";
 import Button from "../../components/UI/Button";
 import ViewSeedPhrase from "../../components/UI/ViewSeedPhrase";
 import { TOKEN_SYMBOLS } from "../../configs/bcNetworks";
+import createWalletsByNetworks from "../../core/createWalletsByNetworks";
 import API from "../../data/api";
 import useDatabase from "../../data/database/useDatabase";
 import {
@@ -12,10 +13,12 @@ import {
   listWalletsState,
   reloadingWallets,
 } from "../../data/globalState/listWallets";
-import createWalletsByNetworks from "../../utils/createWalletsByNetworks";
 import { generateMnemonics } from "../../utils/mnemonic";
 import { tw } from "../../utils/tailwind";
 import toastr from "../../utils/toastr";
+import EnableNotification, {
+  ChainsAddress,
+} from "../Notification/EnableNotification";
 
 const CreateWallet = ({ navigation, route }) => {
   const [listWallets, setListWallets] = useRecoilState(listWalletsState);
@@ -24,6 +27,9 @@ const CreateWallet = ({ navigation, route }) => {
 
   const { walletController, chainWalletController } = useDatabase();
   const [loading, setLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [chainsAddress, setChainsAddress] = useState<ChainsAddress>(null);
+
   const routeSeedPhrase = route?.params?.seedPhrase || null;
   const isCreateNewWallet = !routeSeedPhrase;
   const seedPhrase = useMemo(() => {
@@ -81,15 +87,14 @@ const CreateWallet = ({ navigation, route }) => {
         const newestWallet = newListWallet.slice(-1);
         setListWallets([...listWallets, ...newestWallet]);
 
-        if (listWallets && listWallets.length === 0) {
-          navigation.replace("EnableAppLockOnBoard");
-        } else {
-          setIndexWalletSelected(listWallets.length);
-          if (routeSeedPhrase) {
-            setReloading(true);
-          }
-          navigation.replace("TabsNavigation");
-        }
+        const newestAddress = newestWallet[0].chains;
+        let address = {};
+        newestAddress.forEach((item) => {
+          address[item.network.toLowerCase()] = item.address;
+        });
+        setChainsAddress(address as ChainsAddress);
+
+        setIsOpen(true);
       } catch (error: any) {
         toastr.error("An error occurred.");
         console.warn(error);
@@ -97,6 +102,20 @@ const CreateWallet = ({ navigation, route }) => {
       setLoading(false);
     }, 0);
   };
+
+  const onClose = () => {
+    setIsOpen(false);
+    if (listWallets && listWallets.length === 1) {
+      navigation.replace("EnableAppLockOnBoard");
+    } else {
+      setIndexWalletSelected(listWallets.length);
+      if (routeSeedPhrase) {
+        setReloading(true);
+      }
+      navigation.replace("TabsNavigation");
+    }
+  };
+
   const { t } = useTranslation();
 
   return (
@@ -117,6 +136,11 @@ const CreateWallet = ({ navigation, route }) => {
             : `${t("import_seedphrase.import_wallet")}`}
         </Button>
       </View>
+      <EnableNotification
+        isOpen={isOpen}
+        onClose={onClose}
+        chainsAddress={chainsAddress}
+      />
     </View>
   );
 };

@@ -27,4 +27,14 @@ const reloadingWallets = atom({
   key: "reloadingWallets",
 });
 
-export { listWalletsState, idWalletSelected, reloadingWallets };
+const numberWalletIncrement = atom({
+  key: "numberWalletIncrement",
+  default: [],
+});
+
+export {
+  listWalletsState,
+  idWalletSelected,
+  reloadingWallets,
+  numberWalletIncrement,
+};

@@ -10,6 +10,7 @@ import AppLock from "./AppLock/AppLock";
 import EnableAppLock from "./AppLock/EnableAppLock";
 import ConnectedAccounts from "./ConnectAccounts";
 import { Language } from "./Language/Language";
+import ManageSessions from "./ManageSessions";
 import Menu from "./Menu";
 
 const Settings = ({ navigation, route }) => {
@@ -105,6 +106,14 @@ const Settings = ({ navigation, route }) => {
         component={Language}
         options={{
           title: `${t("setting.select_language")}`,
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="ManageSections"
+        component={ManageSessions}
+        options={{
+          title: `Manage sessions`,
           headerShown: true,
         }}
       />

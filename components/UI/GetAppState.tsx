@@ -1,23 +1,26 @@
 import ignoreWarnings from "ignore-warnings";
 import React, { useEffect, useState } from "react";
 import { AppState, LogBox, Platform, View } from "react-native";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { appLockState } from "../../data/globalState/appLock";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { browserApprovedHost } from "../../data/globalState/browser";
+import { listWalletsState } from "../../data/globalState/listWallets";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { usePinCodeRequired } from "../../hooks/usePinCodeRequired";
 import UpdateHistory from "../../screens/Browser/UpdateHistory";
 import { PinCodeRequired } from "../../screens/Settings/AppLock/PinCodeRequired";
+import WalletConnect from "../../screens/WalletConnect";
 import { APPROVED_HOSTS } from "../../utils/storage";
+import ActionSheetConfirmEventListerner from "../ActionSheet/ActionSheetConfirmEventListerner";
+import { ActionsheetContainer } from "./Actionsheet";
+import Offline from "./Offline";
 import { PopupResult } from "./PopupResult";
 
 const GetAppState = () => {
-  const [lock] = usePinCodeRequired();
-  const [_, setApprovedHosts] = useRecoilState(browserApprovedHost);
-  const applock = useRecoilValue(appLockState);
-
+  const { lock } = usePinCodeRequired();
+  const setApprovedHosts = useSetRecoilState(browserApprovedHost);
   const [approvedHostsFromLocalStorage] = useLocalStorage(APPROVED_HOSTS, {});
   const [appIsBlurred, setAppIsBlurred] = useState(false);
+  const listWallets = useRecoilValue(listWalletsState);
 
   useEffect(() => {
     if (Platform.OS === "android") {
@@ -29,7 +32,6 @@ const GetAppState = () => {
         }
       });
       // const focusSubscription = AppState.addEventListener("focus", () => {
-      //   console.log("focus");
       //   if (appIsBlurred) {
       //     setAppIsBlurred(false);
       //   }
@@ -83,12 +85,16 @@ const GetAppState = () => {
     "ViewPropTypes will be removed from React Native. Migrate to ViewPropTypes exported from 'deprecated-react-native-prop-types'.",
   ]);
   LogBox.ignoreAllLogs();
+
   return (
     <View>
+      <Offline />
       <PopupResult />
-      <PinCodeRequired />
       <UpdateHistory />
-      {/* <SplashModal appIsBlurred={appIsBlurred && applock?.isLock === false} /> */}
+      {listWallets?.length > 0 && <WalletConnect />}
+      <PinCodeRequired />
+      <ActionSheetConfirmEventListerner />
+      <ActionsheetContainer />
     </View>
   );
 };

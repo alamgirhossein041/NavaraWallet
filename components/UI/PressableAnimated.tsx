@@ -74,8 +74,20 @@ const PressableAnimated = ({
     }).start();
 
     setTimeout(() => {
-      triggerHapticFeedback();
+      triggerHapticFeedback("impactHeavy");
       onLongPress();
+    }, delay);
+  };
+
+  const onPressHandler = async () => {
+    Animated.spring(animation, {
+      toValue: 0,
+      useNativeDriver: true,
+    }).start();
+
+    setTimeout(() => {
+      triggerHapticFeedback();
+      onPress();
     }, delay);
   };
 
@@ -85,7 +97,7 @@ const PressableAnimated = ({
       onPressIn={onPressInHandler}
       onPressOut={onPressOutHandler}
       onLongPress={onLongPressHandler}
-      onPress={() => setTimeout(() => onPress(), delay)}
+      onPress={onPressHandler}
       {...props}
     >
       <>{children}</>

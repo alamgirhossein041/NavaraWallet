@@ -4,10 +4,12 @@ import bs58 from "bs58";
 import * as nearAPI from "near-api-js";
 import { derivePath } from "near-hd-key";
 import { useEffect, useState } from "react";
+import uuid from "react-native-uuid";
 import nacl from "tweetnacl";
 import { NEAR_MAINNET_CONFIG } from "../configs/bcMainnets";
 import { DEVIVERATION_PATH } from "../configs/bcNetworks";
 import { NEAR_TESTNET_CONFIG } from "../configs/bcTestnets";
+import API from "../data/api";
 import { INearInstance, WalletInterface } from "../data/types";
 import { NETWORKS, NETWORK_ENVIRONMENT_ENUM } from "../enum/bcEnum";
 import { getNearConfig, useBcNetworks } from "./useBcNetworks";
@@ -64,7 +66,21 @@ export const createNearWallet = async (seed: Buffer, accountIndex = 0) => {
   }
   if (testnetAccountIds.length) {
     keyPairResult.testnetAddress = testnetAccountIds[0];
+  } else {
+    let createSuccess = false;
+    while (!createSuccess) {
+      const testnetAccountId = `${uuid.v4()}.testnet`;
+      const res = await API.post(`${NEAR_TESTNET_CONFIG.helperUrl}/account`, {
+        newAccountId: testnetAccountId,
+        newAccountPublicKey: publicKey,
+      });
+      if (!res.receipts_outcome[0].outcome.status.Failure) {
+        keyPairResult.testnetAddress = testnetAccountId;
+        createSuccess = true;
+      }
+    }
   }
+
   return { ...keyPairResult, network: NETWORKS.NEAR };
 };
 
@@ -92,6 +108,7 @@ export const getNearBalance = async (
   } catch (e) {
     balance = "0";
   }
+
   return {
     address,
     balance: balance,

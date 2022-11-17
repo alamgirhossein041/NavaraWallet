@@ -1,18 +1,16 @@
-import debouce from 'lodash.debounce';
-import {Actionsheet, Modal, Spinner, useDisclose} from 'native-base';
-import React, {useEffect, useMemo, useState} from 'react';
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
-import {ChevronDownIcon} from 'react-native-heroicons/outline';
-import IconSearch from '../../assets/icons/icon-search.svg';
-import {primaryColor} from '../../configs/theme';
-import {useDarkMode} from '../../hooks/useModeDarkMode';
-import {useGridDarkMode} from '../../hooks/useModeDarkMode';
-import {useTextDarkMode} from '../../hooks/useModeDarkMode';
-import {shortenAddress} from '../../utils/stringsFunction';
-import {tw} from '../../utils/tailwind';
-import SearchBar from '../../components/SearchBar';
-import TextField from '../../components/TextField';
-import TokenIcon from '../../components/TokenIcon';
+import debouce from "lodash.debounce";
+import { Actionsheet, Spinner, useDisclose } from "native-base";
+import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ChevronDownIcon } from "react-native-heroicons/outline";
+import IconSearch from "../../assets/icons/icon-search.svg";
+import SearchBar from "../../components/UI/SearchBar";
+import TextField from "../../components/UI/TextField";
+import TokenIcon from "../../components/UI/TokenIcon";
+import { primaryColor } from "../../configs/theme";
+import { shortenAddress } from "../../utils/stringsFunction";
+import { tw } from "../../utils/tailwind";
 
 export interface IOption {
   label: string;
@@ -27,11 +25,13 @@ interface SelectOptionProps {
   stringStyle?: string;
   style?: string;
   onSetValue(value: string | number | object): void;
-  filterType?: 'normal' | 'debounce';
+  filterType?: "normal" | "debounce";
   filterValue?: string;
   debounce?: number;
   handleChange?: (value: string) => void;
   disabledValue?: string;
+  loading?: boolean;
+  error?: string;
 }
 
 const ActionsheetSelectOption = ({
@@ -39,16 +39,18 @@ const ActionsheetSelectOption = ({
   value,
   icon,
   style,
-  iconSize = 'h-7 w-7',
-  stringStyle = 'text-sm',
+  iconSize = "h-7 w-7",
+  stringStyle = "text-sm",
   onSetValue,
-  filterType = 'normal',
+  filterType = "normal",
   filterValue,
   debounce = 500,
   handleChange = () => {},
   disabledValue,
+  loading,
+  error,
 }: SelectOptionProps) => {
-  const {isOpen, onOpen, onClose} = useDisclose();
+  const { isOpen, onOpen, onClose } = useDisclose();
   const handleSelectOption = (option: IOption) => {
     onSetValue(option.value);
     onClose();
@@ -68,28 +70,28 @@ const ActionsheetSelectOption = ({
       debouncedResults.cancel();
     };
   });
-  const modeColor = useDarkMode();
-  //text darkmode
-  const textColor = useTextDarkMode();
-  //grid, shadow darkmode
 
-  const gridColor = useGridDarkMode();
+  const { t } = useTranslation();
+
   return (
     <>
       <TouchableOpacity
         onPress={onOpen}
-        style={tw`p-2 rounded-3xl max-w-96 ${style}`}>
+        style={tw`p-2 rounded-3xl max-w-96 ${style}`}
+      >
         <View style={tw`flex-row items-center justify-between`}>
           <View style={tw`flex-row items-center`}>
             <View
-              style={tw`rounded-full ${iconSize} mr-2 items-center justify-center`}>
+              style={tw`rounded-full ${iconSize} mr-2 items-center justify-center`}
+            >
               {icon}
             </View>
             <View style={tw`mr-3`}>
               <Text
-                style={tw`${stringStyle} ${textColor}`}
+                style={tw`${stringStyle} `}
                 numberOfLines={1}
-                ellipsizeMode="tail">
+                ellipsizeMode="tail"
+              >
                 {value}
               </Text>
             </View>
@@ -98,30 +100,43 @@ const ActionsheetSelectOption = ({
         </View>
       </TouchableOpacity>
       <Actionsheet isOpen={isOpen} onClose={onClose}>
-        <Actionsheet.Content
-          style={tw`w-full h-4/5 p-6 flex flex-col items-center justify-center rounded-3xl ${modeColor}`}>
-          {filterType === 'normal' && (
+        <View
+          style={tw`flex flex-col items-center justify-center w-full p-6 h-4/5 rounded-t-3xl bg-white dark:bg-[#18191A]`}
+        >
+          {filterType === "normal" && (
             <SearchBar
-              placeholder="Search symbol"
+              style={tw` dark:text-white`}
+              placeholder={t("swap.search_symbol")}
               list={options}
-              filterProperty={['label', 'value']}
+              filterProperty={["label", "value"]}
               onListFiltered={(list: IOption[]) => setFilteredList(list)}
             />
           )}
-          {filterType === 'debounce' && (
+          {filterType === "debounce" && (
             <TextField
-              icon={<IconSearch style={tw`mr-2`} />}
+              icon={
+                <View
+                  style={tw`flex items-center justify-center w-6 h-6 p-3 m-2 bg-white rounded-full shadow select-none dark:bg-gray-500 `}
+                >
+                  <IconSearch />
+                </View>
+              }
               value={filterValue}
-              placeholder="Search symbol"
+              placeholder={t("search_bar.search_symbol")}
               onChangeText={debouncedResults}
             />
           )}
           <ScrollView style={tw`w-full `}>
-            {filteredList?.length < 1 && (
+            {loading && (
               <View style={tw`mt-2`}>
                 <Spinner color={primaryColor} />
               </View>
             )}
+
+            {(filteredList?.length < 1 || error) && (
+              <Text style={tw`mt-2 dark:text-white`}>{error}</Text>
+            )}
+
             {filteredList?.map((item, index) => {
               const isSelected =
                 item.label === value || item.label === disabledValue;
@@ -131,17 +146,18 @@ const ActionsheetSelectOption = ({
                   key={index}
                   disabled={isSelected}
                   onPress={() => handleSelectOption(item)}
-                  style={tw`w-full p-2 my-1 items-center flex-row rounded-full ${gridColor}
-                    ${isSelected ? 'opacity-40' : ''}
-                  `}>
+                  style={tw`w-full p-2 my-1 items-center flex-row rounded-full 
+                    ${isSelected ? "opacity-40" : ""}
+                  `}
+                >
                   {item.iconUri && (
                     <TokenIcon size="w-10 h-10" uri={item.iconUri} />
                   )}
                   <View style={tw`flex-col flex-1 ml-2`}>
-                    <Text style={tw`${textColor} font-medium text-base`}>
+                    <Text style={tw`text-base font-medium dark:text-white`}>
                       {item.label}
                     </Text>
-                    <Text style={tw`${textColor} text-sm`}>
+                    <Text style={tw`text-sm dark:text-white`}>
                       {shortenAddress(item.value as string)}
                     </Text>
                   </View>
@@ -149,7 +165,7 @@ const ActionsheetSelectOption = ({
               );
             })}
           </ScrollView>
-        </Actionsheet.Content>
+        </View>
       </Actionsheet>
     </>
   );

@@ -8,7 +8,7 @@ import Button from "../../../components/UI/Button";
 import CheckBox from "../../../components/UI/CheckBox";
 import SignPinCode from "../../../components/UI/SignPinCode";
 import { primaryColor } from "../../../configs/theme";
-import { decryptAESWithKeychain } from "../../../utils/keychain";
+import { decryptAESWithKeychain } from "../../../core/keychain";
 import { tw } from "../../../utils/tailwind";
 import toastr from "../../../utils/toastr";
 const PrivacySeedPhrase = ({ route, navigation }) => {

@@ -57,7 +57,7 @@ export default function DetailChain({ route, navigation }) {
       headerRight: () => (
         <CurrencyFormat
           value={token.price}
-          style="text-gray-400 text-sm flex-row items-center"
+          style="text-gray-400 text-sm flex-row items-center px-1"
         />
       ),
     });

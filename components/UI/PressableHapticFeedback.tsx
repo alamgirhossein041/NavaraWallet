@@ -13,7 +13,7 @@ export const triggerHapticFeedback = (
   hapticType?: HapticFeedbackTypes,
   hapticOptions?: HapticOptions
 ) => {
-  const type = hapticType || "impactMedium";
+  const type = hapticType || "impactLight";
   const options = {
     enableVibrateFallback: true,
     ignoreAndroidSystemSettings: false,

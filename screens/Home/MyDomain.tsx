@@ -9,6 +9,7 @@ import IconCopy from "../../assets/icons/icon-copy.svg";
 import IconDetailWallet from "../../assets/icons/icon-detail-wallet.svg";
 import IconGetDomain from "../../assets/icons/icon-get-domain.svg";
 import ActionSheetItem from "../../components/UI/ActionSheetItem";
+import { shortWalletName } from "../../utils/stringsFunction";
 import { tw } from "../../utils/tailwind";
 import toastr from "../../utils/toastr";
 
@@ -33,9 +34,9 @@ const RenderDomain = ({ data, index }: any) => {
     onOpen();
   };
   const linkTo = useLinkTo();
-
+  const subStringWalletId = shortWalletName(data.id);
   const nameWallet =
-    data.name === null ? `Wallet ${index + 1}` : `${data.name}`;
+    data.name === null ? `Wallet #${subStringWalletId}` : `${data.name}`;
   // const nameWallet = walletSelected&&walletSelected?.data.name
   const navigation = useNavigation();
   const handleDetailWallet = () => {

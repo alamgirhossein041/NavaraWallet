@@ -27,7 +27,7 @@ export default function ConnectWallet(props: IConnectWalletProps) {
           <LockClosedIcon color="black" size={15} />
           <Text>{getDomainFromUrl(url)}</Text>
         </View>
-        <Text style={tw`dark:text-white  mb-5 text-xl font-bold`}>
+        <Text style={tw`mb-5 text-xl font-bold dark:text-white`}>
           Connect to this site
         </Text>
 
@@ -41,9 +41,9 @@ export default function ConnectWallet(props: IConnectWalletProps) {
             }}
           />
           <View style={tw`mx-2`}>
-            <Text style={tw`dark:text-white  font-bold`}>
+            <Text style={tw`font-bold dark:text-white`}>
               {walletSelected.data.name || `Wallet ${walletSelected.index + 1}`}{" "}
-              ({ethAddress})
+              ({ethAddress}){walletSelected.data.chains[0].balance}
             </Text>
           </View>
         </View>

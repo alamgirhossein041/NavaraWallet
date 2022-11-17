@@ -24,6 +24,7 @@ const HistoryWallets = (props) => {
   const symbol = route.params.token.symbol;
   const address = route.params.token.address;
   const network = route.params.token.network;
+
   const [loading, setLoading] = useState(true);
   const {
     status,

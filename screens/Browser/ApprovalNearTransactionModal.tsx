@@ -12,12 +12,12 @@ import { NETWORK_COINGEKO_IDS } from "../../configs/bcNetworks";
 import { NEAR_TESTNET_CONFIG } from "../../configs/bcTestnets";
 import { primaryColor } from "../../configs/theme";
 import { CURRENCIES } from "../../constants/currencies";
+import { parseTransactionsToSign } from "../../core/nearTransaction";
 import API, { URL_GET_PRICE } from "../../data/api";
 import { listWalletsState } from "../../data/globalState/listWallets";
 import { NETWORKS } from "../../enum/bcEnum";
 import { createNearInstance } from "../../hooks/useNEAR";
 import usePopupResult from "../../hooks/usePopupResult";
-import { parseTransactionsToSign } from "../../utils/nearTransaction";
 import { formatBalance } from "../../utils/number";
 import { shortenAddress } from "../../utils/stringsFunction";
 import { tw } from "../../utils/tailwind";
@@ -230,8 +230,6 @@ export default function useNearApproveAccessModal(
             if (error.message.includes("Exceeded the prepaid gas")) {
               messageErr = "Exceeded the prepaid gas";
             }
-            console.log(error.message?.kind?.ExecutionError);
-
             onClose();
             popupResult({
               title:

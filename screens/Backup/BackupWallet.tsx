@@ -10,16 +10,16 @@ import Button from "../../components/UI/Button";
 import TextField from "../../components/UI/TextField";
 import { Regex } from "../../configs/defaultValue";
 import { primaryColor, primaryGray } from "../../configs/theme";
+import {
+  decryptAESWithKeychain,
+  encryptAESWithKeychain,
+} from "../../core/keychain";
 import useDatabase from "../../data/database/useDatabase";
 import { listWalletsState } from "../../data/globalState/listWallets";
 import { IBackupData, IFileData } from "../../data/types";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import usePopupResult from "../../hooks/usePopupResult";
 import { googleDriveStoreFile } from "../../module/googleApi/GoogleDrive";
-import {
-  decryptAESWithKeychain,
-  encryptAESWithKeychain,
-} from "../../utils/keychain";
 import { GOOGLE_ACCESS_TOKEN } from "../../utils/storage";
 import { tw } from "../../utils/tailwind";
 import toastr from "../../utils/toastr";
@@ -30,7 +30,7 @@ const BackupWallet = ({ navigation, route }) => {
   const [storedAccessToken, setStorageAccessToken] =
     useLocalStorage(GOOGLE_ACCESS_TOKEN);
   const [accessToken, setAccessToken] = useState("");
-  const [isAppPassword, setIsAppPassword] = useState(true);
+  const [isNewPassword, setIsNewPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const popupResult = usePopupResult();
   const { walletController } = useDatabase();
@@ -62,7 +62,7 @@ const BackupWallet = ({ navigation, route }) => {
     if (fileName.length === 0) {
       return "Please enter file name";
     }
-    if (isAppPassword) {
+    if (!isNewPassword) {
       return "";
     }
     if (password.length === 0) {
@@ -85,7 +85,7 @@ const BackupWallet = ({ navigation, route }) => {
   };
 
   const getData = async (password: string) => {
-    if (isAppPassword) {
+    if (!isNewPassword) {
       return seedPhrase;
     } else {
       const decryptedSeedPhrase = await decryptAESWithKeychain(seedPhrase);
@@ -208,7 +208,7 @@ const BackupWallet = ({ navigation, route }) => {
       <Text style={tw`w-full dark:text-white`}>{storedAccessToken?.email}</Text>
       <ScrollView style={tw`flex`}>
         {textFields.map((item, index) => {
-          if (isAppPassword && index > 0) {
+          if (!isNewPassword && index > 0) {
             return null;
           }
           return (
@@ -224,12 +224,12 @@ const BackupWallet = ({ navigation, route }) => {
                   onChangeText={onChange}
                   label={item.label}
                   returnKeyType={
-                    isAppPassword || item.name === "passwordHint"
+                    !isNewPassword || item.name === "passwordHint"
                       ? "done"
                       : "next"
                   }
                   onSubmitEditing={() => {
-                    if (!isAppPassword && item.name !== "passwordHint") {
+                    if (isNewPassword && item.name !== "passwordHint") {
                       textFieldRef.current[index + 1]?.focus();
                     }
                   }}
@@ -243,13 +243,13 @@ const BackupWallet = ({ navigation, route }) => {
       <View style={tw`absolute w-full bottom-5`}>
         <View style={tw`flex-row items-center justify-between w-full`}>
           <Text style={tw`font-semibold dark:text-white`}>
-            Use App's Password for encryption
+            Use new password for encryption
           </Text>
           <Switch
             trackColor={{ false: primaryGray, true: primaryColor }}
             thumbColor="white"
-            onValueChange={(value) => setIsAppPassword(value)}
-            value={isAppPassword}
+            onValueChange={setIsNewPassword}
+            value={isNewPassword}
           />
         </View>
         <Button

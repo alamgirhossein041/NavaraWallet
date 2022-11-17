@@ -28,9 +28,15 @@ const MenuItem = ({
         >
           {icon}
         </View>
-        <Text style={tw`ml-2 text-sm font-bold text-gray-400 dark:text-white `}>
-          {name}
-        </Text>
+        {typeof name === "string" ? (
+          <Text
+            style={tw`ml-2 text-sm font-bold text-gray-400 dark:text-white `}
+          >
+            {name}
+          </Text>
+        ) : (
+          name
+        )}
       </View>
       <View style={tw`flex flex-row items-center mr-2`}>
         {typeof value === "string" ? (

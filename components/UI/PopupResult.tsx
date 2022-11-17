@@ -19,6 +19,7 @@ const openPopupResultState = atom({
     isOpen: false,
   } as IPopupResultProps,
 });
+
 const PopupResult = () => {
   const [popupResult, setPopupResult] = useRecoilState(openPopupResultState);
 

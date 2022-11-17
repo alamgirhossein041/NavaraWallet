@@ -42,8 +42,6 @@ const validateToken = async (
 ): Promise<boolean> => {
   let validatingNetwork = network;
   if (isSameNetwork(network, NETWORKS.NEAR)) {
-    console.log(address, network, env, await validateAccountId(address, env));
-
     return await validateAccountId(address, env);
   } else if (EVM_CHAINS.includes(network)) {
     validatingNetwork = NETWORKS.ETHEREUM;

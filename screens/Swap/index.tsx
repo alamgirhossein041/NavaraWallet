@@ -13,7 +13,12 @@ const SwapToken = () => {
       <View style={tw`flex-col items-center justify-between flex-1 w-full`}>
         <ScrollView style={tw`w-full mb-5 `}>
           <Loading type={"spin"}>
-            <ListChainsChart next="SwapScreen" caching filter={filter} />
+            <ListChainsChart
+              next="SwapScreen"
+              caching
+              hideSettings
+              filter={filter}
+            />
           </Loading>
         </ScrollView>
       </View>

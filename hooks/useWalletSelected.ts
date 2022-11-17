@@ -31,13 +31,14 @@ const useWalletSelected = (): IUseWalletSelected => {
   const selectedWallet = useMemo(() => {
     const wallet = {
       ...selectedWalletInstance,
-      chains: selectedWalletInstance.chains.map((chain) => {
+      chains: selectedWalletInstance?.chains.map((chain) => {
+        const addressByNetwork =
+          walletEnvironment === ENVIRONMENT.PRODUCTION
+            ? chain?.address
+            : chain?.testnetAddress;
         return {
           ...chain,
-          address:
-            walletEnvironment === ENVIRONMENT.PRODUCTION
-              ? chain?.address
-              : chain?.testnetAddress,
+          currentAddress: addressByNetwork,
         };
       }),
     };

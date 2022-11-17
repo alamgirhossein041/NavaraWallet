@@ -7,6 +7,7 @@ import { CogIcon } from "react-native-heroicons/solid";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import Loading, { SkeletonFlatList } from "../../components/Skeleton/Loading";
 import { primaryColor } from "../../configs/theme";
+import updateBalanceForWallet from "../../core/updateBalanceForWallet";
 import { ChainWallet } from "../../data/database/entities/chainWallet";
 import { Wallet } from "../../data/database/entities/wallet";
 import {
@@ -17,15 +18,20 @@ import { walletEnvironmentState } from "../../data/globalState/userData";
 import { getNetworkEnvironment } from "../../hooks/useBcNetworks";
 import { useWalletSelected } from "../../hooks/useWalletSelected";
 import { tw } from "../../utils/tailwind";
-import updateBalanceForWallet from "../../utils/updateBalanceForWallet";
 import PricesChart from "./PricesChart";
 interface IListChains {
   next: string;
   filter?: string[];
   caching?: boolean;
+  hideSettings?: boolean;
 }
 
-const ListChainsChart = ({ next, filter, caching = false }: IListChains) => {
+const ListChainsChart = ({
+  next,
+  filter,
+  caching = false,
+  hideSettings = false,
+}: IListChains) => {
   const [reloading, setReloading] = useRecoilState(reloadingWallets);
   const walletSelected = useWalletSelected();
   const navigation = useNavigation();
@@ -53,8 +59,9 @@ const ListChainsChart = ({ next, filter, caching = false }: IListChains) => {
           });
         });
       }
-    } catch (error) {}
-
+    } catch (error) {
+      console.warn(error);
+    }
     setReloading(false);
   };
 
@@ -71,22 +78,26 @@ const ListChainsChart = ({ next, filter, caching = false }: IListChains) => {
   }, [filter, walletSelected]);
 
   useEffect(() => {
-    navigation.setOptions({
-      headerRight: () => {
-        return (
-          <TouchableOpacity
-            style={tw``}
-            onPress={() => navigation.navigate("ManageChains" as never)}
-          >
-            <CogIcon color={primaryColor} />
-          </TouchableOpacity>
-        );
-      },
-    });
-  }, [navigation]);
+    if (!hideSettings) {
+      navigation.setOptions({
+        headerRight: () => {
+          return (
+            <TouchableOpacity
+              style={tw``}
+              onPress={() => navigation.navigate("ManageChains" as never)}
+            >
+              <CogIcon color={primaryColor} />
+            </TouchableOpacity>
+          );
+        },
+      });
+    }
+  }, [navigation, hideSettings]);
 
   useEffect(() => {
-    reloading && isFocused && getBalance();
+    if (reloading && isFocused) {
+      getBalance();
+    }
   }, [isFocused, reloading]);
 
   return (

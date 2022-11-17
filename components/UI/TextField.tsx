@@ -8,6 +8,7 @@ import React, {
 import {
   Animated,
   Keyboard,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -128,8 +129,9 @@ const TextField = forwardRef((props: ITextFieldProps, ref) => {
 
   return (
     <View style={tw`w-full my-1`}>
-      <View
-        style={tw`w-full my-5 ${styleInput}  relative flex flex-row items-center px-3  rounded-xl  mb-1 border ${
+      <Pressable
+        onPress={() => internalInputRef.current.focus()}
+        style={tw`w-full my-5 ${styleInput}  relative flex flex-row  px-3  rounded-xl  mb-1 border ${
           err ? "border-red-500 bg-red-100" : "border-gray-300"
         }`}
       >
@@ -194,7 +196,7 @@ const TextField = forwardRef((props: ITextFieldProps, ref) => {
             <>{iconPosition === "right" && icon}</>
           )}
         </PressableAnimated>
-      </View>
+      </Pressable>
       {typeof err === "string" && err && (
         <Text style={tw`text-center text-red-500 dark:text-white`}>{err}</Text>
       )}

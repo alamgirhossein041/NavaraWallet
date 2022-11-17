@@ -1,5 +1,5 @@
 import { Spinner } from "native-base";
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Switch, View } from "react-native";
 import ReactNativeBiometrics, { BiometryTypes } from "react-native-biometrics";
@@ -28,24 +28,26 @@ const FaceId: FunctionComponent = () => {
     available: false,
     biometryType: "",
   });
-  const menu = {
-    onPress: () => handleChangeSwitch(true),
-    icon: <UserIcon width="100%" height="100%" fill={primaryColor} />,
-    name: `${t("setting.apps_lock.face_id")}`,
-    // label={t("setting.apps_lock.set_password")}
-    value: loading ? (
-      <Spinner />
-    ) : (
-      <Switch
-        trackColor={{ false: primaryGray, true: primaryColor }}
-        thumbColor="white"
-        onValueChange={(value) => handleChangeSwitch(value)}
-        value={appLock.typeBioMetric === BiometryTypes.FaceID}
-      />
-    ),
+  const menu = useMemo(() => {
+    return {
+      onPress: () => {},
+      icon: <UserIcon width="100%" height="100%" fill={primaryColor} />,
+      name: `${t("setting.apps_lock.face_id")}`,
+      // label={t("setting.apps_lock.set_password")}
+      value: loading ? (
+        <Spinner />
+      ) : (
+        <Switch
+          trackColor={{ false: primaryGray, true: primaryColor }}
+          thumbColor="white"
+          onValueChange={(value) => handleChangeSwitch(value)}
+          value={appLock.typeBioMetric === "none"}
+        />
+      ),
 
-    next: false,
-  };
+      next: false,
+    };
+  }, [appLock.typeBioMetric, loading]);
 
   useEffect(() => {
     (async () => {
@@ -57,18 +59,25 @@ const FaceId: FunctionComponent = () => {
 
   const handleChangeSwitch = async (value: boolean) => {
     setLoading(true);
-    if (await checkStateScanFingerNative()) {
-      if (appLock.typeBioMetric !== BiometryTypes.FaceID) {
-        setAppLock({
-          ...appLock,
-          typeBioMetric: BiometryTypes.FaceID,
-        });
-      } else {
-        setAppLock({
-          ...appLock,
-          typeBioMetric: "none",
-        });
+    if (value) {
+      if (await checkStateScanFingerNative()) {
+        if (appLock.typeBioMetric !== BiometryTypes.FaceID) {
+          setAppLock({
+            ...appLock,
+            typeBioMetric: BiometryTypes.FaceID,
+          });
+        } else {
+          setAppLock({
+            ...appLock,
+            typeBioMetric: "none",
+          });
+        }
       }
+    } else {
+      setAppLock({
+        ...appLock,
+        typeBioMetric: "none",
+      });
     }
     setLoading(false);
   };

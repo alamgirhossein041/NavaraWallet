@@ -1,10 +1,21 @@
 import axios from "axios";
 import { apiUrl } from "../../configs/apiUrl";
+import { cacheCoinId } from "./caching";
 
 const API = axios.create({ baseURL: apiUrl });
 
 API.interceptors.response.use(
-  (response) => {
+  async (response) => {
+    const config = response?.config;
+    if (config?.url) {
+      switch (config.url) {
+        case "/coin":
+          cacheCoinId(config?.params, response?.data);
+          break;
+        default:
+          break;
+      }
+    }
     return response.data;
   },
   (error) => {

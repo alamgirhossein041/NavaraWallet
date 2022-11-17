@@ -1,7 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
-import axios from "axios";
+import { isNumber } from "lodash";
 import { Skeleton } from "native-base";
-import React from "react";
+import React, { useMemo } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import {
   CheckCircleIcon,
@@ -14,28 +14,21 @@ import { useRecoilValue } from "recoil";
 import CurrencyFormat from "../../components/UI/CurrencyFormat";
 import MiniLineChart, { ChartData } from "../../components/UI/MiniLineChart";
 import PressableAnimatedSpin from "../../components/UI/PressableAnimatedSpin";
-import {
-  CHAIN_ICONS,
-  NETWORK_COINGEKO_IDS,
-  TOKEN_SYMBOLS,
-} from "../../configs/bcNetworks";
+import { CHAIN_ICONS, TOKEN_SYMBOLS } from "../../configs/bcNetworks";
 import {
   dangerColor,
   primaryColor,
   safeColor,
   warningColor,
 } from "../../configs/theme";
-import API from "../../data/api";
+import { fetchMarketChart } from "../../data/api/fetching";
 import { ChainWallet } from "../../data/database/entities/chainWallet";
-import { priceTokenState } from "../../data/globalState/priceTokens";
 import showTotalAssets from "../../data/globalState/showTotalAssets";
 import {
   capitalizeFirstLetter,
   getKeyByValue,
 } from "../../utils/stringsFunction";
 import { tw } from "../../utils/tailwind";
-
-const COIN_GECKO_URL = "https://api.coingecko.com/api/v3/coins/";
 
 interface IChainItem {
   chain: ChainWallet;
@@ -46,7 +39,6 @@ interface IChainItem {
 
 const PricesChart = ({ chain, next, caching = false }: IChainItem) => {
   const inVisible = useRecoilValue(showTotalAssets);
-  const priceTokens = useRecoilValue(priceTokenState);
 
   const {
     isLoading: loadingPrices,
@@ -54,68 +46,41 @@ const PricesChart = ({ chain, next, caching = false }: IChainItem) => {
     isError,
     refetch,
   } = useQuery(
-    [`price-${chain.symbol}`, chain.symbol],
+    [`price-${chain.symbol}`, chain.symbol, caching],
     async (): Promise<any> => {
       if (caching) {
-        return;
+        return null;
       }
-      const resTokenId = await API.get("/coin/", {
-        params: {
-          symbol: chain.symbol.toLowerCase(),
-        },
-      });
-
-      const tokenId = resTokenId[0]?.id;
-      if (!!tokenId) {
-        const url = `${COIN_GECKO_URL}${tokenId}/market_chart`;
-        const response = await axios.get(url, {
-          params: {
-            id: tokenId,
-            vs_currency: "usd",
-            days: "14",
-            interval: "daily",
-          },
-        });
-
-        const priceData = await response?.data?.prices;
-        const _price: ChartData[] = priceData.map(
-          (item: any[], index: number) => {
-            return {
-              x: index,
-              y: item[1] as number,
-            };
-          }
-        );
-        return _price;
-      }
+      const response = await fetchMarketChart(chain.symbol);
+      const priceData = await response?.prices;
+      const _price: ChartData[] = priceData.map(
+        (item: any[], index: number) => {
+          return {
+            x: index,
+            y: item[1] as number,
+          };
+        }
+      );
+      return _price;
     }
   );
 
-  const IconChain = CHAIN_ICONS[chain.network];
-  const IconToken = CHAIN_ICONS[getKeyByValue(TOKEN_SYMBOLS, chain.symbol)];
-
   const navigation = useNavigation();
 
-  const handleOnPress = () => {
-    const latestPrice = priceTokens[NETWORK_COINGEKO_IDS[chain.network]]?.usd;
+  const IconChain = CHAIN_ICONS[chain.network];
+  const IconToken = CHAIN_ICONS[getKeyByValue(TOKEN_SYMBOLS, chain.symbol)];
+  const latestPrice = useMemo(
+    () => price && price[price?.length - 1]?.y,
+    [price]
+  );
 
+  const handleOnPress = () => {
     navigation.navigate(
       next as never,
       { token: { ...chain, price: latestPrice } } as never
     );
     return;
   };
-
-  if (isError) {
-    return (
-      <View style={tw`flex-row items-center justify-between py-2`}>
-        <Text>Get {chain.symbol} price failed</Text>
-        <PressableAnimatedSpin onPress={refetch}>
-          <RefreshIcon color={primaryColor} />
-        </PressableAnimatedSpin>
-      </View>
-    );
-  }
 
   return (
     <TouchableOpacity
@@ -128,7 +93,7 @@ const PricesChart = ({ chain, next, caching = false }: IChainItem) => {
             <IconToken width={40} height={40} />
           </View>
           <View
-            style={tw`absolute -right-1 border border-gray-100 ml-0.5 bg-white dark:bg-[#18191A]  rounded-full`}
+            style={tw`absolute -right-1 border-[0.4] border-gray-100 ml-0.5 bg-white dark:bg-[#18191A] rounded-full`}
           >
             <IconChain width={18} height={18} />
           </View>
@@ -149,8 +114,19 @@ const PricesChart = ({ chain, next, caching = false }: IChainItem) => {
       </View>
       <View style={tw`w-1/2 flex-row items-start`}>
         <View style={tw``}>
-          {!loadingPrices && (
-            <>{!caching && price && <MiniLineChart data={price} />}</>
+          {!caching && (
+            <>
+              {isError || loadingPrices || !price ? (
+                <PressableAnimatedSpin
+                  onPress={refetch}
+                  spinning={loadingPrices}
+                >
+                  <RefreshIcon color={primaryColor} />
+                </PressableAnimatedSpin>
+              ) : (
+                <MiniLineChart data={price} />
+              )}
+            </>
           )}
         </View>
         <View style={tw`flex-1 items-end`}>
@@ -161,7 +137,7 @@ const PricesChart = ({ chain, next, caching = false }: IChainItem) => {
               {!caching && price && (
                 <View>
                   <CurrencyFormat
-                    value={price[price?.length - 1]?.y}
+                    value={latestPrice}
                     style="font-semibold text-sm"
                   />
                 </View>
@@ -175,7 +151,9 @@ const PricesChart = ({ chain, next, caching = false }: IChainItem) => {
               <Text
                 style={tw`dark:text-white  text-xs text-gray-600 text-right`}
               >
-                {`${+chain.balance?.toFixed(4)} ${chain.symbol}`}
+                {isNumber(chain.balance)
+                  ? `${+chain.balance?.toFixed(4)} ${chain.symbol}`
+                  : "failed"}
               </Text>
             )}
           </View>

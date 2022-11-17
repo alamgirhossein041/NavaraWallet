@@ -2,13 +2,13 @@ import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useRecoilState, useSetRecoilState } from "recoil";
+import { getFromKeychain } from "../../core/keychain";
 import useDatabase from "../../data/database/useDatabase";
 import { appLockState } from "../../data/globalState/appLock";
 import { listWalletsState } from "../../data/globalState/listWallets";
 import { walletEnvironmentState } from "../../data/globalState/userData";
 import { ENVIRONMENT } from "../../global.config";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
-import { getFromKeychain } from "../../utils/keychain";
 import {
   localStorage,
   NETWORKS_ENVIRONMENT,

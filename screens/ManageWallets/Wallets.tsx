@@ -2,7 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Actionsheet, useDisclose } from "native-base";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import DraggableFlatList from "react-native-draggable-flatlist";
 import { PlusIcon } from "react-native-heroicons/outline";
 import { DotsHorizontalIcon } from "react-native-heroicons/solid";
@@ -15,6 +15,7 @@ import PressableAnimated from "../../components/UI/PressableAnimated";
 import { primaryColor } from "../../configs/theme";
 import { listWalletsState } from "../../data/globalState/listWallets";
 import useWalletsActions from "../../data/globalState/listWallets/listWallets.actions";
+import { shortWalletName } from "../../utils/stringsFunction";
 import { tw } from "../../utils/tailwind";
 import CardWallet from "../Home/CardWallet";
 
@@ -98,27 +99,25 @@ const Wallets = ({ navigation }) => {
   );
 
   return (
-    <ScrollView style={tw`bg-white dark:bg-[#18191A] py-1`}>
-      <View style={tw`flex flex-col justify-between `}>
-        {listWallets && (
-          <DraggableFlatList
-            data={listWallets}
-            renderItem={RenderWallet}
-            keyExtractor={(item) => item.id}
-            onDragEnd={({ data }) => setListWallets(data)}
-          />
-        )}
-        {/* ActionSheet create walllet */}
-        {actionSheetCreateWallet}
-      </View>
-    </ScrollView>
+    <View style={tw`flex flex-col justify-between bg-white dark:bg-[#18191A] `}>
+      {listWallets && (
+        <DraggableFlatList
+          data={listWallets}
+          renderItem={RenderWallet}
+          keyExtractor={(item) => item.id}
+          onDragEnd={({ data }) => setListWallets(data)}
+        />
+      )}
+      {/* ActionSheet create walllet */}
+      {actionSheetCreateWallet}
+    </View>
   );
 };
 
 const RenderWallet = ({ item: wallet, drag, isActive }) => {
   const navigation = useNavigation();
   const createdIndex = useWalletsActions().createdIndex(wallet.id);
-
+  const subStringWalletId = shortWalletName(wallet.id);
   const onWalletPress = () => {
     navigation.navigate(
       "DetailWallet" as never,
@@ -127,7 +126,6 @@ const RenderWallet = ({ item: wallet, drag, isActive }) => {
         data: wallet,
       } as never
     );
-
     // onOpen()
   };
 
@@ -142,7 +140,7 @@ const RenderWallet = ({ item: wallet, drag, isActive }) => {
       <View style={tw`flex flex-row items-center justify-between mx-5 mb-1`}>
         <Text style={tw`font-bold dark:text-white `}>
           {wallet.name === null
-            ? `Wallet ${createdIndex + 1}`
+            ? `Wallet #${subStringWalletId}`
             : `${wallet.name}`}
         </Text>
         <TouchableOpacity onPress={() => onWalletPress()}>

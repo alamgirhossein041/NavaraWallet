@@ -17,3 +17,5 @@ builds/*
 fastlane/*.env
 *.app
 *.zip
+
+firebase_login_credentials.json

@@ -1,17 +1,23 @@
+import { useNetInfo } from "@react-native-community/netinfo";
 import React from "react";
-import { Text, View } from "react-native";
-import { ExclamationCircleIcon } from "react-native-heroicons/solid";
+import { Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { tw } from "../../utils/tailwind";
 
 export default function Offline() {
-  return (
-    <View
-      style={tw`flex-col items-center justify-center h-full bg-white dark:bg-black`}
-    >
-      <ExclamationCircleIcon color="red" size={60} style={tw`mb-5`} />
-      <Text style={tw`text-xl font-bold text-red-500`}>
-        No network connection
-      </Text>
-    </View>
-  );
+  const netInfo = useNetInfo();
+
+  if (netInfo.isConnected !== true) {
+    return (
+      <SafeAreaView
+        edges={["top"]}
+        style={tw`flex-row items-center justify-center bg-red-500`}
+      >
+        <Text style={tw`text-xl font-semibold text-white `}>
+          No network connection
+        </Text>
+      </SafeAreaView>
+    );
+  }
+  return null;
 }

@@ -15,36 +15,61 @@
 
 default_platform(:android)
 
+PASSWORD = ENV["PASSWORD"]
+FIREBASE_APP_ID = ENV["FIREBASE_APP_ID"]
+FIREBASE_CLI_TOKEN = ENV["FIREBASE_CLI_TOKEN"]
+
 platform :android do
   desc "Runs all the tests"
   lane :test do
     gradle(task: "test")
   end
 
-  desc "Submit a new Beta Build to Crashlytics Beta"
-  lane :beta do
-    store_password = prompt(text: "Signing Store Password: ", secure_text: true)
-    key_password = prompt(text: "Alias Key Password: ", secure_text: true)
-    releaseFilePath = File.join(Dir.pwd, "../app/", "navara.keystore")
-    gradle(task: 'clean')
-    gradle(
-      task: 'bundle',
-      build_type: 'Release',
-      print_command: false,
-      properties: {
-        "android.injected.signing.store.file" => releaseFilePath,
-        "android.injected.signing.store.password" => store_password,
-        "android.injected.signing.key.alias" => "navara-key-alias",
-        "android.injected.signing.key.password" => key_password,
-      }
-    )
-    # sh "your_script.sh"
-    # You can also use other beta testing services here
+  desc "Increment version code"
+  lane :increment_vc do
+    version_code = prompt(text: "New version code: ")
+    increment_version_code(version_code: version_code)
   end
 
-  desc "Deploy a new version to the Google Play"
-  lane :deploy do
-    gradle(task: "clean assembleRelease")
-    upload_to_play_store
+  desc "Build"
+  lane :build do
+
+    password = PASSWORD
+
+    gradle(task: 'clean')
+    gradle(   
+    task: "assemble",   
+    build_type: "Release",   
+    print_command: false,   
+    properties: {     
+        "android.injected.signing.store.file" => "./app/navara.keystore",
+        "android.injected.signing.store.password" => password,     
+        "android.injected.signing.key.alias" => "navara_key_alias",
+        "android.injected.signing.key.password" => password, 
+    }
+)
   end
+  
+
+  desc "Submit a new Google Test Build to Firebase App Distribution"
+  lane :firebase do
+      # build_android_app(...) # build_android_app is a built-in fastlane action.
+
+    firebase_app_id = FIREBASE_APP_ID
+    firebase_cli_token = FIREBASE_CLI_TOKEN
+    output_path = "./app/release/"
+    output_json_path = output_path + "output-metadata.json"
+     build_output = load_json(json_path: output_json_path)
+     elements = build_output["elements"][0]
+     apk_path = output_path + elements["outputFile"]
+
+      firebase_app_distribution(
+      app: firebase_app_id,
+      apk_path: apk_path,
+      firebase_cli_token: firebase_cli_token,
+      release_notes: "Bug fixes and performance improvements",
+      groups: "android",
+    )
+  end
+  
 end

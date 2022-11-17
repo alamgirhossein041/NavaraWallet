@@ -69,9 +69,9 @@ export default function ConfirmTransaction({ route, navigation }) {
 
   useEffect(() => {
     if (near || provider || connection) {
-      getBalance(token.address);
+      getBalance(token.currentAddress);
     }
-  }, [token.address, provider, near, connection]);
+  }, [token.currentAddress, provider, near, connection]);
 
   const handleTransfer = () => {
     setSending(true);
@@ -108,7 +108,7 @@ export default function ConfirmTransaction({ route, navigation }) {
               </Text>
             </View>
             <Text style={tw`dark:text-white`}>
-              {shortenAddress(token.address)}
+              {shortenAddress(token.currentAddress)}
             </Text>
           </View>
         </View>

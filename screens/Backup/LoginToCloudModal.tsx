@@ -78,7 +78,11 @@ const LoginToCloudModal = ({
           onPress={() => onClose()}
           style={tw`w-7 h-7 p-0.5 flex items-center justify-center bg-gray-400/30 rounded-full mb-6`}
         >
-          <XIcon style={tw`dark:text-white `} width="100%" height="100%" />
+          <XIcon
+            style={tw`dark:text-white text-black `}
+            width="100%"
+            height="100%"
+          />
         </PressableAnimated>
         <Text
           style={tw`dark:text-white  text-center mb-10 text-xl font-medium  `}

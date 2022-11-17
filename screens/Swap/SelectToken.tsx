@@ -7,7 +7,7 @@ import TokenIcon from "../../components/UI/TokenIcon";
 import { primaryColor } from "../../configs/theme";
 import { IToken } from "../../data/types";
 import { tw } from "../../utils/tailwind";
-import ModalSelectOption from "./ModalSelectOption";
+import ActionsheetSelectOption from "./ActionsheetSelectOption";
 
 type SelectNetworkProps = {
   value: string;
@@ -63,7 +63,7 @@ const SelectToken = ({
   }
 
   return (
-    <ModalSelectOption
+    <ActionsheetSelectOption
       icon={<TokenIcon uri={iconUri} />}
       loading={isLoading}
       error={isError ? `${t("swap.cannot_load")}` : undefined}

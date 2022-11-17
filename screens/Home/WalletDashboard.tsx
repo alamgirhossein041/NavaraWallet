@@ -16,6 +16,7 @@ import ListChainsChart from "./ListChainsChart";
 import ListNFT from "./ListNFT";
 import News from "./News";
 import SelectWallets from "./SelectWallets";
+import { TelegramLinking } from "./TelegramLinking";
 
 export interface ButtonProps {
   icon: JSX.Element;
@@ -43,19 +44,13 @@ const WalletDashboard = () => {
     if (!reloading) {
       onRefresh();
     }
-  }, [JSON.stringify(enabledNetworks), index, scheme]);
-
-  useEffect(() => {
-    if (!reloading) {
-      onRefresh();
-    }
-  }, [walletEnvironment]);
+  }, [JSON.stringify(enabledNetworks), index, scheme, walletEnvironment]);
 
   const [tabSelected, setTabSelected] = React.useState(0);
 
   return (
     <View style={tw`flex flex-col h-full`}>
-      <View style={tw`pt-[${insets.top}] bg-white dark:bg-[#18191A]   flex-1`}>
+      <View style={tw`pt-[${insets.top}] bg-white dark:bg-[#18191A] flex-1`}>
         <ScrollView
           scroll={false}
           refreshControl={
@@ -70,13 +65,14 @@ const WalletDashboard = () => {
             setTabSelected={(index) => setTabSelected(index)}
           />
           {tabSelected === 0 ? (
-            <View>
+            <View style={tw`pb-24 ios:pb-52`}>
               <ListChainsChart next="DetailChain" />
-              <News keyword="blockchain" />
+              <News keyword="blockchain" isPreview />
             </View>
           ) : (
             <ListNFT />
           )}
+          <TelegramLinking />
         </ScrollView>
       </View>
     </View>

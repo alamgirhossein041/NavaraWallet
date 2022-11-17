@@ -9,6 +9,8 @@ APPLE_ISSUER_ID = ENV["APPLE_ISSUER_ID"]
 APPLE_KEY_ID = ENV["APPLE_KEY_ID"]
 APPLE_KEY_CONTENT = ENV["APPLE_KEY_CONTENT"]
 GIT_AUTHORIZATION = ENV["GIT_AUTHORIZATION"]
+FIREBASE_APP_ID = ENV["FIREBASE_APP_ID"]
+FIREBASE_CLI_TOKEN = ENV["FIREBASE_CLI_TOKEN"]
 
 def delete_temp_keychain(name)
   delete_keychain(
@@ -80,6 +82,37 @@ platform :ios do
       distribute_external: false,
       notify_external_testers: false,
       ipa: "./Navara.ipa"
+    )
+
+    delete_temp_keychain(keychain_name)
+  end
+  lane :firebase do
+    keychain_name = TEMP_KEYCHAIN_USER
+    keychain_password = TEMP_KEYCHAIN_PASSWORD
+    ensure_temp_keychain(keychain_name, keychain_password)
+
+    match(
+      type: "adhoc",
+      git_basic_authorization: Base64.strict_encode64(GIT_AUTHORIZATION),
+      keychain_name: keychain_name,
+      keychain_password: keychain_password,
+    )
+
+    gym(
+      scheme: "Runner",
+      archive_path: "./build/Runner.xcarchive",
+      export_method: "ad-hoc",
+      output_directory: "./build/Runner",
+    )
+    
+    firebase_app_id = FIREBASE_APP_ID
+    firebase_cli_token = FIREBASE_CLI_TOKEN
+
+    firebase_app_distribution(
+      app: firebase_app_id,
+      firebase_cli_token: firebase_cli_token,
+      release_notes: "Bug fixes and performance improvements",
+      groups: "ios",
     )
 
     delete_temp_keychain(keychain_name)

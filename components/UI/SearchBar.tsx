@@ -44,7 +44,7 @@ const SearchBar = (props: ISearchBar) => {
     onListFiltered = () => {},
     icon = (
       <View
-        style={tw`flex justify-center items-center select-none dark:bg-gray-500   p-3 m-2 rounded-full shadow h-6 w-6 `}
+        style={tw`flex items-center justify-center w-6 h-6 p-3 m-2 bg-white rounded-full shadow select-none dark:bg-gray-500`}
       >
         <IconSearch />
       </View>

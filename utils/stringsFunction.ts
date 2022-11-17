@@ -20,6 +20,18 @@ export const shortenAddress = (address: string, length?: number) => {
   }
 };
 
+export const shortWalletName = (address: string, length?: number) => {
+  if (!address) {
+    return "";
+  }
+  const maxLength = length || 20;
+  if (address.length > maxLength) {
+    return address.slice(-5);
+  } else {
+    return address;
+  }
+};
+
 export const shortenAddressForHistory = (address: string, length?: number) => {
   if (!address) {
     return "";
@@ -54,4 +66,11 @@ export const getKeyByValue = (
   } catch (error) {
     return "";
   }
+};
+
+export const checkDateIsToday = (timestamp: number) => {
+  const today = new Date().setHours(0, 0, 0, 0);
+  const thatDay = new Date(timestamp).setHours(0, 0, 0, 0);
+
+  return today === thatDay;
 };

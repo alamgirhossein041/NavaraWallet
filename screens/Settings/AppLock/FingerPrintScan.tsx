@@ -30,9 +30,10 @@ const FingerPrint: FunctionComponent = () => {
     available: false,
     biometryType: "",
   });
+
   const menu = useMemo(() => {
     return {
-      onPress: () => handleChangeSwitch(true),
+      onPress: () => {},
       icon: <FingerPrintIcon width="100%" height="100%" fill={primaryColor} />,
       name: `${t("setting.apps_lock.finger_print")}`,
       value: (
@@ -40,13 +41,14 @@ const FingerPrint: FunctionComponent = () => {
           trackColor={{ false: primaryGray, true: primaryColor }}
           thumbColor="white"
           onValueChange={(value) => handleChangeSwitch(value)}
-          value={appLock.typeBioMetric === BiometryTypes.Biometrics}
+          value={appLock.typeBioMetric !== "none"}
         />
       ),
 
       next: false,
     };
-  }, [appLock]);
+  }, [appLock.typeBioMetric]);
+
   useEffect(() => {
     (async () => {
       const { available, biometryType } =
@@ -56,18 +58,25 @@ const FingerPrint: FunctionComponent = () => {
   }, []);
 
   const handleChangeSwitch = async (value: boolean) => {
-    if (await checkStateScanFingerNative()) {
-      if (appLock.typeBioMetric !== BiometryTypes.Biometrics) {
-        setAppLock({
-          ...appLock,
-          typeBioMetric: BiometryTypes.Biometrics,
-        });
-      } else {
-        setAppLock({
-          ...appLock,
-          typeBioMetric: "none",
-        });
+    if (value) {
+      if (await checkStateScanFingerNative()) {
+        if (appLock.typeBioMetric !== BiometryTypes.Biometrics) {
+          setAppLock({
+            ...appLock,
+            typeBioMetric: BiometryTypes.Biometrics,
+          });
+        } else {
+          setAppLock({
+            ...appLock,
+            typeBioMetric: "none",
+          });
+        }
       }
+    } else {
+      setAppLock({
+        ...appLock,
+        typeBioMetric: "none",
+      });
     }
   };
 

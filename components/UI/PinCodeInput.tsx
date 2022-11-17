@@ -23,6 +23,7 @@ import checkPinCode from "../../utils/checkPinCode";
 import { tw } from "../../utils/tailwind";
 import Button from "./Button";
 import PressableAnimated from "./PressableAnimated";
+import { triggerHapticFeedback } from "./PressableHapticFeedback";
 import TextField from "./TextField";
 
 const ONE_SECOND_IN_MS = 100;
@@ -86,7 +87,6 @@ const PinCodeInput = ({
         if (await checkPinCode(password)) {
           onSuccess(password);
           setAppLock({ ...appLock, isLock: false });
-          resetValue();
         } else {
           setErr(`${t("setting.apps_lock.incorrect_password")}`);
           setCountWrong(countWrong + 1);
@@ -100,26 +100,21 @@ const PinCodeInput = ({
         }
       } else if (type === PinCodeEnum.NEW) {
         onSuccess(password);
-        resetValue();
       }
     } else {
       setErr(`${t("setting.apps_lock.password_not_match")}`);
     }
   };
 
-  const resetValue = () => {
-    setValue("password", "");
-    setValue("rePassword", "");
-    setErr("");
-  };
   const checkBioMetric = useCallback(async () => {
     if (
-      (appLock?.disableUntil - Date.now() <= 0 && timer === -1) ||
-      !appLock?.disableUntil
+      !appLock?.disableUntil ||
+      (appLock?.disableUntil - Date.now() <= 0 && timer === -1)
     ) {
       const scanResult = await checkStateScanFingerNative();
       if (scanResult) {
         setAppLock({ ...appLock, isLock: false });
+        triggerHapticFeedback("clockTick");
         Keyboard.dismiss();
         onSuccess();
       }
@@ -155,7 +150,7 @@ const PinCodeInput = ({
         await checkBioMetric();
       }
     })();
-  }, [appLock.typeBioMetric, biometric]);
+  }, [appLock.typeBioMetric, biometric, appLock?.isLock]);
 
   return (
     <KeyboardAvoidingView
@@ -247,7 +242,12 @@ const PinCodeInput = ({
       <View />
 
       <View style={tw`absolute w-full px-3 bottom-5`}>
-        <Button fullWidth onPress={handleEndEditing} disabled={timer >= 0}>
+        <Button
+          hideOnKeyboard
+          fullWidth
+          onPress={handleEndEditing}
+          disabled={timer >= 0}
+        >
           {t("setting.apps_lock.continue")}
         </Button>
       </View>

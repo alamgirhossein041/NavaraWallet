@@ -1,23 +1,23 @@
-import {useState, useEffect} from 'react';
 import {
   Connection,
   Keypair,
+  LAMPORTS_PER_SOL,
   PublicKey,
+  sendAndConfirmTransaction,
   SystemProgram,
   Transaction,
-  LAMPORTS_PER_SOL,
-  sendAndConfirmTransaction,
-} from '@solana/web3.js';
-import {WalletInterface} from '../data/types';
-import {DEVIVERATION_PATH} from '../configs/bcNetworks';
-import {Buffer} from 'buffer';
-import bs58 from 'bs58';
-import {NETWORKS, NETWORK_ENVIRONMENT_ENUM} from '../enum/bcEnum';
-import * as bip32 from 'bip32';
-import {getSolanaClusterApiUrl, useBcNetworks} from './useBcNetworks';
+} from "@solana/web3.js";
+import * as bip32 from "bip32";
+import bs58 from "bs58";
+import { Buffer } from "buffer";
+import { useEffect, useState } from "react";
+import { DEVIVERATION_PATH } from "../configs/bcNetworks";
+import { WalletInterface } from "../data/types";
+import { NETWORKS, NETWORK_ENVIRONMENT_ENUM } from "../enum/bcEnum";
+import { getSolanaClusterApiUrl, useBcNetworks } from "./useBcNetworks";
 
 // Create connection
-function createConnection(apiUrl: string) {
+export function createConnection(apiUrl: string) {
   return new Connection(apiUrl);
 }
 
@@ -36,7 +36,7 @@ export const createSolanaWallet = (seed: Buffer, accountIndex = 0) => {
 
 export const getSolanaBalance = async (
   address: string,
-  env: NETWORK_ENVIRONMENT_ENUM,
+  env: NETWORK_ENVIRONMENT_ENUM
 ) => {
   const SOLANA_CLUSTER_API_URL = getSolanaClusterApiUrl(env);
   const connection = createConnection(SOLANA_CLUSTER_API_URL);
@@ -45,23 +45,23 @@ export const getSolanaBalance = async (
   return {
     address,
     balance: balance / LAMPORTS_PER_SOL,
-    network: 'SOLANA',
+    network: "SOLANA",
   };
 };
 
 const useSolana = (privateKey: string): WalletInterface => {
   const [error, setError] = useState<string>();
-  const [address, setAddress] = useState('');
+  const [address, setAddress] = useState("");
   const [connection, setConnection] = useState<Connection>();
   const [keypair, setKeypair] = useState<Keypair>();
-  const {SOLANA_CLUSTER_API_URL} = useBcNetworks();
+  const { SOLANA_CLUSTER_API_URL } = useBcNetworks();
 
   useEffect(() => {
     try {
       // const secretKey = bs58.decode(privateKey)
       // let keypair = !!privateKey ? Keypair.fromSecretKey(secretKey) : getSolanaKeypair(mnemonic);
       let _keypair = Keypair.fromSecretKey(
-        new Uint8Array(bs58.decode(privateKey)),
+        new Uint8Array(bs58.decode(privateKey))
       );
 
       const _connection = createConnection(SOLANA_CLUSTER_API_URL);
@@ -79,7 +79,7 @@ const useSolana = (privateKey: string): WalletInterface => {
     if (balance) {
       return (balance / LAMPORTS_PER_SOL).toString();
     }
-    return '0';
+    return "0";
   };
 
   const transfer = async (receiver: string, amount: string) => {
@@ -91,12 +91,12 @@ const useSolana = (privateKey: string): WalletInterface => {
           fromPubkey: keypair.publicKey,
           toPubkey: receiverPublicKey,
           lamports: +amount * LAMPORTS_PER_SOL,
-        }),
+        })
       );
       const signature = await sendAndConfirmTransaction(
         connection,
         transaction,
-        [keypair],
+        [keypair]
       );
       return signature;
     }
@@ -116,7 +116,7 @@ const useSolana = (privateKey: string): WalletInterface => {
     if (connection && keypair) {
       let receiverPublicKey = new PublicKey(receiver);
       let transaction = new Transaction();
-      let blockhash = (await connection?.getRecentBlockhash('finalized'))
+      let blockhash = (await connection?.getRecentBlockhash("finalized"))
         .blockhash;
       transaction.recentBlockhash = blockhash;
       transaction.feePayer = keypair.publicKey;
@@ -125,11 +125,11 @@ const useSolana = (privateKey: string): WalletInterface => {
           fromPubkey: keypair.publicKey,
           toPubkey: receiverPublicKey,
           lamports: +amount * LAMPORTS_PER_SOL,
-        }),
+        })
       );
       const response = await connection.getFeeForMessage(
         transaction.compileMessage(),
-        'confirmed',
+        "confirmed"
       );
       return (response.value / LAMPORTS_PER_SOL).toString();
     }

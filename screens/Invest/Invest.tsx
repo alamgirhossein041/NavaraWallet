@@ -27,7 +27,7 @@ const SubInvest = () => {
   // const getPrice = useCallback(async () => {
   //   setLoadingPrices(true);
   //   const tokenId = await (
-  //     await axios.get(`${apiUrl}/coin/`, {
+  //     await axios.get(`${apiUrl}/coin`, {
   //       params: {
   //         symbol: chain.symbol.toLowerCase(),
   //       },
@@ -66,7 +66,7 @@ const SubInvest = () => {
     // const getPrice = useCallback(async () => {
     //   setLoadingPrices(true);
     //   const tokenId = await (
-    //     await axios.get(`${apiUrl}/coin/`, {
+    //     await axios.get(`${apiUrl}/coin`, {
     //       params: {
     //         symbol: props.item.symbol.toLowerCase(),
     //       },
@@ -113,10 +113,10 @@ const SubInvest = () => {
               <Icon width={40} height={40} />
             </View>
             <View style={tw`flex w-1/2`}>
-              <Text style={tw`dark:text-white  font-bold`}>
+              <Text style={tw`font-bold dark:text-white`}>
                 {props.item.symbol}
               </Text>
-              <Text style={tw`dark:text-white  capitalize text-regular`}>
+              <Text style={tw`capitalize dark:text-white text-regular`}>
                 {props.item.network}
               </Text>
             </View>
@@ -145,7 +145,7 @@ const SubInvest = () => {
     <View style={tw`mb-10`}>
       <ScrollView style={tw`flex flex-col w-full p-3 `}>
         <SearchBar
-          style={tw`dark:text-white p-2`}
+          style={tw`p-2 dark:text-white`}
           placeholder={t("search_bar.search")}
           // list={listChains}
 
@@ -161,12 +161,8 @@ const SubInvest = () => {
             >
               Market Cap
             </Text>
-            <Text
-              style={tw`dark:text-white  text-lg font-bold dark:text-white `}
-            >
-              $2.5B
-            </Text>
-            <Text style={tw`dark:text-white  text-xs text-green-500`}>
+            <Text style={tw`text-lg font-bold dark:text-white `}>$2.5B</Text>
+            <Text style={tw`text-xs text-green-500 dark:text-white`}>
               +6.15%
             </Text>
           </View>
@@ -176,12 +172,8 @@ const SubInvest = () => {
             >
               24th Volumn
             </Text>
-            <Text
-              style={tw`dark:text-white  text-lg font-bold dark:text-white `}
-            >
-              $219B
-            </Text>
-            <Text style={tw`dark:text-white  text-xs text-green-500`}>
+            <Text style={tw`text-lg font-bold dark:text-white `}>$219B</Text>
+            <Text style={tw`text-xs text-green-500 dark:text-white`}>
               +1.15%
             </Text>
           </View>
@@ -191,19 +183,15 @@ const SubInvest = () => {
             >
               BTC Dominance
             </Text>
-            <Text
-              style={tw`dark:text-white  text-lg font-bold dark:text-white `}
-            >
-              $60%
-            </Text>
-            <Text style={tw`dark:text-white  text-xs text-green-500`}>
+            <Text style={tw`text-lg font-bold dark:text-white `}>$60%</Text>
+            <Text style={tw`text-xs text-green-500 dark:text-white`}>
               +0.45%
             </Text>
           </View>
         </View>
 
         <View style={tw`flex flex-row w-full px-2 my-5`}>
-          <Text style={tw`dark:text-white  text-lg font-bold`}>Favorites</Text>
+          <Text style={tw`text-lg font-bold dark:text-white`}>Favorites</Text>
           <Text style={tw`dark:text-white  ml-auto text-[${primaryColor}]`}>
             See All
           </Text>
@@ -227,9 +215,7 @@ const SubInvest = () => {
           );
         })} */}
         <View style={tw`flex flex-row w-full px-2 py-5`}>
-          <Text style={tw`dark:text-white  text-lg font-bold`}>
-            Live Prices
-          </Text>
+          <Text style={tw`text-lg font-bold dark:text-white`}>Live Prices</Text>
         </View>
         {/* {listChains.map((chain: ChainWallet, index) => {
           return (

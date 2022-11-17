@@ -1,4 +1,3 @@
-import { useNetInfo } from "@react-native-community/netinfo";
 import { NavigationContainer } from "@react-navigation/native";
 import * as Sentry from "@sentry/react-native";
 import "intl";
@@ -12,10 +11,12 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { RecoilRoot } from "recoil";
 import { useDeviceContext } from "twrnc";
 import GetAppState from "./components/UI/GetAppState";
-import Offline from "./components/UI/Offline";
 import { primaryColor } from "./configs/theme";
+import { EventHub } from "./core/eventHub";
 import AppRoutes from "./navigation";
 import { tw } from "./utils/tailwind";
+
+export const eventHub = new EventHub();
 
 function App() {
   //connect to sentry
@@ -55,7 +56,7 @@ function App() {
     initialColorMode: "light",
   };
   const customTheme = extendTheme({ config });
-  const netInfo = useNetInfo();
+
   return (
     <QueryClientProvider client={queryClient}>
       <RecoilRoot>
@@ -65,7 +66,7 @@ function App() {
           >
             <NativeBaseProvider theme={customTheme}>
               <GetAppState />
-              {netInfo.isConnected === false ? <Offline /> : <AppRoutes />}
+              <AppRoutes />
             </NativeBaseProvider>
           </NavigationContainer>
         </GestureHandlerRootView>

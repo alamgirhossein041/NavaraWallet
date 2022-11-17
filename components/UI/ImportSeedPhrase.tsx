@@ -1,29 +1,19 @@
+import { isValidMnemonic } from "@ethersproject/hdnode";
 import Clipboard from "@react-native-clipboard/clipboard";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import usePopupResult from "../../hooks/usePopupResult";
 import useSeedPhraseService from "../../hooks/useSeedPhrase";
 import ScanQR from "../../screens/SendToken/ScanQR";
+import { normalizeSeedPhrase } from "../../utils/mnemonic";
 import { tw } from "../../utils/tailwind";
 import Button from "./Button";
 import CheckBox from "./CheckBox";
 import TextField from "./TextField";
-
 const ImportSeedPhrase = ({ navigation, route }) => {
-  const [loading, setLoading] = useState(false);
-  const { isValidMnemonic } = require("@ethersproject/hdnode");
   const seedPhraseService = useSeedPhraseService();
-
-  useEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <View style={tw`px-4`}>
-          {/* <ScanQR onValueScaned={handleResultQrScan} /> */}
-        </View>
-      ),
-    });
-  }, []);
 
   const {
     control,
@@ -40,16 +30,22 @@ const ImportSeedPhrase = ({ navigation, route }) => {
     setValue("seedPhrase", input);
   };
 
+  const popupResult = usePopupResult();
   const onSubmit = async (data) => {
     const checkSeedPhraseDuplicate = await seedPhraseService.isDuplicate(
-      data.seedPhrase
+      normalizeSeedPhrase(data.seedPhrase)
     );
 
     if (checkSeedPhraseDuplicate) {
-      Alert.alert("Your seed phrase was already existing");
+      // Alert.alert("Your seed phrase was already existing");
+      popupResult({
+        isOpen: true,
+        title: "Your seed phrase was already existing",
+        type: "error",
+      });
     } else {
       navigation.navigate("CreateWallet", {
-        seedPhrase: data.seedPhrase,
+        seedPhrase: normalizeSeedPhrase(data.seedPhrase),
       });
     }
   };
@@ -94,13 +90,14 @@ const ImportSeedPhrase = ({ navigation, route }) => {
             render={({ field: { onChange, value } }) => (
               <TextField
                 autoFocus
-                style={tw`py-10 dark:text-white `}
+                style={tw`ios:h-20 dark:text-white `}
                 type="text"
-                value={value.toLowerCase().replace(/\s+/g, " ")}
+                value={value}
                 onChangeText={onChange}
                 label={t("import_seedphrase.seedphrase")}
                 err={!!errors.seedPhrase}
-                numberOfLines={5}
+                multiline
+                numberOfLines={4}
               />
             )}
             name="seedPhrase"

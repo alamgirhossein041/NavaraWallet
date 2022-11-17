@@ -1,19 +1,17 @@
 import { Modal, useDisclose } from "native-base";
-import React, { useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { ChevronLeftIcon, QrcodeIcon } from "react-native-heroicons/solid";
 import QRCodeScanner from "react-native-qrcode-scanner";
+import WalletConnectLogo from "../../assets/logo/walletconnect-logo.svg";
 import { primaryColor } from "../../configs/theme";
 import { tw } from "../../utils/tailwind";
 const ScanQR = ({ onValueScaned }: any) => {
-  const [hasPermission, setHasPermission] = useState(null);
-  const [scanned, setScanned] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclose();
   const { t } = useTranslation();
 
   const handleBarCodeScanned = (data: string) => {
-    setScanned(true);
     onClose();
     onValueScaned(data);
   };
@@ -27,19 +25,18 @@ const ScanQR = ({ onValueScaned }: any) => {
 
   return (
     <View>
-      <View style={tw`flex-1 `}></View>
       <TouchableOpacity
         activeOpacity={0.6}
         onPress={onOpen}
         style={tw`rounded-lg`}
       >
-        <QrcodeIcon color={primaryColor} width={25} height={25} />
+        <QrcodeIcon color={primaryColor} width={35} height={35} />
       </TouchableOpacity>
       <Modal
         animationPreset={"slide"}
         isOpen={isOpen}
         onClose={onClose}
-        style={tw`relative flex-row items-center justify-center w-full h-full backdrop-blur-xl bg-black/90`}
+        style={tw`relative flex-col items-center justify-center w-full h-full backdrop-blur-xl bg-black/90`}
       >
         <TouchableOpacity
           activeOpacity={0.6}
@@ -48,21 +45,11 @@ const ScanQR = ({ onValueScaned }: any) => {
         >
           <ChevronLeftIcon width={40} height={40} color={primaryColor} />
         </TouchableOpacity>
-        <TouchableOpacity
-          activeOpacity={0.6}
-          onPress={onClose}
-          style={tw`absolute items-center  justify-center p-1 rounded-lg w-left-[39%] ios:top-[20%] android:top-[20%] `}
+        <Text
+          style={tw`dark:text-white mb-10  text-white font-bold text-[20px]`}
         >
-          <Text style={tw`dark:text-white  text-white font-bold text-[20px]`}>
-            {t("home.qr_scan")}
-          </Text>
-        </TouchableOpacity>
-        {/* <TouchableOpacity
-          activeOpacity={0.6}
-          onPress={handlePicture}
-          style={tw`absolute items-center bg-white dark:bg-[#18191A]  h-10 w-10 justify-center p-1 rounded-lg w-right-5 ios:top-10 android:top-10 `}>
-          <PhotographIcon width={40} height={40} color="blue" />
-        </TouchableOpacity> */}
+          {t("home.qr_scan")}
+        </Text>
         <View style={styles.barcodebox}>
           <QRCodeScanner
             onRead={onSuccess}
@@ -70,6 +57,12 @@ const ScanQR = ({ onValueScaned }: any) => {
             topContent={<View></View>}
             bottomContent={<View></View>}
           />
+        </View>
+        <View style={tw`flex-col items-center my-10`}>
+          <View style={tw`flex-row w-full`}>
+            <WalletConnectLogo style={tw`mx-1`} width={50} height={50} />
+          </View>
+          <Text style={tw`text-white`}>supported</Text>
         </View>
       </Modal>
     </View>

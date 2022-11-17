@@ -21,6 +21,7 @@ import useDatabase from "../../data/database/useDatabase";
 import { listWalletsState } from "../../data/globalState/listWallets";
 import useWalletsActions from "../../data/globalState/listWallets/listWallets.actions";
 import usePopupResult from "../../hooks/usePopupResult";
+import { shortWalletName } from "../../utils/stringsFunction";
 import { tw } from "../../utils/tailwind";
 import toastr from "../../utils/toastr";
 import LoginToCloudModal from "../Backup/LoginToCloudModal";
@@ -30,10 +31,13 @@ const DetailWallet = ({ route, navigation }) => {
   const [walletData] = useState<Wallet>(data);
   const [isOpenLoginModal, setIsOpenModal] = useState(false);
   const { t } = useTranslation();
+  const subStringWalletId = shortWalletName(data.id);
 
   const [nameWallet, setNameWallet] = useState(
     `${
-      walletData?.name !== null ? `${walletData.name}` : `Wallet ${index + 1}`
+      walletData?.name !== null
+        ? `${walletData.name}`
+        : `Wallet #${subStringWalletId}`
     }`
   );
   // const [nameChange, setNameChange] = useState(nameWallet);
@@ -51,7 +55,7 @@ const DetailWallet = ({ route, navigation }) => {
         listWallets.length > 1 && (
           <RemoveWallet
             item={listWallets && listWallets[index]}
-            index={index + 1}
+            index={subStringWalletId}
             id={listWallets && listWallets[index].id}
           />
         ),
@@ -113,7 +117,9 @@ const DetailWallet = ({ route, navigation }) => {
   } = useForm({
     defaultValues: {
       nameWallet: `${
-        walletData?.name !== null ? `${walletData.name}` : `Wallet ${index + 1}`
+        walletData?.name !== null
+          ? `${walletData.name}`
+          : `Wallet #${subStringWalletId}`
       }`,
     },
   });
@@ -171,6 +177,7 @@ const DetailWallet = ({ route, navigation }) => {
           <Actionsheet isOpen={isOpen} onClose={handleCloseEdit}>
             <KeyboardAvoidingView
               behavior={Platform.OS === "ios" ? "padding" : null}
+              style={tw`flex flex-col items-center justify-around flex-1 w-full`}
             >
               <Actionsheet.Content style={tw``}>
                 <Controller
@@ -251,6 +258,7 @@ const RemoveWallet = ({
     //
     setIsDelete({ error: null, value: value });
   };
+  const subStringWalletId = shortWalletName(item.id);
 
   const walletActions = useWalletsActions();
   const { t } = useTranslation();
@@ -277,7 +285,7 @@ const RemoveWallet = ({
   };
 
   const validateDeleteWallet = `${
-    item?.name !== null ? `${item.name}` : `Wallet ${index}`
+    item?.name !== null ? `${item.name}` : `Wallet #${subStringWalletId}`
   }`;
 
   return (
@@ -339,7 +347,7 @@ const RemoveWallet = ({
                   disabled={
                     item?.name !== null
                       ? item?.name !== isDelete.value
-                      : `Wallet ${index}` !== isDelete.value
+                      : `Wallet #${subStringWalletId}` !== isDelete.value
                   }
                 >
                   {t("manage_wallets.delete")}

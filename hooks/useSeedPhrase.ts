@@ -1,6 +1,6 @@
 import { useRecoilValue } from "recoil";
+import { decryptAES, getFromKeychain } from "../core/keychain";
 import { listWalletsState } from "../data/globalState/listWallets";
-import { decryptAES, getFromKeychain } from "../utils/keychain";
 
 const useSeedPhraseService = () => {
   const listWallets = useRecoilValue(listWalletsState);

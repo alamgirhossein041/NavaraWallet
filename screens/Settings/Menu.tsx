@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, Switch, Text, View } from "react-native";
 import { getBuildNumber, getVersion } from "react-native-device-info";
-import { BeakerIcon } from "react-native-heroicons/solid";
+import { BeakerIcon, LinkIcon } from "react-native-heroicons/solid";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRecoilState } from "recoil";
 import { useDeviceContext } from "twrnc";
@@ -89,6 +89,14 @@ const Menu = ({ navigation }) => {
             />
           ),
           next: false,
+        },
+        {
+          icon: <LinkIcon color={primaryColor} />,
+          name: `Manage connect sections`,
+          next: true,
+          onPress: () => {
+            navigation.push("ManageSections");
+          },
         },
 
         // {

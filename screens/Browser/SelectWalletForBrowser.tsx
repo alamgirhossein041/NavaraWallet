@@ -44,7 +44,7 @@ const SelectWalletForBrowser = memo((props: any) => {
           {listWallets.map((wallet: Wallet, index) => (
             <ActionSheetItem onPress={() => handleChangeWalletSelected(index)}>
               <View style={tw`flex-row items-center justify-between w-full`}>
-                <View style={tw`flex-row items-center`}>
+                <View style={tw`flex-row items-center flex-1`}>
                   <Image
                     style={tw`w-8 h-8 rounded-full`}
                     source={{
@@ -60,7 +60,9 @@ const SelectWalletForBrowser = memo((props: any) => {
                   </Text>
                 </View>
                 {indexWalletSelected === index && (
-                  <CheckCircleIcon color={primaryColor} />
+                  <View style={tw`absolute right-0 bg-white dark:bg-[#18191A]`}>
+                    <CheckCircleIcon color={primaryColor} />
+                  </View>
                 )}
               </View>
             </ActionSheetItem>

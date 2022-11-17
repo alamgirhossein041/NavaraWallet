@@ -1,8 +1,8 @@
 import { useRecoilState } from "recoil";
 import { nearInstanceState } from ".";
-import { createNearInstance } from "../../../hooks/useNEAR";
 import { NEAR_MAINNET_CONFIG } from "../../../configs/bcMainnets";
 import { NEAR_TESTNET_CONFIG } from "../../../configs/bcTestnets";
+import { createNearInstance } from "../../../hooks/useNEAR";
 import { INearInstanceByNetwork } from "../../types";
 
 interface INearInstanceActions {

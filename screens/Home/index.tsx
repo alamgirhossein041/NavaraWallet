@@ -27,7 +27,7 @@ import DetailNews from "./DetailNews";
 import DetailPrice from "./DetailPrice";
 import HistoryWallets from "./HistoryWallets";
 import ManageChains from "./ManageChains";
-import News from "./News";
+import { NewsScreen } from "./News";
 import WalletDashboard from "./WalletDashboard";
 
 const Home = ({ navigation, route }) => {
@@ -203,8 +203,8 @@ const Home = ({ navigation, route }) => {
         }}
       />
       <Stack.Screen
-        name="News"
-        component={News}
+        name="NewsScreen"
+        component={NewsScreen}
         options={{
           title: `${t("stack_screen.news")}`,
         }}

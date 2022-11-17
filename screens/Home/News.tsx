@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import dayjs from "dayjs";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import uuid from "react-native-uuid";
@@ -12,18 +12,22 @@ import { tw } from "../../utils/tailwind";
 const dateFormat: any = dayjs;
 interface INewsProps {
   keyword: string | "blockchain";
+  isPreview?: boolean;
 }
 const News = (props: INewsProps) => {
-  const { keyword } = props;
+  const { keyword, isPreview = false } = props;
   const { t } = useTranslation();
 
-  const limit = 10;
+  const limit = isPreview ? 5 : 10;
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setError] = useState(false);
   const [data, setData] = useState([]);
-  const [hasMore, setHasMore] = useState(true);
-  const fetchNews = async () => {
+
+  const fetchNews = useCallback(async () => {
+    if (isPreview && page !== 1 && data.length > 0) {
+      return;
+    }
     try {
       setIsLoading(true);
       const dataNews: any[] = await API.get(`news/chain`, {
@@ -34,22 +38,19 @@ const News = (props: INewsProps) => {
         },
       });
 
-      if (dataNews.length < limit) {
-        setHasMore(false);
-      }
-      setData([...data, ...dataNews]);
+      setData((oldData) => [...oldData, ...dataNews]);
       setError(false);
     } catch (e) {
       setError(true);
     }
     setIsLoading(false);
-  };
+  }, [keyword, page, limit, isPreview]);
 
   useEffect(() => {
     (async () => {
       await fetchNews();
     })();
-  }, [page]);
+  }, [fetchNews]);
 
   const navigation = useNavigation();
   const goDetail = (item: any) => {
@@ -70,12 +71,13 @@ const News = (props: INewsProps) => {
     contentOffset,
     contentSize,
   }) => {
-    const paddingToBottom = 20;
+    const paddingToBottom = 120;
     return (
       layoutMeasurement.height + contentOffset.y >=
       contentSize.height - paddingToBottom
     );
   };
+
   const fetchMore = () => setPage(page + 1);
 
   if (!isLoading && data.length === 0) {
@@ -84,11 +86,12 @@ const News = (props: INewsProps) => {
   return (
     <ScrollView
       onScroll={({ nativeEvent }) => {
-        if (isCloseToBottom(nativeEvent)) {
+        if (!isPreview && !isLoading && isCloseToBottom(nativeEvent)) {
+          fetchMore();
         }
       }}
       scrollEventThrottle={400}
-      style={tw`dark:text-white ios:mb-50 mb-25`}
+      style={tw`mb-8 dark:text-white`}
     >
       <Text
         style={tw`mx-3 mt-5 text-xl font-semibold text-black dark:text-white`}
@@ -127,7 +130,7 @@ const News = (props: INewsProps) => {
           <Image
             source={
               item.picture === ""
-                ? require("../../assets/news/imagenotfound.png")
+                ? require("../../assets/imagenotfound.png")
                 : { uri: item.urlToImage }
             }
             style={tw`rounded-lg w-23 h-23`}
@@ -139,22 +142,27 @@ const News = (props: INewsProps) => {
         <NewsSkeleton limit={limit} />
       ) : (
         <View style={tw`flex-row items-center justify-center w-full`}>
-          {hasMore ? (
+          {isPreview && (
             <View style={tw`w-1/3`}>
               <TouchableOpacity
                 style={tw`bg-[${primaryColor}] p-3 rounded-full `}
-                onPress={fetchMore}
+                // onPress={fetchMore}
+                onPress={() => {
+                  navigation.navigate("NewsScreen" as never);
+                }}
               >
-                <Text style={tw`text-center text-white`}>Load more</Text>
+                <Text style={tw`text-center text-white`}>Read more</Text>
               </TouchableOpacity>
             </View>
-          ) : (
-            <View style={tw`w-5 h-5 bg-gray-200 rounded-full`}></View>
           )}
         </View>
       )}
     </ScrollView>
   );
+};
+
+export const NewsScreen = () => {
+  return <News keyword="blockchain" />;
 };
 
 export default News;

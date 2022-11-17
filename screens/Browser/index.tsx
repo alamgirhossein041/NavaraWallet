@@ -11,6 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import uuid from "react-native-uuid";
 import { useRecoilState, useRecoilValue } from "recoil";
 import BackButton from "../../components/UI/BackButton";
+import { SPA_urlChangeListener } from "../../core/browserScripts";
 import useDatabase from "../../data/database/useDatabase";
 import {
   browserState,
@@ -21,18 +22,19 @@ import { useBrowserActions } from "../../data/globalState/browser/browser.action
 import useNearInstanceAction from "../../data/globalState/nearInstance/nearInstance.actions";
 import { NETWORKS } from "../../enum/bcEnum";
 import { useWalletSelected } from "../../hooks/useWalletSelected";
-import { SPA_urlChangeListener } from "../../utils/browserScripts";
 import { BROWSER_TABS, localStorage } from "../../utils/storage";
 import { tw } from "../../utils/tailwind";
 import BrowserHistory from "./BrowserHistory";
 import BrowserTab from "./BrowserTab";
 import InpageBridgeWeb3 from "./core/InpageBridgeWeb3";
+import SolanaInpageBridge from "./core/SolanaInpageBridge";
 import FavoritesList from "./FavoritesList";
 import ManageTabs from "./ManageTabs";
 import SearchEngine from "./Settings/SearchEngine";
 import SettingsMenu from "./Settings/SettingsMenu";
 
-const InPageScript = InpageBridgeWeb3 + SPA_urlChangeListener;
+const InPageScript =
+  InpageBridgeWeb3 + SolanaInpageBridge + SPA_urlChangeListener;
 
 const MainBrowser = ({ route }) => {
   const { params } = route;

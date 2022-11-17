@@ -98,7 +98,7 @@ const ReceiveSpecificToken = ({ route, navigation }) => {
             <View
               style={tw`relative items-center justify-center w-2/3 p-5 bg-white border-2 border-gray-100 dark:border-gray-600/60 rounded-3xl`}
             >
-              <QRCode value={`${token.address}`} size={200} />
+              <QRCode value={`${token.currentAddress}`} size={200} />
             </View>
           </View>
 
@@ -106,12 +106,12 @@ const ReceiveSpecificToken = ({ route, navigation }) => {
             style={tw`p-2 mb-3`}
             activeOpacity={0.6}
             onPress={async () => {
-              await Clipboard.setString(token.address);
+              await Clipboard.setString(token.currentAddress);
               toastr.info("Copied");
             }}
           >
             <Text style={tw`px-5 text-sm text-center dark:text-white `}>
-              {shortenAddress(token.address)}
+              {shortenAddress(token.currentAddress)}
             </Text>
           </TouchableOpacity>
         </View>
@@ -119,7 +119,7 @@ const ReceiveSpecificToken = ({ route, navigation }) => {
       <View style={tw`flex-row items-center justify-center my-5 text-center`}>
         <TouchableOpacity
           onPress={async () => {
-            await Clipboard.setString(token.address);
+            await Clipboard.setString(token.currentAddress);
             toastr.info("Copied");
           }}
           style={tw`items-center justify-center w-20 text-center `}

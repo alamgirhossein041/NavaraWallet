@@ -13,6 +13,7 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import ReceiveIcon from "../../assets/icons/icon-recevie.svg";
 import SendIcon from "../../assets/icons/icon-send.svg";
 import SwapIcon from "../../assets/icons/icon-swap.svg";
+import { triggerHapticFeedback } from "../../components/UI/PressableHapticFeedback";
 import { Wallet } from "../../data/database/entities/wallet";
 import {
   idWalletSelected,
@@ -39,10 +40,9 @@ const SelectWallets = () => {
   }, []);
 
   const handleSelectWallet = (index: number) => {
-    if (indexWalletSelected !== index && index !== 0) {
-      setIndexWalletSelected(index);
-      localStorage.set(SELECTED_WALLET, index);
-    }
+    setIndexWalletSelected(index);
+    localStorage.set(SELECTED_WALLET, index);
+    triggerHapticFeedback();
   };
 
   return (
