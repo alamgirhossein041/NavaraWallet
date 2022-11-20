@@ -6,7 +6,6 @@ import { browserApprovedHost } from "../../data/globalState/browser";
 import { listWalletsState } from "../../data/globalState/listWallets";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import { usePinCodeRequired } from "../../hooks/usePinCodeRequired";
-import UpdateHistory from "../../screens/Browser/UpdateHistory";
 import { PinCodeRequired } from "../../screens/Settings/AppLock/PinCodeRequired";
 import WalletConnect from "../../screens/WalletConnect";
 import { APPROVED_HOSTS } from "../../utils/storage";
@@ -90,7 +89,6 @@ const GetAppState = () => {
     <View>
       <Offline />
       <PopupResult />
-      <UpdateHistory />
       {listWallets?.length > 0 && <WalletConnect />}
       <PinCodeRequired />
       <ActionSheetConfirmEventListerner />

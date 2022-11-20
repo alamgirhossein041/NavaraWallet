@@ -2,7 +2,7 @@ import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { Modal } from "native-base";
 import React, { useEffect } from "react";
 import { Platform, Text, View } from "react-native";
-import { XIcon } from "react-native-heroicons/solid";
+import { XMarkIcon } from "react-native-heroicons/solid";
 import Google from "../../assets/icons/icon-google.svg";
 import PressableAnimated from "../../components/UI/PressableAnimated";
 import { primaryColor } from "../../configs/theme";
@@ -56,6 +56,7 @@ const LoginToCloudModal = ({
       });
     } catch (error: any) {
       GoogleSignin.signOut();
+      throw new Error(error);
     }
   };
   //background Darkmode
@@ -78,7 +79,7 @@ const LoginToCloudModal = ({
           onPress={() => onClose()}
           style={tw`w-7 h-7 p-0.5 flex items-center justify-center bg-gray-400/30 rounded-full mb-6`}
         >
-          <XIcon
+          <XMarkIcon
             style={tw`dark:text-white text-black `}
             width="100%"
             height="100%"

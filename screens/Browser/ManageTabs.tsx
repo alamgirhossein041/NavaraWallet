@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { CheckIcon, PlusIcon, XIcon } from "react-native-heroicons/solid";
+import { CheckIcon, PlusIcon, XMarkIcon } from "react-native-heroicons/solid";
 import { useRecoilState } from "recoil";
 import PressableAnimated from "../../components/UI/PressableAnimated";
 import { primaryColor } from "../../configs/theme";
@@ -95,7 +95,7 @@ const ManageTabs = ({ navigation, route }) => {
                         onPress={(event) => handleCloseTab(event, tab.id)}
                         style={tw`items-center justify-center rounded-full w-9 h-9`}
                       >
-                        <XIcon
+                        <XMarkIcon
                           size={25}
                           color={currentTab === index ? "white" : "gray"}
                         />
@@ -121,7 +121,7 @@ const ManageTabs = ({ navigation, route }) => {
             onPress={handleCloseAllTabs}
             style={tw`flex-row items-center justify-center w-1/3 px-3`}
           >
-            <XIcon style={tw`mx-1`} fill={"red"} />
+            <XMarkIcon style={tw`mx-1`} fill={"red"} />
             <Text style={tw`text-red-500 dark:text-white`}>Close all</Text>
           </TouchableOpacity>
           <TouchableOpacity

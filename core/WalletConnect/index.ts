@@ -1,16 +1,13 @@
 import WalletConnect from "@walletconnect/client";
 import { eventHub } from "../../App";
-import { ChainWallet } from "../../data/database/entities/chainWallet";
-import { NETWORKS } from "../../enum/bcEnum";
-import {
-  DISPATCH_NOTIFICATION,
-  localStorage,
-  WALLETCONNECT_SESSIONS,
-} from "../../utils/storage";
+import getETHAddressFromChains from "../../utils/getETHAddressFromChains";
+import { localStorage, WALLETCONNECT_SESSIONS } from "../../utils/storage";
 import toastr from "../../utils/toastr";
 import {
+  EVENT_CONNECTED_SESSION,
   EVENT_HANDLE_RPC_REQUEST,
   EVENT_HANDLE_RPC_RESPONSE,
+  EVENT_SESSION_UPDATED,
 } from "../eventHub";
 
 /**
@@ -30,6 +27,7 @@ const OPTION_WALLETCONNECT = {
       "https://firebasestorage.googleapis.com/v0/b/navara-network.appspot.com/o/app%20icon.png?alt=media&token=816bd89a-8043-4e03-803c-dade3b1de4e7",
     ],
     name: "Navara",
+    ssl: true,
   },
 };
 
@@ -38,11 +36,6 @@ const OPTION_WALLETCONNECT = {
  * @param chains
  * @returns
  */
-const getETHAddressFromChains = (chains: ChainWallet[]) => {
-  return (
-    chains.find((chain) => chain.network === NETWORKS.ETHEREUM).address || null
-  );
-};
 
 /**
  * Custom Hook handle session WalletConnect connector instance
@@ -61,8 +54,12 @@ const updateSessionToLocalStorage = async () => {
         lastAccess: new Date(),
       };
     });
-
   await localStorage.set(WALLETCONNECT_SESSIONS, sessions);
+  if (sessions.length === 0) {
+    eventHub.emit(EVENT_CONNECTED_SESSION, {
+      isConnected: false,
+    });
+  }
 };
 
 const walletConnect = {
@@ -78,7 +75,6 @@ const walletConnect = {
     if (oldSessions && oldSessions.length > 0) {
       oldSessions.forEach((session) => {
         const walletConnectClient = new WalletConnectClient({ session }, true);
-
         listConnectors.push(walletConnectClient);
       });
     }
@@ -133,7 +129,9 @@ class WalletConnectClient {
       ...option,
       ...OPTION_WALLETCONNECT,
     });
-
+    eventHub.emit(EVENT_CONNECTED_SESSION, {
+      isConnected: true,
+    });
     this.connectorData = {
       origin: this.connector?.peerMeta?.url,
       icon: this.connector?.peerMeta?.icons[0],
@@ -143,7 +141,6 @@ class WalletConnectClient {
       if (error) {
         throw error;
       }
-
       const param = payload.params[0];
       this.connectorData = {
         origin: param.peerMeta.url,
@@ -200,9 +197,11 @@ class WalletConnectClient {
   public killSession() {
     this.connector.killSession();
   }
-  public approval() {}
 
   private initBackgroundBridgeListener(existing?: boolean) {
+    eventHub.removeAllListeners(
+      `${EVENT_HANDLE_RPC_RESPONSE}:${this.connectorData.peerId}`
+    );
     eventHub.on(
       `${EVENT_HANDLE_RPC_RESPONSE}:${this.connectorData.peerId}`,
       (response) => {
@@ -234,7 +233,7 @@ class WalletConnectClient {
         }
       }
     );
-    eventHub.on(DISPATCH_NOTIFICATION, (notification) => {
+    eventHub.on(EVENT_SESSION_UPDATED, (notification) => {
       try {
         this.connector.updateSession(notification);
       } catch (e) {}

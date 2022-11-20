@@ -1,74 +1,81 @@
-import {RpcProviderMethod, NETWORKS} from '../enum/bcEnum';
+import { NETWORKS, RpcProviderMethod } from "../enum/bcEnum";
 
-export const EVM_MAINET_CONFIG = {
+export const EVM_MAINNET_CONFIG = {
   [NETWORKS.ETHEREUM]: {
-    name: 'ethereum mainnet',
-    provider: 'homestead',
+    name: "ethereum mainnet",
+    provider: "homestead",
     providerMethod: RpcProviderMethod.JsonRpcProvider,
-    rpc: 'https://mainnet.infura.io/v3/a383cc1a30ed4d64ab93408862cdf8d7',
+    rpc: "https://mainnet.infura.io/v3/a383cc1a30ed4d64ab93408862cdf8d7",
     chainId: 1,
   },
-  // [NETWORKS.POLYGON]: {
-  //   name: 'Polygon Mainnet',
-  //   providerMethod: RpcProviderMethod.JsonRpcProvider,
-  //   chainId: 137,
-  //   rpc: 'https://rpc-mainnet.maticvigil.com/',
-  // },
+  [NETWORKS.POLYGON]: {
+    name: "Polygon Mainnet",
+    providerMethod: RpcProviderMethod.JsonRpcProvider,
+    chainId: 137,
+    rpc: "https://rpc-mainnet.maticvigil.com/",
+  },
   [NETWORKS.BINANCE_SMART_CHAIN]: {
-    name: 'Binance Smart Chain',
+    name: "Binance Smart Chain",
     providerMethod: RpcProviderMethod.JsonRpcProvider,
     chainId: 56,
-    rpc: 'https://bsc-dataseed.binance.org/',
+    rpc: "https://bsc-dataseed.binance.org/",
   },
   [NETWORKS.FANTOM]: {
-    name: 'Fantom Opera',
+    name: "Fantom Opera",
     providerMethod: RpcProviderMethod.JsonRpcProvider,
     chainId: 250,
-    scanner: 'https://api.ftmscan.com/api',
-    rpc: 'https://rpc.ftm.tools/',
+    scanner: "https://api.ftmscan.com/api",
+    rpc: "https://rpc.ftm.tools/",
   },
   [NETWORKS.AURORA]: {
-    name: 'Aurora',
+    name: "Aurora",
     providerMethod: RpcProviderMethod.JsonRpcProvider,
     chainId: 1313161554,
-    rpc: 'https://mainnet.aurora.dev/',
+    rpc: "https://mainnet.aurora.dev/",
   },
   [NETWORKS.AVALANCHE]: {
-    name: 'Avalanche Network',
+    name: "Avalanche Network",
     providerMethod: RpcProviderMethod.JsonRpcProvider,
     chainId: 0xa86a,
-    rpc: 'https://api.avax.network/ext/bc/C/rpc',
+    rpc: "https://api.avax.network/ext/bc/C/rpc",
   },
   [NETWORKS.HUOBI_CHAIN]: {
-    name: 'HuobiChain- Mainnet',
+    name: "HuobiChain- Mainnet",
     providerMethod: RpcProviderMethod.JsonRpcProvider,
     chainId: 128,
-    rpc: 'https://http-mainnet.hecochain.com',
+    rpc: "https://http-mainnet.hecochain.com",
   },
   [NETWORKS.CRONOS]: {
-    name: 'Cronos Mainnet',
+    name: "Cronos Mainnet",
     providerMethod: RpcProviderMethod.JsonRpcProvider,
     chainId: 25,
-    rpc: 'https://evm.cronos.org',
+    rpc: "https://evm.cronos.org",
   },
   [NETWORKS.OPTIMISM]: {
-    name: 'Optimism Testnet',
+    name: "Optimism Testnet",
     providerMethod: RpcProviderMethod.JsonRpcProvider,
     chainId: 10,
-    rpc: 'https://mainnet.optimism.io',
+    rpc: "https://mainnet.optimism.io",
   },
   [NETWORKS.ARBITRUM]: {
-    name: 'Arbitrum Testnet',
+    name: "Arbitrum Testnet",
     providerMethod: RpcProviderMethod.JsonRpcProvider,
     chainId: 42161,
-    rpc: 'https://arb1.arbitrum.io/rpc',
+    rpc: "https://arb1.arbitrum.io/rpc",
   },
 };
 
 export const NEAR_MAINNET_CONFIG = {
-  networkId: 'mainnet',
-  walletUrl: 'https://wallet.near.org',
-  nodeUrl: 'https://rpc.mainnet.near.org',
-  helperUrl: 'https://api.kitwallet.app',
-  explorerUrl: 'https://explorer.mainnet.near.org',
-}
+  networkId: "mainnet",
+  walletUrl: "https://wallet.near.org",
+  nodeUrl: "https://rpc.mainnet.near.org",
+  helperUrl: "https://api.kitwallet.app",
+  explorerUrl: "https://explorer.mainnet.near.org",
+};
+
+export const ALCHEMY_MAINNET_NETWORK = {
+  [NETWORKS.ETHEREUM]: "eth-mainnet",
+  [NETWORKS.OPTIMISM]: "opt-mainnet",
+  [NETWORKS.ARBITRUM]: "arb-mainnet",
+  [NETWORKS.POLYGON]: "polygon-mainnet",
+};

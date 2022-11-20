@@ -11,7 +11,7 @@ import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { ScrollView, Text, TextInput, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { ShieldExclamationIcon, XIcon } from "react-native-heroicons/solid";
+import { ShieldExclamationIcon, XMarkIcon } from "react-native-heroicons/solid";
 import { useMutation } from "react-query";
 import { useRecoilValue } from "recoil";
 import IconUSA from "../../assets/icons/icon-usa.svg";
@@ -29,6 +29,7 @@ import { getNetworkEnvironment } from "../../hooks/useBcNetworks";
 import { useTranslation } from "react-i18next";
 
 import { SelectListChains } from "../../components/UI/SelectListChains";
+import { decryptAESWithKeychain } from "../../core/keychain";
 import { validateAccountId } from "../../hooks/useNEAR";
 import { isSameNetwork } from "../../utils/network";
 import { shortenAddress } from "../../utils/stringsFunction";
@@ -93,7 +94,8 @@ const ViewSendingToken = ({ route, navigation }: any) => {
     domain: false,
     address: false,
   });
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
+    token.privateKey = await decryptAESWithKeychain(token.privateKey);
     navigation.navigate("ConfirmTransaction", {
       token,
       seed,
@@ -270,7 +272,7 @@ const ViewSendingToken = ({ route, navigation }: any) => {
               </Text>
             </View>
           ) : (
-            <ScanQR onValueScaned={handleResultQrScan} />
+            <ScanQR onValueScanned={handleResultQrScan} />
           )}
         </View>
 
@@ -302,7 +304,7 @@ const ViewSendingToken = ({ route, navigation }: any) => {
                 )}
               </View>
               <View style={tw`flex flex-row justify-end w-1/8`}>
-                <XIcon
+                <XMarkIcon
                   onPress={clearState}
                   width={25}
                   height={25}
@@ -351,7 +353,7 @@ const ViewSendingToken = ({ route, navigation }: any) => {
                   {requestGetAddress.isLoading || requestGetDomain.isLoading ? (
                     <Spinner color={primaryColor} />
                   ) : (
-                    <XIcon
+                    <XMarkIcon
                       onPress={clearState}
                       width={25}
                       height={25}
@@ -453,6 +455,9 @@ const ViewSendingToken = ({ route, navigation }: any) => {
                 keyboardType="numeric"
                 onBlur={onBlur}
                 onChangeText={onChange}
+                onEndEditing={() =>
+                  setValue("amount", +value.toString().replace(/,/g, "."))
+                }
                 style={tw`w-full p-4  dark:text-white`}
                 placeholder={t("send.enter_amount")}
                 // placeholderTextColor={'gray'}
@@ -461,7 +466,7 @@ const ViewSendingToken = ({ route, navigation }: any) => {
             name="amount"
           />
 
-          <View style={tw`flex-row ml-auto`}>
+          {/* <View style={tw`flex-row ml-auto`}>
             <TouchableOpacity
               onPress={() => setValue("amount", balance)}
               underlayColor="transparent"
@@ -471,7 +476,7 @@ const ViewSendingToken = ({ route, navigation }: any) => {
                 {t("send.max")}
               </Text>
             </TouchableOpacity>
-          </View>
+          </View> */}
         </View>
         <View style={tw`py-5 mx-2`}>
           <Text style={tw`text-lg`}>≈</Text>

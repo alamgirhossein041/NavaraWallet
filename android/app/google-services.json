@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "210953684920",
+    "firebase_url": "https://navara-network-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "navara-network",
     "storage_bucket": "navara-network.appspot.com"
   },
@@ -37,6 +38,14 @@
             {
               "client_id": "210953684920-idqecm0v1u70mtvrgdrjoae27uca3hg8.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "210953684920-0krjsjs7emopu816dmmv2ljtmtioifmv.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "network.navara",
+                "app_store_id": "1635370314"
+              }
             }
           ]
         }

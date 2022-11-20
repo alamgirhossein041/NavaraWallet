@@ -3,7 +3,7 @@ import { Modal } from "native-base";
 import React, { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { TouchableOpacity, View } from "react-native";
-import { XIcon } from "react-native-heroicons/solid";
+import { XMarkIcon } from "react-native-heroicons/solid";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRecoilState } from "recoil";
 import { appLockState } from "../../data/globalState/appLock";
@@ -37,7 +37,7 @@ const SignPinCode = () => {
             onPress={onClose}
             style={tw`items-center justify-center w-8 h-8 p-1 bg-gray-200 rounded-full`}
           >
-            <XIcon size={25} color="gray" />
+            <XMarkIcon size={25} color="gray" />
           </TouchableOpacity>
         </View>
 

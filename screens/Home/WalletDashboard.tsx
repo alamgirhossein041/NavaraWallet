@@ -1,12 +1,11 @@
 import React, { useEffect } from "react";
 
-import { RefreshControl, ScrollView, useColorScheme, View } from "react-native";
+import { RefreshControl, ScrollView, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useRecoilRefresher_UNSTABLE, useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import TabBarMenu from "../../components/UI/TabBarMenu";
 
 import { reloadingWallets } from "../../data/globalState/listWallets";
-import { priceTokenState } from "../../data/globalState/priceTokens";
 import { walletEnvironmentState } from "../../data/globalState/userData";
 import { useWalletSelected } from "../../hooks/useWalletSelected";
 import { tw } from "../../utils/tailwind";
@@ -14,7 +13,6 @@ import { tw } from "../../utils/tailwind";
 import HeaderHome from "./HeaderHome";
 import ListChainsChart from "./ListChainsChart";
 import ListNFT from "./ListNFT";
-import News from "./News";
 import SelectWallets from "./SelectWallets";
 import { TelegramLinking } from "./TelegramLinking";
 
@@ -26,31 +24,24 @@ export interface ButtonProps {
 }
 
 const WalletDashboard = () => {
-  const scheme = useColorScheme();
   const [reloading, setReloading] = useRecoilState(reloadingWallets);
   const insets = useSafeAreaInsets();
   const { enabledNetworks, index } = useWalletSelected();
+  const walletEnvironment = useRecoilValue(walletEnvironmentState);
 
-  const refresh = useRecoilRefresher_UNSTABLE(priceTokenState);
-  const [walletEnvironment, setWalletEnvironment] = useRecoilState(
-    walletEnvironmentState
-  );
   const onRefresh = React.useCallback(() => {
-    refresh();
     setReloading(true);
-  }, [refresh, setReloading]);
+  }, [setReloading]);
 
   useEffect(() => {
     if (!reloading) {
       onRefresh();
     }
-  }, [JSON.stringify(enabledNetworks), index, scheme, walletEnvironment]);
-
-  const [tabSelected, setTabSelected] = React.useState(0);
+  }, [JSON.stringify(enabledNetworks), index, walletEnvironment]);
 
   return (
     <View style={tw`flex flex-col h-full`}>
-      <View style={tw`pt-[${insets.top}] bg-white dark:bg-[#18191A] flex-1`}>
+      <View style={tw`pt-[${insets.top}] flex-1`}>
         <ScrollView
           scroll={false}
           refreshControl={
@@ -60,18 +51,13 @@ const WalletDashboard = () => {
           <HeaderHome />
           <SelectWallets />
           {/* <BonusCryptoCard /> */}
-          <TabBarMenu
-            tabSelected={tabSelected}
-            setTabSelected={(index) => setTabSelected(index)}
-          />
-          {tabSelected === 0 ? (
-            <View style={tw`pb-24 ios:pb-52`}>
+          <TabBarMenu itemTabBar={["Token", "NFT"]}>
+            <View style={tw`flex-col items-center w-full pb-24 ios:pb-52`}>
               <ListChainsChart next="DetailChain" />
-              <News keyword="blockchain" isPreview />
+              {/* <News keyword="blockchain" isPreview /> */}
             </View>
-          ) : (
             <ListNFT />
-          )}
+          </TabBarMenu>
           <TelegramLinking />
         </ScrollView>
       </View>

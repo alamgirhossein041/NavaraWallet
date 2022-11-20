@@ -1,43 +1,49 @@
-import { cloneDeep } from "lodash";
 import React from "react";
 import { View } from "react-native";
-import { useRecoilState } from "recoil";
 import Logo from "../../../assets/logo/logo.svg";
 import {
   encryptAESWithKeychain,
   getFromKeychain,
 } from "../../../core/keychain";
-import useDatabase from "../../../data/database/useDatabase";
-import { listWalletsState } from "../../../data/globalState/listWallets";
+import WalletController from "../../../data/database/controllers/wallet.controller";
+import useWalletsActions from "../../../data/globalState/listWallets/listWallets.actions";
 import { tw } from "../../../utils/tailwind";
 import EnableAppLock from "./EnableAppLock";
 
 export default function EnableAppLockOnBoard({ navigation, route }) {
-  const { walletController } = useDatabase();
-  const [listWallets, setListWallets] = useRecoilState(listWalletsState);
+  const walletController = new WalletController();
+  const { updateSpecificDB, get } = useWalletsActions();
+  // const [listWallets, setListWallets] = useRecoilState(listWalletsState);
   //background Darkmode
 
   const handlePress = async () => {
     const password = await getFromKeychain();
 
     if (password) {
-      const seedPhrase = listWallets[0]?.seedPhrase;
-      const encryptedSeedPhrase = await encryptAESWithKeychain(seedPhrase);
-      await walletController.updateWallet({
-        ...listWallets[0],
-        seedPhrase: encryptedSeedPhrase,
-      });
-      setListWallets(
-        cloneDeep(listWallets).map((item, index) => {
-          if (index === 0) {
+      const firstWallet = get()?.[0];
+      if (firstWallet) {
+        const seedPhrase = firstWallet.seedPhrase;
+        const encryptedSeedPhrase = await encryptAESWithKeychain(seedPhrase);
+        const encryptedChains = await Promise.all(
+          firstWallet.chains.map(async (chain) => {
+            const encryptedPrivateKey = await encryptAESWithKeychain(
+              chain.privateKey
+            );
             return {
-              ...item,
-              seedPhrase: encryptedSeedPhrase,
+              ...chain,
+              privateKey: encryptedPrivateKey,
             };
-          }
-          return item;
-        })
-      );
+          })
+        );
+
+        const wallet = {
+          ...firstWallet,
+          seedPhrase: encryptedSeedPhrase,
+          chains: encryptedChains,
+        };
+
+        await updateSpecificDB(wallet.id, wallet);
+      }
     }
 
     navigation.navigate("EnableBiometric");
@@ -47,7 +53,7 @@ export default function EnableAppLockOnBoard({ navigation, route }) {
       style={tw`relative items-center w-full min-h-full px-3 bg-white dark:bg-[#18191A] `}
     >
       <View style={tw`mt-10`}>
-        <Logo width={120} height={120} />
+        <Logo width={100} height={100} />
       </View>
       <EnableAppLock onSuccess={handlePress} />
     </View>

@@ -14,12 +14,12 @@ import { useRecoilState } from "recoil";
 import FaceId from "../../assets/icons/face-id.svg";
 import FingerPrint from "../../assets/icons/finger-print.svg";
 
-import { Regex } from "../../configs/defaultValue";
 import { primaryColor } from "../../configs/theme";
 import { appLockState } from "../../data/globalState/appLock";
 import { checkStateScanFingerNative } from "../../screens/Settings/AppLock/FingerPrintScan";
 
 import checkPinCode from "../../utils/checkPinCode";
+import { validatePassword } from "../../utils/stringsFunction";
 import { tw } from "../../utils/tailwind";
 import Button from "./Button";
 import PressableAnimated from "./PressableAnimated";
@@ -77,8 +77,9 @@ const PinCodeInput = ({
       return;
     }
     const { password, rePassword } = getValues();
-    if (!password.match(Regex.password) && type === PinCodeEnum.NEW) {
-      setErr(`${t("setting.apps_lock.description_error_verify_your_access")}`);
+    const inValid = validatePassword(password);
+    if (inValid && type === PinCodeEnum.NEW) {
+      setErr(inValid);
       return;
     }
 
@@ -114,9 +115,9 @@ const PinCodeInput = ({
       const scanResult = await checkStateScanFingerNative();
       if (scanResult) {
         setAppLock({ ...appLock, isLock: false });
-        triggerHapticFeedback("clockTick");
         Keyboard.dismiss();
         onSuccess();
+        triggerHapticFeedback();
       }
     }
   }, [appLock, timer]);
@@ -154,41 +155,44 @@ const PinCodeInput = ({
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : null}
+      behavior={Platform.OS === "ios" ? "padding" : "padding"}
       style={tw`flex flex-col items-center justify-start flex-1 w-full`}
     >
       <View style={tw`flex-col px-3 py-10`}>
         <Text style={tw`mb-5 text-2xl font-bold text-center dark:text-white`}>
           {label}
         </Text>
-        <Controller
-          control={control}
-          rules={{
-            required: true,
-          }}
-          render={({ field: { onChange, value } }) => (
-            <TextField
-              label={t("setting.apps_lock.enter_password")}
-              type="password"
-              value={value.replace(/\s/g, "")}
-              onChangeText={onChange}
-              autoCapitalize="none"
-              err={err.length > 0}
-              onTouchStart={() => {
-                setErr("");
-              }}
-              returnKeyType={type === PinCodeEnum.NEW ? "next" : "default"}
-              onSubmitEditing={() => {
-                if (type === PinCodeEnum.NEW) {
-                  rePasswordRef?.current?.focus();
-                } else {
-                  handleEndEditing();
-                }
-              }}
-            />
-          )}
-          name="password"
-        />
+        <View style={tw`mb-5`}>
+          <Controller
+            style={tw`mb-3`}
+            control={control}
+            rules={{
+              required: true,
+            }}
+            render={({ field: { onChange, value } }) => (
+              <TextField
+                label={t("setting.apps_lock.enter_password")}
+                type="password"
+                value={value.replace(/\s/g, "")}
+                onChangeText={onChange}
+                autoCapitalize="none"
+                err={err.length > 0}
+                onTouchStart={() => {
+                  setErr("");
+                }}
+                returnKeyType={type === PinCodeEnum.NEW ? "next" : "default"}
+                onSubmitEditing={() => {
+                  if (type === PinCodeEnum.NEW) {
+                    rePasswordRef?.current?.focus();
+                  } else {
+                    handleEndEditing();
+                  }
+                }}
+              />
+            )}
+            name="password"
+          />
+        </View>
         {type === PinCodeEnum.NEW && (
           <Controller
             control={control}
@@ -243,7 +247,7 @@ const PinCodeInput = ({
 
       <View style={tw`absolute w-full px-3 bottom-5`}>
         <Button
-          hideOnKeyboard
+          hideOnKeyboard={true}
           fullWidth
           onPress={handleEndEditing}
           disabled={timer >= 0}

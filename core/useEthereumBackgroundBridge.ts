@@ -1,21 +1,28 @@
 import { ethers } from "ethers";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Alert } from "react-native";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { eventHub } from "../App";
 import { NETWORK_CONFIG_BY_CHAIN_ID } from "../configs/bcNetworks";
 import { NOTIFICATION_NAMES } from "../constants/AppConstant";
 import API from "../data/api";
+import WalletController from "../data/database/controllers/wallet.controller";
 import { browserApprovedHost } from "../data/globalState/browser";
 import { useBrowserActions } from "../data/globalState/browser/browser.actions";
-import { listWalletsState } from "../data/globalState/listWallets";
+import {
+  idWalletSelected,
+  listWalletsState,
+} from "../data/globalState/listWallets";
 import { Web3Provider } from "../enum";
 import { NETWORKS } from "../enum/bcEnum";
-import { useWalletSelected } from "../hooks/useWalletSelected";
-import { DISPATCH_NOTIFICATION } from "../utils/storage";
 import { JS_POST_MESSAGE_TO_PROVIDER } from "./browserScripts";
 import { confirmEvent } from "./eventConfirm";
-import { EVENT_APPROVED_ACTION_RESPONSE, EVENT_TYPE } from "./eventHub";
+import {
+  EVENT_APPROVED_ACTION_RESPONSE,
+  EVENT_SESSION_UPDATED,
+  EVENT_TYPE,
+} from "./eventHub";
+import { decryptAESWithKeychain } from "./keychain";
 import { createResponseMessage } from "./web3Message";
 
 export class Port {
@@ -37,8 +44,7 @@ export class Port {
 export const useEthereumBackgroundBridge = (props) => {
   const [approvedHosts] = useRecoilState(browserApprovedHost);
   const { webviewRef, isWalletConnect } = props;
-  const [chainId, setChainId] = useState("3");
-  const { data: selectedWallet } = useWalletSelected();
+  const [chainId, setChainId] = useState("1");
   const [provider, setProvider] = useState<ethers.providers.JsonRpcProvider>();
   const [ethWallet, setEthWallet] = useState<ethers.Wallet>();
   const [selectedAddress, setSelectedAddress] = useState<string>();
@@ -47,6 +53,8 @@ export const useEthereumBackgroundBridge = (props) => {
   const [accounts, setAccounts] = useState<string[]>([]);
   const [gasPrice, setGasPrice] = useState<ethers.utils.BigNumber>();
   const { addApprovedHost } = useBrowserActions();
+  const walletController = new WalletController();
+  const indexWalletSelected = useRecoilValue(idWalletSelected);
   const [isModalConfirmAccessOpen, setModalConfirmAccessOpen] =
     useState<boolean>(false);
 
@@ -68,15 +76,16 @@ export const useEthereumBackgroundBridge = (props) => {
     (data, currentState) => {
       if (isWalletConnect) {
         const { method, params } = data;
+
         if (method === NOTIFICATION_NAMES.CHAIN_CHAINED) {
-          eventHub.emit(DISPATCH_NOTIFICATION, {
+          eventHub.emit(EVENT_SESSION_UPDATED, {
             ...currentState,
             chainId: params.chainId,
           });
           return;
         }
         if (method === NOTIFICATION_NAMES.ACCOUNTS_CHANGES) {
-          eventHub.emit(DISPATCH_NOTIFICATION, {
+          eventHub.emit(EVENT_SESSION_UPDATED, {
             ...currentState,
             accounts: params,
           });
@@ -103,52 +112,66 @@ export const useEthereumBackgroundBridge = (props) => {
   }, [chainId, selectedAddress]);
 
   useEffect(() => {
-    const { chains } = selectedWallet;
-    const ethereumWallet = chains.find(
-      (chain) => chain.network === NETWORKS.ETHEREUM
-    );
+    if (!isNaN(indexWalletSelected)) {
+      (async () => {
+        const wallets = await walletController.getWallets();
+        const selectedWallet = wallets[indexWalletSelected];
+        const { chains } = selectedWallet;
+        const ethereumWallet = chains.find(
+          (chain) => chain.network === NETWORKS.ETHEREUM
+        );
+        const accountsList = wallets.map((wallet) => {
+          const { chains: chainsList } = wallet;
+          const ethAddress = chainsList.find(
+            (chain) => chain.network === NETWORKS.ETHEREUM
+          ).address;
+          return ethAddress;
+        });
+        const config = NETWORK_CONFIG_BY_CHAIN_ID[chainId];
 
-    const accountsList = listWallets.map((wallet) => {
-      const { chains: chainsList } = wallet;
-      const ethAddress = chainsList.find(
-        (chain) => chain.network === NETWORKS.ETHEREUM
-      ).address;
-      return ethAddress;
-    });
-    const config = NETWORK_CONFIG_BY_CHAIN_ID[chainId];
+        const currentProvider = new ethers.providers.JsonRpcProvider(
+          config.rpc
+        );
+        const privateKey = await decryptAESWithKeychain(
+          ethereumWallet.privateKey
+        );
 
-    const currentProvider = new ethers.providers.JsonRpcProvider(config.rpc);
-    const wallet = new ethers.Wallet(
-      ethereumWallet.privateKey,
-      currentProvider
-    );
-    setRpcEndpoint(config.rpc);
-    setProvider(currentProvider);
-    setEthWallet(wallet);
-    setSelectedAddress(wallet.address);
-    setAccounts(accountsList);
-    const numApprovedHosts = Object.keys(approvedHosts).length;
+        const wallet = new ethers.Wallet(privateKey, currentProvider);
+        setRpcEndpoint(config.rpc);
+        setProvider(currentProvider);
+        setEthWallet(wallet);
+        setSelectedAddress(wallet.address);
+        setAccounts(accountsList);
+        const numApprovedHosts = Object.keys(approvedHosts).length;
 
-    if (numApprovedHosts === 0) {
-      sendNotification(
-        {
-          method: NOTIFICATION_NAMES.ACCOUNTS_CHANGES,
-          params: [],
-        },
-        currentState
-      ); // notification should be sent regardless of approval status
+        if (numApprovedHosts === 0) {
+          sendNotification(
+            {
+              method: NOTIFICATION_NAMES.ACCOUNTS_CHANGES,
+              params: [],
+            },
+            currentState
+          ); // notification should be sent regardless of approval status
+        }
+
+        if (numApprovedHosts > 0) {
+          sendNotification(
+            {
+              method: NOTIFICATION_NAMES.ACCOUNTS_CHANGES,
+              params: [wallet.address],
+            },
+            currentState
+          );
+        }
+      })();
     }
-
-    if (numApprovedHosts > 0) {
-      sendNotification(
-        {
-          method: NOTIFICATION_NAMES.ACCOUNTS_CHANGES,
-          params: [wallet.address],
-        },
-        currentState
-      );
-    }
-  }, [selectedWallet, approvedHosts, chainId, listWallets, sendNotification]);
+  }, [
+    indexWalletSelected,
+    approvedHosts,
+    chainId,
+    listWallets,
+    sendNotification,
+  ]);
 
   useEffect(() => {
     let chainIdHex = `0x${parseInt(chainId, 10).toString(16)}`;
@@ -372,8 +395,7 @@ export const useEthereumBackgroundBridge = (props) => {
       }
       case "eth_getBalance": {
         try {
-          const balance = await provider.getBalance(payload.params[0]);
-          result = ethers.utils.formatEther(balance);
+          result = await provider.getBalance(payload.params[0]);
         } catch (e) {
           error = { message: e.message, code: 32603 };
         }
@@ -384,9 +406,18 @@ export const useEthereumBackgroundBridge = (props) => {
         break;
       }
       case "personal_sign": {
-        let dataHash = ethers.utils.arrayify(payload.params[0]);
-        const signature = await ethWallet.signMessage(dataHash);
-        result = signature;
+        try {
+          let dataHash = ethers.utils.arrayify(payload.params[0]);
+          const signature = await ethWallet.signMessage(dataHash);
+          result = signature;
+        } catch (e) {
+          const messageToSign = payload.params[0];
+          const messageByte = ethers.utils.toUtf8Bytes(messageToSign);
+          let dataHashBin = ethers.utils.arrayify(messageByte);
+          const signature = await ethWallet.signMessage(dataHashBin);
+          result = signature;
+        }
+
         break;
       }
       case "wallet_addEthereumChain": {
@@ -431,6 +462,8 @@ export const useEthereumBackgroundBridge = (props) => {
   };
 
   return {
+    chainId,
+    setChainId,
     onMessage,
     onDisconnect,
     selectedAddress,

@@ -1,15 +1,19 @@
 import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { getFromKeychain } from "../../core/keychain";
+import WalletController from "../../data/database/controllers/wallet.controller";
 import useDatabase from "../../data/database/useDatabase";
-import { appLockState } from "../../data/globalState/appLock";
-import { listWalletsState } from "../../data/globalState/listWallets";
+import {
+  idWalletSelected,
+  listWalletsState,
+} from "../../data/globalState/listWallets";
 import { walletEnvironmentState } from "../../data/globalState/userData";
 import { ENVIRONMENT } from "../../global.config";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import {
+  ID_WALLET_SELECTED,
   localStorage,
   NETWORKS_ENVIRONMENT,
   SELECTED_LANGUAGE,
@@ -17,10 +21,11 @@ import {
 import SplashScreen from "./SplashScreen";
 
 const Splash = ({ navigation }) => {
-  const { walletController, connection } = useDatabase();
+  const { connection } = useDatabase();
+
   const setListWallets = useSetRecoilState(listWalletsState);
   const setWalletEnvironment = useSetRecoilState(walletEnvironmentState);
-  const [appLock, setAppLock] = useRecoilState(appLockState);
+  const indexWalletSelected = useRecoilValue(idWalletSelected);
 
   const redirect = (route) => {
     navigation.replace(route);
@@ -34,6 +39,7 @@ const Splash = ({ navigation }) => {
 
   useEffect(() => {
     if (!!connection) {
+      const walletController = new WalletController();
       (async () => {
         /**
          * Get state main net / test net
@@ -44,14 +50,24 @@ const Splash = ({ navigation }) => {
         setWalletEnvironment(environment as ENVIRONMENT);
         const wallets = await walletController.getWallets();
 
-        /**
-         * Check database wallet if exting wallet redirect to dashboard or onboard screen
-         */
+        if (!(await localStorage.get(ID_WALLET_SELECTED))) {
+          // Check existing ID_WALLET_SELECTED in localStorage
+
+          if (wallets[indexWalletSelected]?.id) {
+            await localStorage.set(
+              ID_WALLET_SELECTED,
+              wallets[indexWalletSelected].id
+            );
+          }
+        }
+
         if (wallets && wallets.length > 0) {
           setListWallets(wallets);
           const password = await getFromKeychain();
           if (!password) {
-            navigation.navigate("OnBoard", { screen: "EnableAppLockOnBoard" });
+            navigation.navigate("OnBoard", {
+              screen: "EnableAppLockOnBoard",
+            });
           } else {
             redirect("TabsNavigation");
           }

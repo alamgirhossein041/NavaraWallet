@@ -4,13 +4,15 @@ import React, { useEffect } from "react";
 import BackButton from "../../components/UI/BackButton";
 
 import { useTranslation } from "react-i18next";
+import CreateDomain from "../Domain/CreateDomain";
+import DetailDomain from "../Domain/DetailDomain";
+import ManageDomains from "../Domain/ManageDomains";
 import ManageWallets from "../ManageWallets";
 import ShareAddress from "../ReceiveToken/ShareAddress";
 import AppLock from "./AppLock/AppLock";
 import EnableAppLock from "./AppLock/EnableAppLock";
 import ConnectedAccounts from "./ConnectAccounts";
 import { Language } from "./Language/Language";
-import ManageSessions from "./ManageSessions";
 import Menu from "./Menu";
 
 const Settings = ({ navigation, route }) => {
@@ -62,6 +64,28 @@ const Settings = ({ navigation, route }) => {
         }}
       />
       <Stack.Screen
+        name="ManageDomains"
+        options={{
+          title: `Domains`,
+          headerShown: true,
+        }}
+        component={ManageDomains}
+      />
+      <Stack.Screen
+        name="DetailDomain"
+        options={{
+          title: ``,
+        }}
+        component={DetailDomain}
+      />
+      <Stack.Screen
+        name="CreateDomain"
+        component={CreateDomain}
+        options={{
+          title: `${t("stack_screen.name_service")}`,
+        }}
+      />
+      <Stack.Screen
         name="ConnectAccounts"
         component={ConnectedAccounts}
         options={{
@@ -93,27 +117,12 @@ const Settings = ({ navigation, route }) => {
           headerShown: true,
         }}
       />
-      {/* <Stack.Screen
-        name="Currency"
-        component={Currency}
-        options={{
-          title: `${t("setting.currency")}`,
-          headerShown: true,
-        }}
-      /> */}
+
       <Stack.Screen
         name="Language"
         component={Language}
         options={{
           title: `${t("setting.select_language")}`,
-          headerShown: true,
-        }}
-      />
-      <Stack.Screen
-        name="ManageSections"
-        component={ManageSessions}
-        options={{
-          title: `Manage sessions`,
           headerShown: true,
         }}
       />

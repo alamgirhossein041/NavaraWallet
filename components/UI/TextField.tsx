@@ -7,7 +7,6 @@ import React, {
 } from "react";
 import {
   Animated,
-  Keyboard,
   Pressable,
   StyleSheet,
   Text,
@@ -15,7 +14,8 @@ import {
   TextInputProps,
   View,
 } from "react-native";
-import { EyeIcon, EyeOffIcon } from "react-native-heroicons/outline";
+import { MagnifyingGlassIcon } from "react-native-heroicons/outline";
+import { EyeIcon, EyeSlashIcon } from "react-native-heroicons/solid";
 import { secondaryGray } from "../../configs/theme";
 import { tw } from "../../utils/tailwind";
 import PressableAnimated from "./PressableAnimated";
@@ -69,12 +69,12 @@ const TextField = forwardRef((props: ITextFieldProps, ref) => {
 
   const topValue = labelTop.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, -36],
+    outputRange: [5, -38],
   });
 
   const leftValue = labelLeft.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, -10],
+    outputRange: [0, -12],
   });
 
   const styles = StyleSheet.create({
@@ -128,19 +128,31 @@ const TextField = forwardRef((props: ITextFieldProps, ref) => {
   }, [props, focused]);
 
   return (
-    <View style={tw`w-full my-1`}>
+    <View style={tw`w-full my-3`}>
       <Pressable
         onPress={() => internalInputRef.current.focus()}
-        style={tw`w-full my-5 ${styleInput}  relative flex flex-row  px-3  rounded-xl  mb-1 border ${
-          err ? "border-red-500 bg-red-100" : "border-gray-300"
-        }`}
+        style={tw`w-full mb-1 ${styleInput} h-15 items-center  relative flex-row px-3 rounded-xl  border 
+        ${
+          err
+            ? "border-red-500 bg-red-100"
+            : `${
+                focused
+                  ? "border-blue-500"
+                  : "border-gray-300 dark:border-gray-700"
+              }`
+        } 
+        `}
       >
         {iconPosition === "left" && (
           <PressableAnimated onPress={onIconPress}>{icon}</PressableAnimated>
         )}
+        {type === "search" && (
+          <View style={tw`flex items-center justify-center mx-1 select-none `}>
+            <MagnifyingGlassIcon color="gray" />
+          </View>
+        )}
         <TextInput
           onBlur={() => {
-            Keyboard.dismiss();
             setFocused(false);
           }}
           style={[
@@ -165,11 +177,11 @@ const TextField = forwardRef((props: ITextFieldProps, ref) => {
             {
               transform: [{ translateX: leftValue }, { translateY: topValue }],
               opacity: labelOpacity,
-              fontSize: 14,
             },
+            tw`items-center justify-center mb-5 h-7 `,
           ]}
         >
-          <Text style={tw`font-bold dark:text-white`}> {label}</Text>
+          <Text style={tw`mt-3 font-bold dark:text-white`}>{label}</Text>
         </Animated.Text>
         <PressableAnimated
           onPress={() => {
@@ -178,12 +190,12 @@ const TextField = forwardRef((props: ITextFieldProps, ref) => {
             }
             onIconPress();
           }}
-          style={tw`absolute flex items-center justify-center w-5 h-full right-4`}
+          style={tw`absolute flex items-center justify-center w-6 h-full right-4`}
         >
           {type === "password" ? (
             <>
               {hidePassword ? (
-                <EyeOffIcon
+                <EyeSlashIcon
                   height="100%"
                   width="100%"
                   style={tw`text-gray-400`}

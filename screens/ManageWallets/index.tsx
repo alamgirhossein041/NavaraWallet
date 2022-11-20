@@ -1,4 +1,5 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { CardStyleInterpolators } from "@react-navigation/stack";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import BackButton from "../../components/UI/BackButton";
@@ -9,7 +10,7 @@ import SelectFile from "../Backup/SelectFile";
 import CreateWallet from "../OnBoard/CreateWallet";
 import ImportWallet from "../OnBoard/ImportWallet";
 import DetailWallet from "./DetailWallet";
-import PrivacySeedPhrase from "./privacySeedPhrase";
+import PrivacySeedPhrase from "./PrivacySeedPhrase";
 import Wallets from "./Wallets";
 
 const ManageWallets = () => {
@@ -21,10 +22,13 @@ const ManageWallets = () => {
   return (
     <Stack.Navigator
       screenOptions={{
+        gestureEnabled: true,
         headerTitleAlign: "center",
+        gestureDirection: "horizontal",
         headerStyle: tw`bg-white dark:bg-[#18191A] `,
         headerShadowVisible: false,
         headerLeft: () => <BackButton />,
+        cardStyleInterpolator: CardStyleInterpolators.forModalPresentationIOS,
       }}
     >
       <Stack.Screen
@@ -53,6 +57,8 @@ const ManageWallets = () => {
         component={DetailWallet}
         options={{
           title: "",
+          cardStyleInterpolator:
+            CardStyleInterpolators.forFadeFromBottomAndroid,
         }}
       />
       <Stack.Screen

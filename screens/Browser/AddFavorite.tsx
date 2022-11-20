@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect } from 'react';
-import { Text, TouchableOpacity } from 'react-native';
-import { StarIcon as StarIconDefault } from 'react-native-heroicons/outline';
-import { StarIcon as StarIconAdded } from 'react-native-heroicons/solid';
-import { useRecoilValue } from 'recoil';
-import useDatabase from '../../data/database/useDatabase';
-import { browserState, currentTabState } from '../../data/globalState/browser';
-import { tw } from '../../utils/tailwind';
+import React, { useCallback, useEffect } from "react";
+import { Text, TouchableOpacity } from "react-native";
+import { StarIcon as StarIconDefault } from "react-native-heroicons/outline";
+import { StarIcon as StarIconAdded } from "react-native-heroicons/solid";
+import { useRecoilValue } from "recoil";
+import FavoritesBrowserController from "../../data/database/controllers/favoritesBrowser.controller";
+import { browserState, currentTabState } from "../../data/globalState/browser";
+import { tw } from "../../utils/tailwind";
 
 export interface IFavoriteWebSite {
   title: string;
@@ -15,13 +15,13 @@ export interface IFavoriteWebSite {
 
 export default function AddFavorite() {
   const currentTab = useRecoilValue(currentTabState);
-  const {favoritesBrowserController} = useDatabase();
+  const favoritesBrowserController = new FavoritesBrowserController();
   const browser = useRecoilValue(browserState);
   const [isFavorite, setIsFavorite] = React.useState(false);
 
   const handleAddFavorite = useCallback(async (): Promise<void> => {
     const favorites = await favoritesBrowserController.createFavoritesBrowser(
-      browser[currentTab],
+      browser[currentTab]
     );
     if (favorites) {
       setIsFavorite(true);
@@ -29,9 +29,9 @@ export default function AddFavorite() {
   }, [browser, favoritesBrowserController, currentTab]);
 
   const handleRemoveFavorite = useCallback(async () => {
-    const {url} = browser[currentTab];
-    const {affected} = await favoritesBrowserController.deleteFavoritesByUrl(
-      url,
+    const { url } = browser[currentTab];
+    const { affected } = await favoritesBrowserController.deleteFavoritesByUrl(
+      url
     );
     if (affected) {
       setIsFavorite(false);
@@ -40,7 +40,7 @@ export default function AddFavorite() {
 
   useEffect(() => {
     (async () => {
-      const {url} = browser[currentTab];
+      const { url } = browser[currentTab];
       const exiting = await favoritesBrowserController.findFavoritesByUrl(url);
 
       if (exiting) {
@@ -54,15 +54,17 @@ export default function AddFavorite() {
   return isFavorite === true ? (
     <TouchableOpacity
       onPress={handleRemoveFavorite}
-      style={tw`flex-col items-center w-1/4`}>
-      <StarIconAdded height={30} width={30} style={tw`m-1`} color={'gray'} />
+      style={tw`flex-col items-center w-1/4`}
+    >
+      <StarIconAdded height={30} width={30} style={tw`m-1`} color={"gray"} />
       <Text style={tw`dark:text-white `}>Added</Text>
     </TouchableOpacity>
   ) : (
     <TouchableOpacity
       onPress={handleAddFavorite}
-      style={tw`flex-col items-center w-1/4`}>
-      <StarIconDefault height={30} width={30} style={tw`m-1`} color={'gray'} />
+      style={tw`flex-col items-center w-1/4`}
+    >
+      <StarIconDefault height={30} width={30} style={tw`m-1`} color={"gray"} />
       <Text style={tw`dark:text-white `}>Add Favorite</Text>
     </TouchableOpacity>
   );

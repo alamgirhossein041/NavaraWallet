@@ -4,11 +4,15 @@ import { Animated, Text, TouchableOpacity, View } from "react-native";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
+  MagnifyingGlassIcon,
   ShareIcon,
 } from "react-native-heroicons/solid";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Share from "react-native-share";
 import { useRecoilValue } from "recoil";
+import { eventHub } from "../../App";
 import { middleGray } from "../../configs/theme";
+import { FOCUS_ADDRESS_BROWSER } from "../../core/eventHub";
 import { browserState, NEW_TAB } from "../../data/globalState/browser";
 import { tw } from "../../utils/tailwind";
 import OptionsBrowser from "./OptionsBrowser";
@@ -25,19 +29,20 @@ interface INavigationBarBrowserProps {
   goForward;
 }
 const NavigationBarBrowser = memo((props: INavigationBarBrowserProps) => {
-  const {
-    goBack,
-    goForward,
-    openManageTabs,
-    isShow,
-    url,
-    gotoHomePage,
-    tabData,
-  } = props;
+  const { goBack, goForward, openManageTabs, isShow, url, gotoHomePage } =
+    props;
+  const isHomePage = url === NEW_TAB;
 
+  const SearchAndShare = () => {
+    if (isHomePage) {
+      return <MagnifyingGlassIcon height={25} width={25} color="gray" />;
+    }
+    return <ShareIcon fill="gray" width={25} height={25} />;
+  };
   const browser = useRecoilValue(browserState);
   const handleShareUrl = async () => {
-    if (url === NEW_TAB) {
+    if (isHomePage) {
+      eventHub.emit(FOCUS_ADDRESS_BROWSER);
       return;
     }
     await Share.open({
@@ -47,14 +52,14 @@ const NavigationBarBrowser = memo((props: INavigationBarBrowserProps) => {
   };
   const navbarItems = [
     {
-      icon: <ChevronLeftIcon fill={"gray"} width={35} height={35} />,
+      icon: <ChevronLeftIcon fill={"gray"} width={30} height={30} />,
       onPress: () => {
         goBack();
       },
     },
 
     {
-      icon: <ChevronRightIcon fill={"gray"} width={35} height={35} />,
+      icon: <ChevronRightIcon fill={"gray"} width={30} height={30} />,
       onPress: () => {
         goForward();
       },
@@ -80,7 +85,7 @@ const NavigationBarBrowser = memo((props: INavigationBarBrowserProps) => {
       onLongPress: () => gotoHomePage(),
     },
     {
-      icon: <ShareIcon fill="gray" width={25} height={25} />,
+      icon: <SearchAndShare />,
       onPress: () => handleShareUrl(),
     },
     {
@@ -106,30 +111,25 @@ const NavigationBarBrowser = memo((props: INavigationBarBrowserProps) => {
   }, [isShow]);
 
   return (
-    <Animated.View
+    <SafeAreaView
+      edges={["bottom"]}
       style={[
-        tw`absolute bottom-0 left-0 right-0 flex-row items-center justify-between p-2 bg-white dark:bg-[#18191A]  shadow ios:pb-7`,
-        {
-          transform: [
-            {
-              translateY: animationValues,
-            },
-          ],
-        },
+        tw`absolute bottom-0 left-0 right-0 flex-row items-center justify-between bg-white dark:bg-[#18191A] shadow`,
       ]}
     >
       {navbarItems.map((item, index) => {
         return (
           <TouchableOpacity
+            delayLongPress={200}
             key={index}
             {...item}
-            style={tw`flex-row justify-center w-10 `}
+            style={tw`flex-row items-center justify-center w-1/5 h-full p-2 `}
           >
             {item.icon}
           </TouchableOpacity>
         );
       })}
-    </Animated.View>
+    </SafeAreaView>
   );
 });
 

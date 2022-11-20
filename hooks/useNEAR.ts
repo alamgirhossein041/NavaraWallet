@@ -4,12 +4,10 @@ import bs58 from "bs58";
 import * as nearAPI from "near-api-js";
 import { derivePath } from "near-hd-key";
 import { useEffect, useState } from "react";
-import uuid from "react-native-uuid";
 import nacl from "tweetnacl";
 import { NEAR_MAINNET_CONFIG } from "../configs/bcMainnets";
 import { DEVIVERATION_PATH } from "../configs/bcNetworks";
 import { NEAR_TESTNET_CONFIG } from "../configs/bcTestnets";
-import API from "../data/api";
 import { INearInstance, WalletInterface } from "../data/types";
 import { NETWORKS, NETWORK_ENVIRONMENT_ENUM } from "../enum/bcEnum";
 import { getNearConfig, useBcNetworks } from "./useBcNetworks";
@@ -34,7 +32,11 @@ function buf2hex(buffer: ArrayBuffer) {
     .join("");
 }
 
-export const createNearWallet = async (seed: Buffer, accountIndex = 0) => {
+export const createNearWallet = async (
+  seed: Buffer,
+  isCreateNewWallet,
+  accountIndex = 0
+) => {
   const path = DEVIVERATION_PATH[NETWORKS.NEAR](accountIndex);
   const { key } = derivePath(path, seed.toString("hex"));
 
@@ -45,15 +47,15 @@ export const createNearWallet = async (seed: Buffer, accountIndex = 0) => {
 
   const implicitBuffer = nearAPI.utils.PublicKey.fromString(publicKey).data;
   const implicitAccountId = buf2hex(implicitBuffer);
+  let genAccountIds = [[], []];
+  if (!isCreateNewWallet) {
+    genAccountIds = await Promise.all([
+      getAccountIds(publicKey, NEAR_MAINNET_CONFIG.helperUrl),
+      getAccountIds(publicKey, NEAR_TESTNET_CONFIG.helperUrl),
+    ]);
+  }
 
-  const accountIds = await getAccountIds(
-    publicKey,
-    NEAR_MAINNET_CONFIG.helperUrl
-  );
-  const testnetAccountIds = await getAccountIds(
-    publicKey,
-    NEAR_TESTNET_CONFIG.helperUrl
-  );
+  const [accountIds, testnetAccountIds] = genAccountIds;
 
   const keyPairResult = {
     address: implicitAccountId,
@@ -66,20 +68,24 @@ export const createNearWallet = async (seed: Buffer, accountIndex = 0) => {
   }
   if (testnetAccountIds.length) {
     keyPairResult.testnetAddress = testnetAccountIds[0];
-  } else {
-    let createSuccess = false;
-    while (!createSuccess) {
-      const testnetAccountId = `${uuid.v4()}.testnet`;
-      const res = await API.post(`${NEAR_TESTNET_CONFIG.helperUrl}/account`, {
-        newAccountId: testnetAccountId,
-        newAccountPublicKey: publicKey,
-      });
-      if (!res.receipts_outcome[0].outcome.status.Failure) {
-        keyPairResult.testnetAddress = testnetAccountId;
-        createSuccess = true;
-      }
-    }
   }
+  // else {
+  //   let createSuccess = false;
+  //   while (!createSuccess) {
+  //     const testnetAccountId = `${uuid.v4()}.testnet`;
+  //     const res: any = await API.post(
+  //       `${NEAR_TESTNET_CONFIG.helperUrl}/account`,
+  //       {
+  //         newAccountId: testnetAccountId,
+  //         newAccountPublicKey: publicKey,
+  //       }
+  //     );
+  //     if (!res.receipts_outcome[0].outcome.status.Failure) {
+  //       keyPairResult.testnetAddress = testnetAccountId;
+  //       createSuccess = true;
+  //     }
+  //   }
+  // }
 
   return { ...keyPairResult, network: NETWORKS.NEAR };
 };

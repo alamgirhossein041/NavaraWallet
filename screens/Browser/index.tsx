@@ -12,37 +12,40 @@ import uuid from "react-native-uuid";
 import { useRecoilState, useRecoilValue } from "recoil";
 import BackButton from "../../components/UI/BackButton";
 import { SPA_urlChangeListener } from "../../core/browserScripts";
-import useDatabase from "../../data/database/useDatabase";
+import HistoryBrowserController from "../../data/database/controllers/historyBrowser.controller";
 import {
+  browserSettingsState,
   browserState,
   currentTabState,
   NEW_TAB,
 } from "../../data/globalState/browser";
-import { useBrowserActions } from "../../data/globalState/browser/browser.actions";
 import useNearInstanceAction from "../../data/globalState/nearInstance/nearInstance.actions";
 import { NETWORKS } from "../../enum/bcEnum";
 import { useWalletSelected } from "../../hooks/useWalletSelected";
-import { BROWSER_TABS, localStorage } from "../../utils/storage";
+import {
+  BROWSER_SETTINGS,
+  BROWSER_TABS,
+  localStorage,
+} from "../../utils/storage";
 import { tw } from "../../utils/tailwind";
 import BrowserHistory from "./BrowserHistory";
 import BrowserTab from "./BrowserTab";
 import InpageBridgeWeb3 from "./core/InpageBridgeWeb3";
-import SolanaInpageBridge from "./core/SolanaInpageBridge";
 import FavoritesList from "./FavoritesList";
 import ManageTabs from "./ManageTabs";
 import SearchEngine from "./Settings/SearchEngine";
 import SettingsMenu from "./Settings/SettingsMenu";
 
-const InPageScript =
-  InpageBridgeWeb3 + SolanaInpageBridge + SPA_urlChangeListener;
+const InPageScript = InpageBridgeWeb3 + SPA_urlChangeListener;
 
 const MainBrowser = ({ route }) => {
   const { params } = route;
-  const { historyBrowserController } = useDatabase();
-  const { createTabBrowser } = useBrowserActions();
+  const historyBrowserController = new HistoryBrowserController();
   const tabsRef = useRef(null);
   const [browser, setBrowser] = useRecoilState(browserState);
   const currentTab = useRecoilValue(currentTabState);
+  const [browserSettings, setBrowserSettings] =
+    useRecoilState(browserSettingsState);
 
   const { data: selectedWallet } = useWalletSelected();
 
@@ -82,8 +85,25 @@ const MainBrowser = ({ route }) => {
         { url: params.url, id: uuid.v4() as string, title: "New tab" },
       ]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+
+    (async () => {
+      const setting = await localStorage.get(BROWSER_SETTINGS);
+      if (setting) {
+        setBrowserSettings(setting);
+      } else {
+        await localStorage.set(BROWSER_SETTINGS, {
+          searchEngine: "google",
+          adblock: true,
+        });
+      }
+    })();
+  }, [setBrowserSettings, setBrowser]);
+
+  useEffect(() => {
+    if (browserSettings) {
+      localStorage.set(BROWSER_SETTINGS, browserSettings);
+    }
+  }, [browserSettings]);
 
   useEffect(() => {
     if (browser.length > 0) {

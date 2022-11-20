@@ -1,13 +1,10 @@
-import {selector, selectorFamily} from 'recoil';
-import axios from 'axios';
-import {NETWORKS, NETWORK_ENVIRONMENT_ENUM} from '../../enum/bcEnum';
-import {NETWORK_ENVIRONMENT} from '../../configs/bcNetworks';
-import API from '.';
-import {ethers} from 'ethers';
-import {LAMPORTS_PER_SOL} from '@solana/web3.js';
-import {intersection} from 'lodash';
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import { ethers } from "ethers";
+import API from ".";
+import { NETWORK_ENVIRONMENT } from "../../configs/bcNetworks";
+import { NETWORKS, NETWORK_ENVIRONMENT_ENUM } from "../../enum/bcEnum";
 
-const scannerApikey = '6HUJP4G9JHY72ZTY9ZQHXR3166GV463DB8';
+const scannerApikey = "6HUJP4G9JHY72ZTY9ZQHXR3166GV463DB8";
 
 interface IParamsRequest {
   page?: number;
@@ -20,8 +17,8 @@ interface IParamsRequest {
 }
 
 export enum scannerAction {
-  tokentx = 'tokentx',
-  txlist = 'txlist',
+  tokentx = "tokentx",
+  txlist = "txlist",
 }
 
 export const getFetchHistoryAction = (network: string): string => {
@@ -30,31 +27,31 @@ export const getFetchHistoryAction = (network: string): string => {
 };
 
 export enum scannerModule {
-  account = 'account',
+  account = "account",
 }
 
 const scannerUrlsMainnet = {
-  [NETWORKS.ETHEREUM]: 'https://api.etherscan.io/api',
-  // [NETWORKS.POLYGON]: 'https://api.polygonscan.com/api',
-  [NETWORKS.BINANCE_SMART_CHAIN]: 'https://api.bscscan.com/api',
-  [NETWORKS.FANTOM]: 'https://api.ftmscan.com/api',
-  [NETWORKS.AVALANCHE]: 'https://api.snowtrace.io/api',
-  [NETWORKS.CRONOS]: 'https://api.cronoscan.com/api',
-  [NETWORKS.AURORA]: 'https://api.aurorascan.dev/api',
-  [NETWORKS.SOLANA]: 'https://api.solscan.io/account',
-  [NETWORKS.NEAR]: 'https://api.kitwallet.app',
+  [NETWORKS.ETHEREUM]: "https://api.etherscan.io/api",
+  [NETWORKS.POLYGON]: "https://api.polygonscan.com/api",
+  [NETWORKS.BINANCE_SMART_CHAIN]: "https://api.bscscan.com/api",
+  [NETWORKS.FANTOM]: "https://api.ftmscan.com/api",
+  [NETWORKS.AVALANCHE]: "https://api.snowtrace.io/api",
+  [NETWORKS.CRONOS]: "https://api.cronoscan.com/api",
+  [NETWORKS.AURORA]: "https://api.aurorascan.dev/api",
+  [NETWORKS.SOLANA]: "https://api.solscan.io/account",
+  [NETWORKS.NEAR]: "https://api.kitwallet.app",
 };
 
 const scannerUrlTestnet = {
-  [NETWORKS.ETHEREUM]: 'https://api-ropsten.etherscan.io/api',
-  // [NETWORKS.POLYGON]: 'https://api-testnet.polygonscan.com/api',
-  [NETWORKS.BINANCE_SMART_CHAIN]: 'https://api-testnet.bscscan.com/api',
-  [NETWORKS.FANTOM]: 'https://api-testnet.ftmscan.com/api',
-  [NETWORKS.AVALANCHE]: 'https://api-testnet.snowtrace.io/api',
-  [NETWORKS.CRONOS]: 'https://api-testnet.cronoscan.com/api',
-  [NETWORKS.AURORA]: 'https://api-testnet.aurorascan.dev/api',
-  [NETWORKS.SOLANA]: 'https://api-testnet.solscan.io',
-  [NETWORKS.NEAR]: 'https://testnet-api.kitwallet.app',
+  [NETWORKS.ETHEREUM]: "https://api-goerli.etherscan.io/api",
+  [NETWORKS.POLYGON]: "https://api-testnet.polygonscan.com/api",
+  [NETWORKS.BINANCE_SMART_CHAIN]: "https://api-testnet.bscscan.com/api",
+  [NETWORKS.FANTOM]: "https://api-testnet.ftmscan.com/api",
+  [NETWORKS.AVALANCHE]: "https://api-testnet.snowtrace.io/api",
+  [NETWORKS.CRONOS]: "https://api-testnet.cronoscan.com/api",
+  [NETWORKS.AURORA]: "https://api-testnet.aurorascan.dev/api",
+  [NETWORKS.SOLANA]: "https://api-testnet.solscan.io",
+  [NETWORKS.NEAR]: "https://testnet-api.kitwallet.app",
 };
 
 const getUrlByEnvironment = (optionMainnet: any, optionTestnet: any): any => {
@@ -66,7 +63,7 @@ const getUrlByEnvironment = (optionMainnet: any, optionTestnet: any): any => {
 const getScannerUrl = (network: NETWORKS): string => {
   return getUrlByEnvironment(
     scannerUrlsMainnet[network],
-    scannerUrlTestnet[network],
+    scannerUrlTestnet[network]
   );
 };
 
@@ -80,29 +77,29 @@ interface txFormatted {
 
 export const commonFetchHistory = async (
   url,
-  {page = 0, offset = 0, address, action, module}: IParamsRequest,
+  { page = 0, offset = 0, address, action, module }: IParamsRequest
 ): Promise<txFormatted[]> => {
   const params = {
     module,
     action,
     page,
     offset,
-    sort: 'desc',
+    sort: "desc",
     address,
     apikey: scannerApikey,
-    tag: 'latest',
+    tag: "latest",
     startblock: 0,
     endblock: 99999999,
   };
   try {
-    const res = await API.get(url, {params});
-    const {result, message} = res;
+    const res = await API.get(url, { params });
+    const { result, message } = res;
 
-    const formattedResult = result.map(tx => {
+    const formattedResult = result.map((tx) => {
       return {
         from: tx.from,
         to: tx.to,
-        intruction: 'transfer',
+        intruction: "transfer",
         value: ethers.utils.formatUnits(tx.value),
         timeStamp: tx.timeStamp,
       };
@@ -116,13 +113,13 @@ export const commonFetchHistory = async (
 export const nearFetchHistory = async (
   accountId: string,
   page?: string,
-  limit?: string,
+  limit?: string
 ): Promise<txFormatted[]> => {
   try {
     const url = `${getScannerUrl(NETWORKS.NEAR)}/account/${accountId}/activity`;
 
     const txs = await API.get(url);
-    let formattedResult = txs.map(tx => {
+    let formattedResult = txs.map((tx) => {
       return {
         from: tx.signer_id,
         to: tx.receiver_id,
@@ -139,23 +136,23 @@ export const nearFetchHistory = async (
 
 export const solanaFetchHistory = async (
   address: string,
-  before?: string,
+  before?: string
 ): Promise<txFormatted[]> => {
   try {
     const res = await API.get(
       `${getScannerUrl(NETWORKS.SOLANA)}/account/transaction`,
       {
-        params: {address, before, type: 'sol-transfer'},
-      },
+        params: { address, before, type: "sol-transfer" },
+      }
     );
-    const {data, success} = res;
-    const formattedResult = data.map(tx => {
+    const { data, success } = res;
+    const formattedResult = data.map((tx) => {
       return {
-        from: tx.signer.join(','),
-        to: '',
+        from: tx.signer.join(","),
+        to: "",
         intruction: tx.parsedInstruction
-          .map(intruction => intruction.type)
-          .join(','),
+          .map((intruction) => intruction.type)
+          .join(","),
         value: (tx.lamport / LAMPORTS_PER_SOL).toString(),
         timeStamp: tx.blockTime,
       };
@@ -167,7 +164,7 @@ export const solanaFetchHistory = async (
 };
 export const fetchHistory = (
   network: NETWORKS,
-  {page, offset, address, before}: IParamsRequest,
+  { page, offset, address, before }: IParamsRequest
 ) => {
   const action = scannerAction.txlist;
   const module = scannerModule.account;
@@ -184,7 +181,7 @@ export const fetchHistory = (
       module,
     });
   } else {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       resolve([]);
     });
   }

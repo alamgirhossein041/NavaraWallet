@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Text, View } from "react-native";
-import { RefreshIcon } from "react-native-heroicons/solid";
+import { ArrowPathIcon } from "react-native-heroicons/solid";
 import PressableAnimatedSpin from "../../components/UI/PressableAnimatedSpin";
 import TokenIcon from "../../components/UI/TokenIcon";
 import { primaryColor } from "../../configs/theme";
@@ -40,9 +40,9 @@ const SelectToken = ({
     if (listTokens) {
       const _options = listTokens.map((token: IToken) => {
         return {
-          label: token.symbol,
-          value: token.address,
-          iconUri: token.img,
+          name: token.symbol,
+          contractAddress: token.address,
+          logo: token.img,
         };
       });
       return _options;
@@ -56,7 +56,7 @@ const SelectToken = ({
       <View style={tw`flex-row items-center justify-between py-2`}>
         <Text>Get list tokens failed</Text>
         <PressableAnimatedSpin onPress={refetch}>
-          <RefreshIcon color={primaryColor} />
+          <ArrowPathIcon color={primaryColor} />
         </PressableAnimatedSpin>
       </View>
     );

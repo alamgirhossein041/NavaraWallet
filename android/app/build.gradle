@@ -134,12 +134,36 @@ def reactNativeArchitectures() {
     return ["arm64-v8a"]
 }
 
-def versionCodeDate() {
-    return new Date().format("HHmmMMdd").toInteger()
+def versionName() {
+   return "${versionMajor}.${versionMinor}.${versionPatch}"
 }
 
-def versionName() {
-   return "${versionMajor}.${versionMinor}.${versionPatch}.${versionCodeDate()}"
+def getVersionCode() {
+    def propertiesFile = file('version.properties')
+
+    if (!propertiesFile.canRead()) {
+        throw new GradleException("Could not read " + propertiesFile.name)
+    }
+
+    Properties properties = new Properties()
+    properties.load(new FileInputStream(propertiesFile))
+
+    def code = properties['VERSION_CODE'].toInteger()
+
+    gradle.taskGraph.whenReady { tasksGraph ->
+        List<Task> tasks = tasksGraph.getAllTasks()
+
+        for (Task task : tasks) {
+            if (task.name.toLowerCase().contains('release')) {
+                code = code + 1
+                properties['VERSION_CODE'] = code.toString()
+                properties.store(propertiesFile.newWriter(), null)
+                break
+            }
+        }
+    }
+
+    return code
 }
 
 android {
@@ -147,12 +171,14 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
+        def code = getVersionCode()
+
     defaultConfig {
         applicationId 'network.navara'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2
-        versionName "${versionMajor}.${versionMinor}.${versionPatch}.${versionCodeDate()}"
+        versionCode code
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
         missingDimensionStrategy 'react-native-camera', 'general' 
         if (isNewArchitectureEnabled()) {
@@ -165,7 +191,8 @@ android {
                         "GENERATED_SRC_DIR=$buildDir/generated/source",
                         "PROJECT_BUILD_DIR=$buildDir",
                         "REACT_ANDROID_DIR=$rootDir/../node_modules/react-native/ReactAndroid",
-                        "REACT_ANDROID_BUILD_DIR=$rootDir/../node_modules/react-native/ReactAndroid/build"
+                        "REACT_ANDROID_BUILD_DIR=$rootDir/../node_modules/react-native/ReactAndroid/build",
+                        "NODE_MODULES_DIR=$rootDir/../node_modules"
                     cFlags "-Wall", "-Werror", "-fexceptions", "-frtti", "-DWITH_INSPECTOR=1"
                     cppFlags "-std=c++17"
                     // Make sure this target name is the same you specify inside the
@@ -272,9 +299,6 @@ android {
     // applicationVariants are e.g. debug, release
     applicationVariants.all { variant ->
         variant.outputs.each { output ->
-            // For each separate APK per architecture, set a unique version code as described here:
-            // https://developer.android.com/studio/build/configure-apk-splits.html
-            // Example: versionCode 1 will generate 1001 for armeabi-v7a, 1002 for x86, etc.
             def versionCodes = ["armeabi-v7a": 1, "x86": 2, "arm64-v8a": 3, "x86_64": 4]
             def abi = output.getFilter(OutputFile.ABI)
             if (abi != null) {  // null for the universal-debug, universal-release variants
@@ -317,9 +341,9 @@ dependencies {
     }
 
     if (enableHermes) {
-        def hermesPath = "../../node_modules/hermes-engine/android/";
-        debugImplementation files(hermesPath + "hermes-debug.aar")
-        releaseImplementation files(hermesPath + "hermes-release.aar")
+        implementation("com.facebook.react:hermes-engine:+") { // From node_modules
+            exclude group:'com.facebook.fbjni'
+        }
     } else {
         implementation jscFlavor
     }
@@ -334,7 +358,11 @@ if (isNewArchitectureEnabled()) {
     configurations.all {
         resolutionStrategy.dependencySubstitution {
             substitute(module("com.facebook.react:react-native"))
-                    .using(project(":ReactAndroid")).because("On New Architecture we're building React Native from source")
+                    .using(project(":ReactAndroid"))
+                    .because("On New Architecture we're building React Native from source")
+            substitute(module("com.facebook.react:hermes-engine"))
+                    .using(project(":ReactAndroid:hermes-engine"))
+                    .because("On New Architecture we're building Hermes from source")
         }
     }
 }

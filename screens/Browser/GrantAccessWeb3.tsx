@@ -1,7 +1,7 @@
 import { Actionsheet, useDisclose } from "native-base";
 import React from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
-import { DuplicateIcon } from "react-native-heroicons/outline";
+import { DocumentDuplicateIcon } from "react-native-heroicons/outline";
 import { LockClosedIcon } from "react-native-heroicons/solid";
 import Button from "../../components/UI/Button";
 import { primaryColor } from "../../configs/theme";
@@ -29,19 +29,19 @@ export default function GrantAccessWeb3(props: IGrantAccessWeb3Props) {
           <LockClosedIcon color="black" size={15} />
           <Text>{getDomainFromUrl(url)}</Text>
         </View>
-        <Text style={tw`dark:text-white  font-bold text-xl mb-5`}>
+        <Text style={tw`mb-5 text-xl font-bold dark:text-white`}>
           Grant access to your USDT
         </Text>
 
-        <Text style={tw`dark:text-white  text-center mb-5`}>
+        <Text style={tw`mb-5 text-center dark:text-white`}>
           By granting permission, you are giving the following contract access
           to your funds.
         </Text>
 
-        <View style={tw`mb-5 flex-row items-center`}>
+        <View style={tw`flex-row items-center mb-5`}>
           <Text>Contract:</Text>
           <TouchableOpacity
-            style={tw`flex-row mx-1 rounded-full bg-blue-100 p-1 items-center`}
+            style={tw`flex-row items-center p-1 mx-1 bg-blue-100 rounded-full`}
           >
             <Image
               style={tw`w-4 h-4 rounded-full`}
@@ -50,11 +50,9 @@ export default function GrantAccessWeb3(props: IGrantAccessWeb3Props) {
               }}
             />
             <View>
-              <Text style={tw`dark:text-white   text-sm mx-1`}>
-                {ethAddress}
-              </Text>
+              <Text style={tw`mx-1 text-sm dark:text-white`}>{ethAddress}</Text>
             </View>
-            <DuplicateIcon color={primaryColor} />
+            <DocumentDuplicateIcon color={primaryColor} />
           </TouchableOpacity>
         </View>
         <View
@@ -67,7 +65,7 @@ export default function GrantAccessWeb3(props: IGrantAccessWeb3Props) {
             }}
           />
           <View style={tw`mx-2`}>
-            <Text style={tw`dark:text-white  font-bold`}>
+            <Text style={tw`font-bold dark:text-white`}>
               {walletSelected.data.name || `Wallet ${walletSelected.index + 1}`}{" "}
               ({ethAddress})
             </Text>
@@ -77,24 +75,24 @@ export default function GrantAccessWeb3(props: IGrantAccessWeb3Props) {
           style={tw`flex-col w-full p-3 mb-3 border border-gray-300 rounded-lg`}
         >
           <View style={tw`flex-row justify-between w-full mb-2`}>
-            <Text style={tw`dark:text-white  font-bold`}>Gas fee estimate</Text>
-            <Text style={tw`dark:text-white  font-bold text-blue-500`}>
+            <Text style={tw`font-bold dark:text-white`}>Gas fee estimate</Text>
+            <Text style={tw`font-bold text-blue-500 dark:text-white`}>
               0,58$
             </Text>
           </View>
           <View style={tw`flex-row justify-between w-full`}>
-            <Text style={tw`dark:text-white  font-bold`}></Text>
+            <Text style={tw`font-bold dark:text-white`}></Text>
             <View style={tw`flex-row`}>
-              <Text style={tw`dark:text-white  font-bold`}>Max fee: </Text>
-              <Text style={tw`dark:text-white  `}>0.0000496ETH</Text>
+              <Text style={tw`font-bold dark:text-white`}>Max fee: </Text>
+              <Text style={tw`dark:text-white `}>0.0000496ETH</Text>
             </View>
           </View>
         </View>
         {true && (
           <View
-            style={tw`mb-5 rounded-lg bg-red-100 w-full text-center p-1 border-red-700 border`}
+            style={tw`w-full p-1 mb-5 text-center bg-red-100 border border-red-700 rounded-lg`}
           >
-            <Text style={tw`dark:text-white  text-center`}>
+            <Text style={tw`text-center dark:text-white`}>
               You need an additional 0.0007 ETH to complete this transaction
             </Text>
           </View>

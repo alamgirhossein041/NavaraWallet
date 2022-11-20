@@ -4,17 +4,17 @@ import { Skeleton } from "native-base";
 import React, { useMemo } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import {
+  ArrowPathIcon,
   CheckCircleIcon,
-  ExclamationIcon,
+  ExclamationTriangleIcon,
   InformationCircleIcon,
-  RefreshIcon,
 } from "react-native-heroicons/solid";
 import { useQuery } from "react-query";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import CurrencyFormat from "../../components/UI/CurrencyFormat";
 import MiniLineChart, { ChartData } from "../../components/UI/MiniLineChart";
 import PressableAnimatedSpin from "../../components/UI/PressableAnimatedSpin";
-import { CHAIN_ICONS, TOKEN_SYMBOLS } from "../../configs/bcNetworks";
+import { CHAIN_ICONS, NATIVE_TOKEN_ICON } from "../../configs/bcNetworks";
 import {
   dangerColor,
   primaryColor,
@@ -23,11 +23,9 @@ import {
 } from "../../configs/theme";
 import { fetchMarketChart } from "../../data/api/fetching";
 import { ChainWallet } from "../../data/database/entities/chainWallet";
+import { priceTokenState } from "../../data/globalState/priceTokens";
 import showTotalAssets from "../../data/globalState/showTotalAssets";
-import {
-  capitalizeFirstLetter,
-  getKeyByValue,
-} from "../../utils/stringsFunction";
+import { capitalizeFirstLetter } from "../../utils/stringsFunction";
 import { tw } from "../../utils/tailwind";
 
 interface IChainItem {
@@ -39,6 +37,7 @@ interface IChainItem {
 
 const PricesChart = ({ chain, next, caching = false }: IChainItem) => {
   const inVisible = useRecoilValue(showTotalAssets);
+  const setPriceTokens = useSetRecoilState(priceTokenState);
 
   const {
     isLoading: loadingPrices,
@@ -46,13 +45,22 @@ const PricesChart = ({ chain, next, caching = false }: IChainItem) => {
     isError,
     refetch,
   } = useQuery(
-    [`price-${chain.symbol}`, chain.symbol, caching],
+    [`price-${chain.symbol}`, chain.symbol, chain.network, caching],
     async (): Promise<any> => {
       if (caching) {
         return null;
       }
+
       const response = await fetchMarketChart(chain.symbol);
       const priceData = await response?.prices;
+      const latestPrice = priceData?.[priceData.length - 1]?.[1];
+      setPriceTokens((prev) => {
+        return {
+          ...prev,
+          [chain.network]: latestPrice,
+        };
+      });
+
       const _price: ChartData[] = priceData.map(
         (item: any[], index: number) => {
           return {
@@ -68,7 +76,7 @@ const PricesChart = ({ chain, next, caching = false }: IChainItem) => {
   const navigation = useNavigation();
 
   const IconChain = CHAIN_ICONS[chain.network];
-  const IconToken = CHAIN_ICONS[getKeyByValue(TOKEN_SYMBOLS, chain.symbol)];
+  const IconToken = NATIVE_TOKEN_ICON[chain.network];
   const latestPrice = useMemo(
     () => price && price[price?.length - 1]?.y,
     [price]
@@ -121,7 +129,7 @@ const PricesChart = ({ chain, next, caching = false }: IChainItem) => {
                   onPress={refetch}
                   spinning={loadingPrices}
                 >
-                  <RefreshIcon color={primaryColor} />
+                  <ArrowPathIcon color={primaryColor} />
                 </PressableAnimatedSpin>
               ) : (
                 <MiniLineChart data={price} />
@@ -170,7 +178,9 @@ const StatusIcon = (status: string) => {
         <InformationCircleIcon width={12} height={12} color={warningColor} />
       );
     case "danger":
-      return <ExclamationIcon width={12} height={12} color={dangerColor} />;
+      return (
+        <ExclamationTriangleIcon width={12} height={12} color={dangerColor} />
+      );
     default:
       return <CheckCircleIcon width={12} height={12} color={safeColor} />;
   }

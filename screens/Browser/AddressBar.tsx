@@ -1,9 +1,10 @@
-import Clipboard, { useClipboard } from "@react-native-clipboard/clipboard";
+import Clipboard from "@react-native-clipboard/clipboard";
 import { useNavigation } from "@react-navigation/native";
 import isUrl from "is-url";
 import { debounce } from "lodash";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import {
+  Keyboard,
   Pressable,
   ScrollView,
   Text,
@@ -13,25 +14,25 @@ import {
   View,
 } from "react-native";
 import {
-  ClipboardIcon,
   ClockIcon,
   DocumentDuplicateIcon,
+  MagnifyingGlassIcon,
   PencilIcon,
-  SearchIcon,
-  XIcon,
+  XMarkIcon,
 } from "react-native-heroicons/outline";
 import {
-  ArrowSmUpIcon,
-  ExclamationIcon,
-  LinkIcon,
+  ArrowUpIcon,
+  ExclamationTriangleIcon,
   LockClosedIcon,
 } from "react-native-heroicons/solid";
 import { useRecoilValue } from "recoil";
+import { eventHub } from "../../App";
 import { defaultSettings, searchDefault } from "../../configs/browser";
+import { FOCUS_ADDRESS_BROWSER } from "../../core/eventHub";
 import API from "../../data/api";
+import HistoryBrowserController from "../../data/database/controllers/historyBrowser.controller";
 import { BrowserHistory } from "../../data/database/entities/historyBrowser";
 import { SearchRecent } from "../../data/database/entities/searchRecent";
-import useDatabase from "../../data/database/useDatabase";
 import {
   browserState,
   currentTabState,
@@ -50,21 +51,20 @@ const getProtocol = (url) => {
   return url.split(":")[0];
 };
 const AddressBar = (props) => {
-  const { historyBrowserController } = useDatabase();
+  const historyBrowserController = new HistoryBrowserController();
+  const LogoSearchEngine = props.logoSearchEngine;
   const currentTab = useRecoilValue(currentTabState);
   const { onGotoUrl, contextUrl, progress, icon } = props;
   const browser = useRecoilValue(browserState);
-  const isNewTab = contextUrl === NEW_TAB || !contextUrl;
-  const currentUrl = isNewTab ? { hostname: "NEW_TAB" } : new URL(contextUrl);
+  const isHomePage = contextUrl === NEW_TAB || !contextUrl;
+  const currentUrl = isHomePage ? { hostname: NEW_TAB } : new URL(contextUrl);
   const navigation = useNavigation();
   const [searchInput, setSearchInput] = React.useState<string>("");
-
+  const inputRef: any = useRef();
   const [browserSettings] = useLocalStorage(BROWSER_SETTINGS);
   const searchEngine =
     searchDefault[browserSettings?.searchEngine]?.url ||
     searchDefault[defaultSettings?.searchEngine]?.url;
-  const [clipboard] = useClipboard();
-
   const handleSetUrlBrowser = (url) => {
     onGotoUrl(url);
   };
@@ -115,53 +115,46 @@ const AddressBar = (props) => {
 
   const handleCloseBrowser = useCallback(() => {
     navigation.goBack();
-  }, []);
+  }, [navigation]);
 
   const [searchRecent, setSearchRecent] = React.useState<SearchRecent[]>([]);
+  useEffect(() => {
+    eventHub.on(FOCUS_ADDRESS_BROWSER, () => {
+      inputRef?.current?.focus();
+      setIsEditing(true);
+    });
+  }, [inputRef]);
+
   useEffect(() => {
     isEditing &&
       historyBrowserController.getSearchRecent().then((response) => {
         setSearchRecent(response);
       });
-  }, [isEditing]);
+  }, [isEditing, historyBrowserController]);
 
   const handleClearSearchRecent = () => {
     setSearchRecent([]);
     historyBrowserController.deleteAllSearchRecent();
   };
 
-  const renderButtonPaste = () => {
-    return (
-      clipboard.length > 0 &&
-      isUrl(clipboard) &&
-      contextUrl !== clipboard.trim() && (
-        <TouchableOpacity
-          onPress={() => handleGoTo(clipboard)}
-          style={tw`flex-row items-center justify-between p-3 `}
-        >
-          <View style={tw`flex-row items-center`}>
-            <ClipboardIcon size={30} color="gray" />
-            <Text style={tw`mx-3 font-bold text-black dark:text-white`}>
-              Paste copied link
-            </Text>
-          </View>
-          <LinkIcon size={25} color="gray" />
-        </TouchableOpacity>
-      )
-    );
-  };
-
+  const handleCancel = useCallback(() => {
+    setIsEditing(false);
+    setSearchInput("");
+    Keyboard.dismiss();
+  }, []);
   return (
-    <View
+    <ScrollView
+      keyboardShouldPersistTaps="handled"
       scrollEnabled={false}
       style={[
         tw`absolute z-10 w-full  bg-white shadow dark:bg-[#18191A]  ${
           isEditing ? "h-full" : ""
         } `,
+        tw`${(isHomePage && isEditing) || !isHomePage ? "flex" : "h-0"}`,
       ]}
     >
       <View
-        style={tw`flex-row items-center w-full px-3 py-1 bg-white dark:bg-[#18191A] `}
+        style={tw`flex-row items-center w-full px-3 py-1 bg-white dark:bg-[#18191A]`}
       >
         {!isEditing && contextUrl !== NEW_TAB && (
           <SelectWalletForBrowser {...props} />
@@ -169,7 +162,7 @@ const AddressBar = (props) => {
         <View
           style={tw`flex-row items-center justify-center flex-1 w-full h-10 px-1 bg-gray-100 border border-gray-100 rounded-full dark:bg-stone-800 dark:border-stone-800`}
         >
-          {!isEditing && !isNewTab ? (
+          {!isEditing && !isHomePage ? (
             <View style={tw`flex-row items-center justify-between px-1`}>
               <TouchableOpacity
                 activeOpacity={0.8}
@@ -179,24 +172,27 @@ const AddressBar = (props) => {
                 }}
                 style={tw`flex-row items-center justify-center flex-1`}
               >
-                {getProtocol(contextUrl) === PROTOCOL ? (
-                  <LockClosedIcon width={15} color={"gray"} />
-                ) : (
-                  <ExclamationIcon width={15} color={"red"} />
-                )}
+                <View style={tw`flex-row items-center`}>
+                  {getProtocol(contextUrl) === PROTOCOL ? (
+                    <LockClosedIcon width={15} color={"gray"} />
+                  ) : (
+                    <ExclamationTriangleIcon width={15} color={"red"} />
+                  )}
 
-                <Text
-                  style={tw`mx-1 text-center text-gray-600 dark:text-gray-200`}
-                >
-                  {currentUrl.hostname}
-                </Text>
+                  <Text
+                    style={tw`mx-1 text-center text-gray-600 dark:text-gray-200`}
+                  >
+                    {currentUrl.hostname}
+                  </Text>
+                </View>
               </TouchableOpacity>
             </View>
           ) : (
             <View style={tw`flex-row items-center`}>
-              <SearchIcon color="gray" width={25} />
+              <LogoSearchEngine width={30} height={30} />
               <TextInput
-                autoFocus={!isNewTab}
+                ref={inputRef}
+                autoFocus={!isHomePage}
                 onFocus={handleOnFocus}
                 selectTextOnFocus
                 autoCapitalize="none"
@@ -206,14 +202,14 @@ const AddressBar = (props) => {
                 onSubmitEditing={() => handleGoTo(searchInput)}
                 style={tw`flex-1 h-20 p-3 dark:text-white `}
                 placeholderTextColor="gray"
-                placeholder="Search name or link"
+                placeholder="Search name or type URL"
               />
               {searchInput.trim().length > 0 && (
                 <TouchableOpacity
                   style={tw`mx-3`}
                   onPress={handleClearAllSearchInput}
                 >
-                  <XIcon color="gray" width={20} />
+                  <XMarkIcon color="gray" width={20} />
                 </TouchableOpacity>
               )}
             </View>
@@ -221,14 +217,10 @@ const AddressBar = (props) => {
         </View>
         <View>
           {isEditing ? (
-            <TouchableOpacity
-              onPress={() => {
-                setIsEditing(false);
-                setSearchInput("");
-              }}
-              style={tw`mx-3`}
-            >
-              <Text style={tw`text-black dark:text-white`}>Cancel</Text>
+            <TouchableOpacity onPress={handleCancel} style={tw`ml-2`}>
+              <Text style={tw`font-bold text-gray-500 dark:text-white`}>
+                Cancel
+              </Text>
             </TouchableOpacity>
           ) : (
             <View style={tw`flex-row ml-3`}>
@@ -236,7 +228,7 @@ const AddressBar = (props) => {
                 onPress={handleCloseBrowser}
                 style={tw`flex-row`}
               >
-                <XIcon width={30} height={30} color="gray" />
+                <XMarkIcon width={30} height={30} color="gray" />
               </TouchableOpacity>
             </View>
           )}
@@ -247,7 +239,7 @@ const AddressBar = (props) => {
         <View>
           {!searchInput && (
             <View>
-              {!isNewTab && (
+              {!isHomePage && (
                 <ScrollView style={tw`px-3`}>
                   <View
                     style={tw`flex-row items-center py-2 border-b border-gray-100 dark:border-gray-600`}
@@ -261,7 +253,7 @@ const AddressBar = (props) => {
                           numberOfLines={1}
                           style={tw`font-bold text-black dark:text-white`}
                         >
-                          {browser[currentTab].title}
+                          {browser[currentTab]?.title}
                         </Text>
                         <Text numberOfLines={1} style={tw`text-blue-500`}>
                           {contextUrl}
@@ -295,8 +287,6 @@ const AddressBar = (props) => {
             </View>
           )}
 
-          {renderButtonPaste()}
-
           {!isUrl(searchInput) && (
             <SuggestionAutoComplete
               handleClearSearchRecent={handleClearSearchRecent}
@@ -309,7 +299,7 @@ const AddressBar = (props) => {
           )}
         </View>
       )}
-    </View>
+    </ScrollView>
   );
 };
 
@@ -384,7 +374,7 @@ const SuggestionAutoComplete = ({
               </View>
             </View>
             <View>
-              <ArrowSmUpIcon color="gray" rotation={45} />
+              <ArrowUpIcon color="gray" rotation={45} />
             </View>
           </View>
         </TouchableHighlight>
@@ -405,7 +395,7 @@ const SuggestionAutoComplete = ({
               >
                 <View style={tw`flex-row items-center justify-between`}>
                   <View style={tw`flex-row items-center flex-1 px-1`}>
-                    <SearchIcon color="gray" width={25} />
+                    <MagnifyingGlassIcon color="gray" width={25} />
                     <Text
                       style={tw`mx-2 text-lg text-gray-600 dark:text-white `}
                     >
@@ -416,7 +406,7 @@ const SuggestionAutoComplete = ({
                   <Pressable
                     onPress={(event) => hanleUpdateKeyWord(event, keyword)}
                   >
-                    <ArrowSmUpIcon color="gray" rotation={-45} />
+                    <ArrowUpIcon color="gray" rotation={-45} />
                   </Pressable>
                 </View>
               </TouchableHighlight>
@@ -455,7 +445,7 @@ const SuggestionAutoComplete = ({
                       <Pressable
                         onPress={(event) => hanleUpdateKeyWord(event, keyword)}
                       >
-                        <ArrowSmUpIcon color="gray" rotation={-45} />
+                        <ArrowUpIcon color="gray" rotation={-45} />
                       </Pressable>
                     </View>
                   </TouchableHighlight>
@@ -481,7 +471,7 @@ const SuggestionAutoComplete = ({
             onPress={(event) => handleSearchByKeyWord(event, searchInput)}
           >
             <View style={tw`flex-row items-center px-1`}>
-              <SearchIcon color="gray" width={25} />
+              <MagnifyingGlassIcon color="gray" width={25} />
               <Text style={tw`mx-2 text-lg text-gray-600 dark:text-white `}>
                 {searchInput}
               </Text>

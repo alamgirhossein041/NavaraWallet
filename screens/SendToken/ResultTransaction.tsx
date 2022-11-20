@@ -4,8 +4,8 @@ import React, { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Text, TouchableOpacity, View } from "react-native";
 import {
+  ArrowDownTrayIcon,
   CheckIcon,
-  DownloadIcon,
   HomeIcon,
   ShareIcon,
 } from "react-native-heroicons/solid";
@@ -62,16 +62,16 @@ export default function ResultTransaction({ route, navigation }) {
             >
               Navara
             </Text>
-            <Text style={tw`dark:text-white  text-xs text-gray-400`}>
+            <Text style={tw`text-xs text-gray-400 dark:text-white`}>
               {dayjs(new Date()).format("DD/MM/YYYY HH:mm:ss")}
             </Text>
           </View>
           <View style={tw`p-2 mb-3 bg-blue-200 rounded-lg`}>
-            <Text style={tw` text-lg font-bold text-center text-blue-500 `}>
+            <Text style={tw`text-lg font-bold text-center text-blue-500 `}>
               {t("send.transfer_successful")}
             </Text>
           </View>
-          <Text style={tw`dark:text-white  text-xl font-bold text-center`}>
+          <Text style={tw`text-xl font-bold text-center dark:text-white`}>
             {amount} {token.symbol}
           </Text>
           {card}
@@ -83,13 +83,13 @@ export default function ResultTransaction({ route, navigation }) {
           onPress={handleSaveImage}
           style={tw`flex-row items-center justify-center`}
         >
-          <DownloadIcon
+          <ArrowDownTrayIcon
             fill={primaryColor}
             style={tw`ml-5 `}
             width={20}
             height={20}
           />
-          <Text style={tw`dark:text-white  mx-1 text-lg `}>
+          <Text style={tw`mx-1 text-lg dark:text-white `}>
             {t("send.save")}
           </Text>
         </TouchableOpacity>
@@ -104,7 +104,7 @@ export default function ResultTransaction({ route, navigation }) {
             width={20}
             height={20}
           />
-          <Text style={tw`dark:text-white  mx-1 text-lg `}>
+          <Text style={tw`mx-1 text-lg dark:text-white `}>
             {t("send.share")}
           </Text>
         </TouchableOpacity>
@@ -114,7 +114,7 @@ export default function ResultTransaction({ route, navigation }) {
         <Button onPress={() => navigation.replace("TabsNavigation")}>
           <View style={tw`flex-row items-center`}>
             <HomeIcon fill={"white"} width={30} />
-            <Text style={tw`dark:text-white  text-lg font-bold text-white`}>
+            <Text style={tw`text-lg font-bold text-white dark:text-white`}>
               {t("send.go_to_home")}
             </Text>
           </View>

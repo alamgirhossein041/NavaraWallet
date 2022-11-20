@@ -5,6 +5,7 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm/browser";
 import { ChainWallet } from "./chainWallet";
+import { FungibleTokens } from "./fungibleTokens";
 @Entity("Wallet")
 export class Wallet {
   @PrimaryGeneratedColumn("uuid")
@@ -28,9 +29,17 @@ export class Wallet {
   @Column({ default: false })
   isBackedUp: boolean;
 
+  @Column({ default: false })
+  isEnableNotify: boolean;
+
   @Column({ nullable: true })
   enabledNetworks?: string;
 
   @OneToMany(() => ChainWallet, (chain) => chain.walletId)
   chains: ChainWallet[];
+
+  @OneToMany(() => FungibleTokens, (fungibleToken) => fungibleToken.walletId, {
+    nullable: true,
+  })
+  fungibleTokens: FungibleTokens[];
 }

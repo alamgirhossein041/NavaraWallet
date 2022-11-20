@@ -1,3 +1,5 @@
+import { Regex } from "../configs/defaultValue";
+
 export const capitalizeFirstLetter = (str: string) => {
   if (!str) {
     return "";
@@ -73,4 +75,26 @@ export const checkDateIsToday = (timestamp: number) => {
   const thatDay = new Date(timestamp).setHours(0, 0, 0, 0);
 
   return today === thatDay;
+};
+
+export const validatePassword = (password: string) => {
+  if (!password) {
+    return "Password is required";
+  }
+  if (password.length < 8) {
+    return "Password must be at least 8 characters";
+  }
+  if (!password.match(Regex.lowerCase)) {
+    return "Password must contain at least one lowercase letter";
+  }
+  if (!password.match(Regex.number)) {
+    return "Password must contain at least one number";
+  }
+  if (!password.match(Regex.upperCase)) {
+    return "Password must contain at least one uppercase letter";
+  }
+  if (!password.match(Regex.specialCharacter)) {
+    return "Password must contain at least one special character";
+  }
+  return "";
 };

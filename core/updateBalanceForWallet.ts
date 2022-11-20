@@ -1,7 +1,6 @@
 import allSettled from "promise.allsettled";
 import { TOKEN_SYMBOLS } from "../configs/bcNetworks";
 import { ChainWallet } from "../data/database/entities/chainWallet";
-import { Wallet } from "../data/database/entities/wallet";
 import { NETWORKS, NETWORK_ENVIRONMENT_ENUM } from "../enum/bcEnum";
 import { getEthereumBalance } from "../hooks/useEvm";
 import { getNearBalance } from "../hooks/useNEAR";
@@ -16,13 +15,12 @@ import { getSolanaBalance } from "../hooks/useSolana";
  */
 
 const updateBalanceForWallet = async (
-  wallet: Wallet,
   currentList: ChainWallet[],
   netWorkEnable: string[],
   env: NETWORK_ENVIRONMENT_ENUM
-): Promise<Wallet> => {
+): Promise<ChainWallet[]> => {
   /**
-   * get list network enable and fucntion get balance for  network
+   * get list network enable and Promise get balance for  network
    */
   const _newListNetworks = netWorkEnable.map((network: NETWORKS) => {
     if (network === NETWORKS.SOLANA) {
@@ -49,11 +47,11 @@ const updateBalanceForWallet = async (
   /**
    * Get blance for all chain network by Promise allSettled
    */
-  const _balanceChains = await allSettled(
+  const _balanceChains = (await allSettled(
     _newListNetworks.map((chain) => {
       return chain?.getBalance;
     })
-  );
+  )) as any;
   /**
    * Merge data chain network and balance
    */
@@ -71,10 +69,7 @@ const updateBalanceForWallet = async (
 
     return { ...chain.data, balance: null };
   });
-  return {
-    ...wallet,
-    chains,
-  };
+  return chains;
 };
 
 export default updateBalanceForWallet;

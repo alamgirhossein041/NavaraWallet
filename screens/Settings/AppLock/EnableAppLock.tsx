@@ -13,13 +13,6 @@ const EnableAppLock = ({ onSuccess }) => {
   // const [err, setErr] = useState('');
   const [loading, setLoading] = useState(false);
   const handlePress = async (password: string) => {
-    // setErr('');
-    // if (!password.match(Regex.password)) {
-    //   setErr(
-    //     'Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number and one special character',
-    //   );
-    //   return;
-    // }
     const appLock = {
       updatedAt: new Date(),
       openAt: new Date(),

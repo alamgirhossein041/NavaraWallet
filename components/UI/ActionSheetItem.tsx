@@ -2,7 +2,7 @@ import React from "react";
 import { StyleProp, TouchableHighlight, useColorScheme } from "react-native";
 import { tw } from "../../utils/tailwind";
 interface IActionSheetItem {
-  children: JSX.Element;
+  children?: JSX.Element;
   onPress?: () => void;
   style?: StyleProp<any>;
 }

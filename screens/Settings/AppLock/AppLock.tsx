@@ -2,7 +2,7 @@ import { KeyboardAvoidingView, Modal } from "native-base";
 import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { TouchableOpacity, View } from "react-native";
-import { LockClosedIcon, XIcon } from "react-native-heroicons/solid";
+import { LockClosedIcon, XMarkIcon } from "react-native-heroicons/solid";
 import MenuItem from "../../../components/UI/MenuItem";
 import SignPinCode from "../../../components/UI/SignPinCode";
 import { primaryColor } from "../../../configs/theme";
@@ -138,7 +138,7 @@ const AppLock = () => {
               onPress={() => setShowModalPincode(defaultModalPinCode)}
               style={tw`absolute items-center justify-center w-8 h-8 p-1 bg-gray-200 rounded-full w-left-5 ios:top-10 android:top-1 `}
             >
-              <XIcon size={25} color="black" />
+              <XMarkIcon size={25} color="black" />
             </TouchableOpacity>
             <Modal.Content
               style={tw`flex items-center justify-center w-full h-full`}

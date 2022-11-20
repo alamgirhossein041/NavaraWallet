@@ -2,25 +2,36 @@ import { View } from "native-base";
 import React from "react";
 import { Text, TouchableOpacity } from "react-native";
 import ChevronRightIcon from "../../assets/icons/icon-chevron-right.svg";
-import { WalletType } from "../../data/types";
+
 import { tw } from "../../utils/tailwind";
 import PressableAnimated from "./PressableAnimated";
+
+export type MenuItemProps = {
+  icon?: JSX.Element;
+  name: string | JSX.Element;
+  onPress?: () => void;
+  value?: string | JSX.Element;
+  next?: boolean;
+  iconPadding?: string;
+  disabled?: boolean;
+};
 
 const MenuItem = ({
   icon,
   name,
   value,
-  onPress,
+  onPress = () => {},
   next = true,
   iconPadding = "p-2.5",
-}: WalletType) => {
+  disabled = false,
+}: MenuItemProps) => {
   return (
     <PressableAnimated
       component={TouchableOpacity}
       activeOpacity={0.6}
       style={tw`flex flex-row items-center justify-between p-2 my-1 h-13`}
       onPress={onPress}
-      // disabled={disabled}
+      disabled={disabled}
     >
       <View style={tw`flex flex-row items-center justify-between `}>
         <View

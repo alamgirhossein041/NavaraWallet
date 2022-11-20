@@ -1,24 +1,23 @@
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
-import { EyeOffIcon } from "react-native-heroicons/solid";
+import { EyeSlashIcon } from "react-native-heroicons/solid";
 import { useRecoilState } from "recoil";
-import { CHAIN_ICONS, TOKEN_SYMBOLS } from "../../configs/bcNetworks";
+import { NATIVE_TOKEN_ICON } from "../../configs/bcNetworks";
 import showTotalAssets from "../../data/globalState/showTotalAssets";
 import { IChain } from "../../data/types";
-import { getKeyByValue } from "../../utils/stringsFunction";
 import { tw } from "../../utils/tailwind";
 import CurrencyFormat from "./CurrencyFormat";
 
 export default function ShowBalanceChain({ chain }: { chain: IChain }) {
   const [inVisible, setInVisible] = useRecoilState(showTotalAssets);
   const balance = chain.balance;
-  const IconToken = CHAIN_ICONS[getKeyByValue(TOKEN_SYMBOLS, chain.symbol)];
+  const IconToken = NATIVE_TOKEN_ICON[chain.network];
   return (
     <View>
       <TouchableOpacity onPress={() => setInVisible(!inVisible)}>
         {inVisible ? (
           <View style={tw`flex-row items-center justify-center mb-4`}>
-            <EyeOffIcon fill={"gray"} width={30} height={30} />
+            <EyeSlashIcon fill={"gray"} width={30} height={30} />
           </View>
         ) : (
           <CurrencyFormat

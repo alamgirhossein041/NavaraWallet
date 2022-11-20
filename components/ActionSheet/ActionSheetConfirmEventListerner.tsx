@@ -28,6 +28,8 @@ export default function ActionSheetConfirmEventListerner() {
 
   useEffect(() => {
     initInstanceWalletConnect();
+    eventHub.removeAllListeners(EVENT_REQUEST_CONFIRM);
+    eventHub.removeAllListeners(EVENT_APPROVED_ACTION_RESPONSE);
     eventHub.on(EVENT_REQUEST_CONFIRM, (params: ConfirmEventParams) => {
       setParams({ ...params });
       setIsOpen(true);

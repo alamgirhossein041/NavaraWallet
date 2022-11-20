@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 import { Text, TouchableOpacity, View } from "react-native";
 import DraggableFlatList from "react-native-draggable-flatlist";
 import { PlusIcon } from "react-native-heroicons/outline";
-import { DotsHorizontalIcon } from "react-native-heroicons/solid";
 import { useRecoilState } from "recoil";
 import IconImport from "../../assets/icons/icon-folder-add.svg";
 import IconCloudRestore from "../../assets/icons/icon-folder-cloud.svg";
@@ -15,7 +14,7 @@ import PressableAnimated from "../../components/UI/PressableAnimated";
 import { primaryColor } from "../../configs/theme";
 import { listWalletsState } from "../../data/globalState/listWallets";
 import useWalletsActions from "../../data/globalState/listWallets/listWallets.actions";
-import { shortWalletName } from "../../utils/stringsFunction";
+import { localStorage, WALLETS_ORDER } from "../../utils/storage";
 import { tw } from "../../utils/tailwind";
 import CardWallet from "../Home/CardWallet";
 
@@ -42,7 +41,7 @@ const Wallets = ({ navigation }) => {
       <Actionsheet.Content style={tw`bg-white text-black  dark:bg-[#18191A]`}>
         <ActionSheetItem
           onPress={() => {
-            navigation.navigate("CreateWallet");
+            navigation.replace("CreateWallet");
             onClose();
           }}
         >
@@ -97,6 +96,11 @@ const Wallets = ({ navigation }) => {
       </Actionsheet.Content>
     </Actionsheet>
   );
+  const onDragEnd = ({ data }) => {
+    setListWallets(data);
+    const idWallets = data.map((item) => item.id);
+    localStorage.set(WALLETS_ORDER, idWallets);
+  };
 
   return (
     <View style={tw`flex flex-col justify-between bg-white dark:bg-[#18191A] `}>
@@ -105,10 +109,10 @@ const Wallets = ({ navigation }) => {
           data={listWallets}
           renderItem={RenderWallet}
           keyExtractor={(item) => item.id}
-          onDragEnd={({ data }) => setListWallets(data)}
+          onDragEnd={onDragEnd}
         />
       )}
-      {/* ActionSheet create walllet */}
+      {/* ActionSheet create wallet */}
       {actionSheetCreateWallet}
     </View>
   );
@@ -117,7 +121,6 @@ const Wallets = ({ navigation }) => {
 const RenderWallet = ({ item: wallet, drag, isActive }) => {
   const navigation = useNavigation();
   const createdIndex = useWalletsActions().createdIndex(wallet.id);
-  const subStringWalletId = shortWalletName(wallet.id);
   const onWalletPress = () => {
     navigation.navigate(
       "DetailWallet" as never,
@@ -137,16 +140,6 @@ const RenderWallet = ({ item: wallet, drag, isActive }) => {
       key={wallet.id}
       style={tw`px-4 mb-3`}
     >
-      <View style={tw`flex flex-row items-center justify-between mx-5 mb-1`}>
-        <Text style={tw`font-bold dark:text-white `}>
-          {wallet.name === null
-            ? `Wallet #${subStringWalletId}`
-            : `${wallet.name}`}
-        </Text>
-        <TouchableOpacity onPress={() => onWalletPress()}>
-          <DotsHorizontalIcon color="gray" />
-        </TouchableOpacity>
-      </View>
       <CardWallet wallet={wallet} />
     </PressableAnimated>
   );

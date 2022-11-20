@@ -29,9 +29,10 @@ const ImportSeedPhrase = ({ navigation, route }) => {
   const handleResultQrScan = (input: string) => {
     setValue("seedPhrase", input);
   };
-
+  const [isLoading, setIsLoading] = useState(false);
   const popupResult = usePopupResult();
   const onSubmit = async (data) => {
+    setIsLoading(true);
     const checkSeedPhraseDuplicate = await seedPhraseService.isDuplicate(
       normalizeSeedPhrase(data.seedPhrase)
     );
@@ -48,6 +49,7 @@ const ImportSeedPhrase = ({ navigation, route }) => {
         seedPhrase: normalizeSeedPhrase(data.seedPhrase),
       });
     }
+    setIsLoading(false);
   };
 
   const [confirmStep, setConfirmStep] = useState({
@@ -73,7 +75,7 @@ const ImportSeedPhrase = ({ navigation, route }) => {
         <Text style={tw`text-sm text-center dark:text-white font-regular`}>
           {t("import_seedphrase.description_import_your_wallet")}
         </Text>
-        <View style={tw`flex flex-col `}>
+        <View style={tw`flex flex-col mt-10`}>
           <Controller
             control={control}
             rules={{
@@ -132,7 +134,7 @@ const ImportSeedPhrase = ({ navigation, route }) => {
         </View>
         <View style={tw`flex flex-col `}>
           <View style={tw`mx-auto`}>
-            <ScanQR onValueScaned={handleResultQrScan} />
+            <ScanQR onValueScanned={handleResultQrScan} />
           </View>
 
           <Text style={tw`py-2 text-center dark:text-white`}>
@@ -167,6 +169,7 @@ const ImportSeedPhrase = ({ navigation, route }) => {
 
       <View style={tw`absolute w-full mb-5 bottom-5`}>
         <Button
+          loading={isLoading}
           hideOnKeyboard
           onPress={handleSubmit(onSubmit)}
           disabled={

@@ -9,17 +9,23 @@ import {
 } from "react-native";
 import ViewShot from "react-native-view-shot";
 import { WebView } from "react-native-webview";
+import { useRecoilValue } from "recoil";
 import { NEAR_MAINNET_CONFIG } from "../../configs/bcMainnets";
 import { NEAR_TESTNET_CONFIG } from "../../configs/bcTestnets";
+import { searchDefault } from "../../configs/browser";
 import { JS_WEBVIEW_URL } from "../../core/browserScripts";
 import { useEthereumBackgroundBridge } from "../../core/useEthereumBackgroundBridge";
-import { newTabDefaultData, NEW_TAB } from "../../data/globalState/browser";
+import {
+  browserSettingsState,
+  newTabDefaultData,
+  NEW_TAB,
+} from "../../data/globalState/browser";
 import { Web3Provider } from "../../enum";
-import { useWalletSelected } from "../../hooks/useWalletSelected";
 import { tw } from "../../utils/tailwind";
 import AddressBar from "./AddressBar";
 import useApprovalNearAccessModal from "./ApprovalNearAccessModal";
 import useNearApprovalTransactionModal from "./ApprovalNearTransactionModal";
+import Adblock from "./core/Adblock";
 import HomePageBrowser from "./HomePageBrowser";
 import NavigationBarBrowser from "./NavigationBarBrowser";
 
@@ -32,10 +38,8 @@ const BrowserTab = (props) => {
   const [initialUrl, setInitialUrl] = useState(props.initialUrl);
   const webviewRef = useRef(null);
   const [progress, setProgress] = useState(0);
-  const { data: selectedWallet } = useWalletSelected();
   const [tab, setTab] = useState<any>();
   const [entryScriptWeb3, setEntryScriptWeb3] = useState<string>();
-  const [firstUrlLoaded, setFirstUrlLoaded] = useState(false);
   const [navigateState, setNavigateState] = useState({
     canGoBack: false,
     canGoForward: false,
@@ -43,21 +47,21 @@ const BrowserTab = (props) => {
   const scheme = useColorScheme();
   const defaultTheme = scheme === "light" ? "white" : "#18191A";
   const [colorTheme, setColorTheme] = useState(defaultTheme);
+  const isHomePage = initialUrl === NEW_TAB;
+  const browserSettings = useRecoilValue(browserSettingsState);
+  const logoSearchEngine =
+    searchDefault[browserSettings?.searchEngine || "google"].logo;
+
+  const adblock = new Adblock();
 
   // eslint-disable-next-line @typescript-eslint/no-shadow
   const onLoadProgress = ({ nativeEvent: { progress } }) => {
     setProgress(progress);
   };
 
-  // const go = (url: string) => {
-  //   setInitialUrl(url);
-  // };
-
   const go = useCallback(async (url) => {
     const { current } = webviewRef;
     setInitialUrl(url);
-    setFirstUrlLoaded(true);
-
     current &&
       current.injectJavaScript(
         `(function(){window.location.href = '${url}' })()`
@@ -94,6 +98,7 @@ const BrowserTab = (props) => {
       BackHandler.addEventListener("hardwareBackPress", onAndroidBackPress);
     }
     return () => {
+      ethereumBackgroundBridge.onDisconnect();
       BackHandler.removeEventListener("hardwareBackPress", onAndroidBackPress);
     };
   }, []);
@@ -117,12 +122,14 @@ const BrowserTab = (props) => {
     updateTabData(newTabDefaultData);
   }, [updateTabData]);
 
-  const onLoadEnd = () => {
+  const onLoadEnd = ({ nativeEvent }) => {
     const { current } = webviewRef;
     current && current.injectJavaScript(JS_WEBVIEW_URL);
   };
 
-  const onLoadStart = ({ nativeEvent }) => {};
+  const onLoadStart = ({ nativeEvent }) => {
+    // setInitialUrl(nativeEvent.url);
+  };
 
   const openManageTabs = useCallback(async () => {
     const imageURI = await viewShotRef.current.capture();
@@ -154,7 +161,7 @@ const BrowserTab = (props) => {
     if (
       direction !== isShow &&
       Math.abs(nativeEvent.locationY - offset) > 3 &&
-      initialUrl !== NEW_TAB
+      !isHomePage
     ) {
       setIsShow(direction);
     }
@@ -192,6 +199,7 @@ const BrowserTab = (props) => {
       switch (type) {
         case "GET_WEBVIEW_URL": {
           updateTabData(payload);
+          setInitialUrl(payload.url);
           setTab(payload);
           if (payload.colorTheme) {
             setColorTheme(payload.colorTheme);
@@ -214,9 +222,13 @@ const BrowserTab = (props) => {
           });
           break;
         }
-        case Web3Provider.SOLANA: {
-          break;
-        }
+        // case Web3Provider.SOLANA: {
+        //   solanaBackgroundBridge.onMessage(data, {
+        //     host: origin,
+        //     favicon: tab?.icon,
+        //   });
+        //   break;
+        // }
         default: {
           break;
         }
@@ -251,6 +263,14 @@ const BrowserTab = (props) => {
    */
   const onShouldStartLoadWithRequest = (event) => {
     const { url } = event;
+    if (browserSettings?.adblock) {
+      if (adblock.isAd(url)) {
+        return false;
+      } else {
+        console.log(url);
+      }
+    }
+
     if (url.startsWith(NEAR_MAINNET_CONFIG.walletUrl)) {
       nearRequestHandler(url, NEAR_MAINNET_CONFIG.networkId);
       return false;
@@ -260,11 +280,12 @@ const BrowserTab = (props) => {
     }
     return true;
   };
-
   const theme = useColorScheme();
+
   return (
-    <View style={tw`flex-1 bg-white dark:bg-[#18191A]`}>
+    <View style={tw` bg-white dark:bg-[#18191A]`}>
       <AddressBar
+        logoSearchEngine={logoSearchEngine}
         colorTheme={colorTheme}
         progress={progress}
         contextUrl={initialUrl}
@@ -273,18 +294,23 @@ const BrowserTab = (props) => {
         onReload={reload}
         {...props}
       />
+
       <ViewShot ref={viewShotRef}>
         <View
-          style={[tw`h-full pt-12 `]}
-          onTouchStart={onTouchStart}
-          onTouchEnd={onTouchEnd}
+          style={[tw`h-full pb-12 ${!isHomePage && "pt-12"} `]}
+          onTouchStart={!isHomePage && onTouchStart}
+          onTouchEnd={!isHomePage && onTouchEnd}
         >
-          {initialUrl === NEW_TAB ? (
-            <HomePageBrowser openLink={(url) => go(url)} />
+          {isHomePage ? (
+            <HomePageBrowser
+              logoSearchEngine={logoSearchEngine}
+              openLink={(url) => go(url)}
+            />
           ) : (
             <View style={[tw`h-full`]}>
               {!!entryScriptWeb3 && (
                 <WebView
+                  allowsBackForwardNavigationGestures
                   onNavigationStateChange={({ canGoBack, canGoForward }) =>
                     setNavigateState({ canGoBack, canGoForward })
                   }

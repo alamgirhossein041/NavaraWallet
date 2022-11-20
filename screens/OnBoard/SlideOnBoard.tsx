@@ -66,6 +66,8 @@ const SlideOnBoard = ({ navigation }) => {
           renderItem={renderItem}
           sliderWidth={SLIDER_WIDTH}
           itemWidth={ITEM_WIDTH}
+          enableMomentum={true}
+          decelerationRate={0.9}
           onSnapToItem={(index) => setDotIndex(index)}
         />
         <Pagination
@@ -88,7 +90,7 @@ const SlideOnBoard = ({ navigation }) => {
         <Button
           fullWidth
           onPress={() => {
-            navigation.navigate("CreateWallet");
+            navigation.push("CreateWallet");
           }}
         >
           Create a new wallet

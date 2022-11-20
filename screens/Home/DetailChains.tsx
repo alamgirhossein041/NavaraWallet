@@ -14,7 +14,6 @@ import { useTranslation } from "react-i18next";
 import DappView from "../../components/UI/Dapp";
 import { NETWORKS } from "../../enum/bcEnum";
 import { tw } from "../../utils/tailwind";
-import News from "./News";
 import { ButtonProps } from "./WalletDashboard";
 
 export default function DetailChain({ route, navigation }) {
@@ -86,7 +85,6 @@ export default function DetailChain({ route, navigation }) {
         ))}
       </View>
       <DappView chain={token.network} />
-      <News keyword={keyWordNews} />
     </ScrollView>
   );
 }

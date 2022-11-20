@@ -11,6 +11,7 @@ const TabBrowser = ({
   const handleChangeTab = (index: number) => {
     setTabSelected(index);
   };
+
   return (
     <View style={tw`flex-row justify-center `}>
       <View style={tw`flex flex-row w-full mx-5`}>

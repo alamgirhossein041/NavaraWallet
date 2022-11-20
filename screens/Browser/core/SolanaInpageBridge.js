@@ -20,7 +20,7 @@ const script = `(function() {
   const container = document.head || document.documentElement;
   const scriptTag = document.createElement("script");
   scriptTag.setAttribute("async", "false");
-  scriptTag.innerHTML = ${scriptTagContent};
+  scriptTag.innerHtml = ${scriptTagContent};
   container.insertBefore(scriptTag, container.children[0]);
   container.removeChild(scriptTag);
   

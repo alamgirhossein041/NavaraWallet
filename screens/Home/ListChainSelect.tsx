@@ -4,7 +4,7 @@ import React, { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Text, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { CogIcon } from "react-native-heroicons/solid";
+import { Cog8ToothIcon } from "react-native-heroicons/solid";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import Loading, { SkeletonFlatList } from "../../components/Skeleton/Loading";
 import { primaryColor } from "../../configs/theme";
@@ -86,7 +86,7 @@ IListChains) => {
   //             style={tw``}
   //             onPress={() => navigation.navigate("ManageChains" as never)}
   //           >
-  //             <CogIcon color={primaryColor} />
+  //             <Cog8ToothIcon color={primaryColor} />
   //           </TouchableOpacity>
   //         );
   //       },
@@ -112,7 +112,7 @@ IListChains) => {
                 style={tw`flex-row items-center justify-center`}
                 onPress={() => navigation.navigate("ManageChains" as never)}
               >
-                <CogIcon color={primaryColor} height={30} width={30} />
+                <Cog8ToothIcon color={primaryColor} height={30} width={30} />
               </TouchableOpacity>
             </View>
           )}

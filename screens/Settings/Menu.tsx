@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ScrollView, Switch, Text, View } from "react-native";
 import { getBuildNumber, getVersion } from "react-native-device-info";
-import { BeakerIcon, LinkIcon } from "react-native-heroicons/solid";
+import { BeakerIcon } from "react-native-heroicons/solid";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRecoilState } from "recoil";
 import { useDeviceContext } from "twrnc";
 import IconLanguage from "../../assets/icons/icon-language.svg";
 import IconLock from "../../assets/icons/icon-lock.svg";
 import IconManageWallet from "../../assets/icons/icon-manager-wallet.svg";
+import Logo from "../../assets/logo/logo.svg";
 import MenuItem from "../../components/UI/MenuItem";
 import { primaryColor, primaryGray } from "../../configs/theme";
 import { listWalletsState } from "../../data/globalState/listWallets";
@@ -17,7 +18,6 @@ import { ENVIRONMENT } from "../../global.config";
 import { localStorage, NETWORKS_ENVIRONMENT } from "../../utils/storage";
 import { tw } from "../../utils/tailwind";
 import toastr from "../../utils/toastr";
-
 const Menu = ({ navigation }) => {
   const insets = useSafeAreaInsets();
   const [listWallets] = useRecoilState(listWalletsState);
@@ -72,6 +72,15 @@ const Menu = ({ navigation }) => {
           next: true,
         },
         {
+          icon: <Logo width={20} />,
+          name: "Manage Domains",
+
+          onPress: () => {
+            navigation.push("ManageDomains");
+          },
+          next: true,
+        },
+        {
           icon: <BeakerIcon color={primaryColor} />,
           name: `${
             walletEnvironment === ENVIRONMENT.DEVELOPMENT
@@ -89,14 +98,6 @@ const Menu = ({ navigation }) => {
             />
           ),
           next: false,
-        },
-        {
-          icon: <LinkIcon color={primaryColor} />,
-          name: `Manage connect sections`,
-          next: true,
-          onPress: () => {
-            navigation.push("ManageSections");
-          },
         },
 
         // {
@@ -211,9 +212,9 @@ const Menu = ({ navigation }) => {
               {group.group}
             </Text>
             {group.items.map(
-              (item, index) =>
+              (item, itemIndex) =>
                 item.name && (
-                  <View key={index}>
+                  <View key={itemIndex}>
                     <MenuItem
                       icon={item.icon}
                       name={item.name}

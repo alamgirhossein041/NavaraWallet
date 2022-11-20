@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
-import { DuplicateIcon } from "react-native-heroicons/outline";
+import { DocumentDuplicateIcon } from "react-native-heroicons/outline";
 import { LockClosedIcon } from "react-native-heroicons/solid";
 import { primaryColor } from "../../configs/theme";
 import { useWalletSelected } from "../../hooks/useWalletSelected";
@@ -21,6 +21,9 @@ export function ConfirmTransactionModal(props: any) {
   const { data: selectedWallet, index: walletIndex } = useWalletSelected();
   const [baseFee, setBaseFee] = useState<string>("0");
   const [maxFee, setMaxFee] = useState<string>("0");
+  const [balance, setBalance] = useState<string>();
+  const [isEnoughBalance, setIsEnoughBalance] = useState<boolean>();
+  const [lackingBalance, setLackingBalance] = useState<number>();
 
   const estimateGasFee = async (tx) => {
     try {
@@ -38,7 +41,25 @@ export function ConfirmTransactionModal(props: any) {
 
   useEffect(() => {
     estimateGasFee(transaction);
-  }, [transaction, provider, gasPrice]);
+  }, [transaction, gasPrice]);
+
+  useEffect(() => {
+    if (selectedAddress && provider) {
+      provider.getBalance(selectedAddress).then((result) => {
+        const formatted = ethers.utils.formatEther(result);
+        setBalance(formatted);
+      });
+    }
+  }, [provider, selectedAddress]);
+
+  useEffect(() => {
+    if (balance && maxFee) {
+      const estimatedRemainingBalance =
+        parseFloat(balance) - parseFloat(maxFee);
+      setIsEnoughBalance(estimatedRemainingBalance > 0);
+      setLackingBalance(-estimatedRemainingBalance);
+    }
+  }, [balance, maxFee]);
 
   return (
     <View style={tw`flex-column items-center w-100  justify-center w-full`}>
@@ -72,7 +93,7 @@ export function ConfirmTransactionModal(props: any) {
               {shortenAddress(transaction?.to || "")}
             </Text>
           </View>
-          <DuplicateIcon color={primaryColor} />
+          <DocumentDuplicateIcon color={primaryColor} />
         </TouchableOpacity>
       </View>
       <View
@@ -106,15 +127,16 @@ export function ConfirmTransactionModal(props: any) {
           </View>
         </View>
       </View>
-      {/* {true && (
+      {isEnoughBalance && (
         <View
           style={tw`mb-5 rounded-lg bg-red-100 w-full text-center p-1 border-red-700 border`}
         >
           <Text style={tw`text-center`}>
-            You need an additional {maxFee} ETH to complete this transaction
+            You need an additional {formatBalance(lackingBalance.toString())}{" "}
+            ETH to complete this transaction
           </Text>
         </View>
-      )} */}
+      )}
     </View>
   );
 }

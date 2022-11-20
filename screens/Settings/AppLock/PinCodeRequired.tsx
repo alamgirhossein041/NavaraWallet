@@ -47,7 +47,7 @@ const PinCodeRequired = () => {
         edges={["top"]}
         style={tw`flex items-center justify-center w-full min-h-full pt-32`}
       >
-        <Logo width={120} height={120} />
+        <Logo width={100} height={100} />
         <PinCodeInput
           label={`${t("setting.apps_lock.unlock_wallet")}`}
           type="required"

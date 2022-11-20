@@ -4,14 +4,17 @@ import { Actionsheet, useDisclose } from "native-base";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import {
+  ArrowPathIcon,
   ClockIcon,
-  CogIcon,
-  CollectionIcon,
+  Cog8ToothIcon,
   DocumentDuplicateIcon,
   HomeIcon,
-  RefreshIcon,
+  RectangleStackIcon,
 } from "react-native-heroicons/outline";
-import { DotsHorizontalIcon, XIcon } from "react-native-heroicons/solid";
+import {
+  EllipsisHorizontalIcon,
+  XMarkIcon,
+} from "react-native-heroicons/solid";
 import { useBrowserActions } from "../../data/globalState/browser/browser.actions";
 import { tw } from "../../utils/tailwind";
 import toastr from "../../utils/toastr";
@@ -30,7 +33,7 @@ export default function OptionsBrowser(props) {
   const navigation = useNavigation();
   const menuItems: IMenuBrowser[] = [
     {
-      icon: <CollectionIcon width={30} height={30} color="gray" />,
+      icon: <RectangleStackIcon width={30} height={30} color="gray" />,
       text: "Favorites List",
       onPress: () => {
         navigation.navigate("FavoritesList" as never);
@@ -45,7 +48,7 @@ export default function OptionsBrowser(props) {
       },
     },
     {
-      icon: <CogIcon height={30} width={30} color="gray" />,
+      icon: <Cog8ToothIcon height={30} width={30} color="gray" />,
       text: "Settings",
       onPress: () => {
         navigation.navigate("SettingsBrowser" as never);
@@ -65,12 +68,12 @@ export default function OptionsBrowser(props) {
       onPress: () => gotoHomePage(),
     },
     {
-      icon: <RefreshIcon height={30} width={30} color="gray" />,
+      icon: <ArrowPathIcon height={30} width={30} color="gray" />,
       text: "Reload",
       onPress: () => onReload(),
     },
     {
-      icon: <XIcon height={30} width={30} color="gray" />,
+      icon: <XMarkIcon height={30} width={30} color="gray" />,
       text: "Close tab",
       onPress: () => closeTabBrowser(tabId, false),
     },
@@ -79,7 +82,7 @@ export default function OptionsBrowser(props) {
   return (
     <View style={tw`px-3`}>
       <TouchableOpacity onPress={onOpen}>
-        <DotsHorizontalIcon width={30} height={30} fill={"gray"} />
+        <EllipsisHorizontalIcon width={35} height={35} fill={"gray"} />
       </TouchableOpacity>
       <Actionsheet isOpen={isOpen} onClose={onClose}>
         <Actionsheet.Content style={tw``}>

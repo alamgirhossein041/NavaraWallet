@@ -1,32 +1,66 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { ScrollView, Text, View } from "react-native";
-import { SearchIcon } from "react-native-heroicons/outline";
+import { ScrollView, Switch, Text, View } from "react-native";
+import {
+  MagnifyingGlassIcon,
+  NoSymbolIcon,
+} from "react-native-heroicons/outline";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useRecoilState } from "recoil";
 import MenuItem from "../../../components/UI/MenuItem";
-import { defaultSettings } from "../../../configs/browser";
-import { primaryColor } from "../../../configs/theme";
-import { useLocalStorage } from "../../../hooks/useLocalStorage";
-import { BROWSER_SETTINGS } from "../../../utils/storage";
+import { primaryColor, primaryGray } from "../../../configs/theme";
+import { browserSettingsState } from "../../../data/globalState/browser";
 import { capitalizeFirstLetter } from "../../../utils/stringsFunction";
 import { tw } from "../../../utils/tailwind";
 
 const SettingsMenu = ({ navigation }) => {
   const insets = useSafeAreaInsets();
-  const [browserSettings] = useLocalStorage(BROWSER_SETTINGS, defaultSettings);
+  const [browserSettings, setBrowserSettings] =
+    useRecoilState(browserSettingsState);
+
   const { t } = useTranslation();
   const menu = [
     {
       group: "",
       items: [
         {
-          icon: <SearchIcon width="100%" height="100%" stroke={primaryColor} />,
+          icon: (
+            <MagnifyingGlassIcon
+              width="100%"
+              height="100%"
+              stroke={primaryColor}
+            />
+          ),
           name: `${t("search_bar.search")}`,
           onPress: () => {
             navigation.navigate("SearchEngine");
           },
           value: capitalizeFirstLetter(browserSettings?.searchEngine),
           next: true,
+        },
+        {
+          icon: (
+            <NoSymbolIcon width="100%" height="100%" stroke={primaryColor} />
+          ),
+          name: `Ads Block`,
+          onPress: () => {
+            navigation.navigate("SearchEngine");
+          },
+          value: (
+            <Switch
+              trackColor={{ false: primaryGray, true: primaryColor }}
+              thumbColor="white"
+              onValueChange={() => {
+                const newBrowserSettings = {
+                  ...browserSettings,
+                  adblock: !browserSettings?.adblock,
+                };
+                setBrowserSettings(newBrowserSettings);
+              }}
+              value={browserSettings?.adblock}
+            />
+          ),
+          next: false,
         },
       ],
     },

@@ -32,39 +32,39 @@ export const resetKeychain = async () => {
   }
 };
 
-export const encryptAESWithKeychain = async (
-  value: string,
-  password?: string
-) => {
+export const encryptAESWithKeychain = async (value: string) => {
   try {
     const KeychainPassword = await getFromKeychain();
     const encryptedValue = CryptoJS.AES.encrypt(
       value,
-      password ? password : KeychainPassword
+      KeychainPassword
     ).toString();
-
-    return encryptedValue;
+    if (encryptedValue) {
+      return encryptedValue;
+    } else {
+      return value;
+    }
   } catch (error) {
     console.warn("AES encryption failed: ", error);
-    return "";
+    return value;
   }
 };
 
-export const decryptAESWithKeychain = async (
-  value: string,
-  password?: string
-) => {
+export const decryptAESWithKeychain = async (value: string) => {
   try {
     const KeychainPassword = await getFromKeychain();
     const decryptedValue = CryptoJS.AES.decrypt(
       value,
-      password ? password : KeychainPassword
+      KeychainPassword
     ).toString(CryptoJS.enc.Utf8);
-
-    return decryptedValue;
+    if (decryptedValue) {
+      return decryptedValue;
+    } else {
+      return value;
+    }
   } catch (error) {
     console.warn("AES decryption failed: ", error);
-    return "";
+    return value;
   }
 };
 export const encryptAES = (value: string, password: string) => {

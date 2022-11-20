@@ -4,16 +4,6 @@ import * as nearApi from "near-api-js";
 import * as nearAPI from "near-api-js";
 import { NETWORKS } from "../../enum/bcEnum";
 
-export type WalletType = {
-  icon?: JSX.Element;
-  name: string | JSX.Element;
-  onPress?: () => void;
-  value?: string | JSX.Element;
-  next?: boolean;
-  iconPadding?: string;
-  disabled?: boolean;
-};
-
 export type WalletInterface = {
   near?: nearApi.Near | undefined;
   address: string;
@@ -219,4 +209,29 @@ export interface INFT {
   metadata: Metadata;
   timeLastUpdated: Date;
   contractMetadata: ContractMetadata;
+}
+
+export interface ITokenMetadata {
+  name: string;
+  contractAddress: string;
+  logo?: string;
+  decimals?: number;
+  symbol?: string;
+  tokenBalance?: number;
+  network?: string;
+}
+
+export interface IDomain {
+  domainId: string;
+  domain: string;
+  owner: string;
+  expired: string;
+  chains: IDomainChain[];
+}
+
+export interface IDomainChain {
+  chainId: string;
+  ethereum: string;
+  near: string;
+  solana: string;
 }

@@ -22,12 +22,12 @@ export const confirmEvent = (params: ConfirmEventParams): Promise<boolean> => {
     eventHub.emit(EVENT_REQUEST_CONFIRM, params);
 
     // Detect event onPress approved - (Button UI)
-    eventHub.on(EVENT_REQUEST_CONFIRM_APPROVED, () => {
+    eventHub.once(EVENT_REQUEST_CONFIRM_APPROVED, () => {
       resolve(true);
     });
 
     // Detect event onPress reject - (Button UI)
-    eventHub.on(EVENT_REQUEST_CONFIRM_REJECTED, () => {
+    eventHub.once(EVENT_REQUEST_CONFIRM_REJECTED, () => {
       resolve(false);
     });
   });

@@ -8,19 +8,19 @@ import base64 from "react-native-base64";
 import { useRecoilState } from "recoil";
 import Button from "../../components/UI/Button";
 import TextField from "../../components/UI/TextField";
-import { Regex } from "../../configs/defaultValue";
 import { primaryColor, primaryGray } from "../../configs/theme";
 import {
   decryptAESWithKeychain,
   encryptAESWithKeychain,
 } from "../../core/keychain";
-import useDatabase from "../../data/database/useDatabase";
+import WalletController from "../../data/database/controllers/wallet.controller";
 import { listWalletsState } from "../../data/globalState/listWallets";
 import { IBackupData, IFileData } from "../../data/types";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 import usePopupResult from "../../hooks/usePopupResult";
 import { googleDriveStoreFile } from "../../module/googleApi/GoogleDrive";
 import { GOOGLE_ACCESS_TOKEN } from "../../utils/storage";
+import { validatePassword } from "../../utils/stringsFunction";
 import { tw } from "../../utils/tailwind";
 import toastr from "../../utils/toastr";
 
@@ -33,7 +33,7 @@ const BackupWallet = ({ navigation, route }) => {
   const [isNewPassword, setIsNewPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const popupResult = usePopupResult();
-  const { walletController } = useDatabase();
+  const walletController = new WalletController();
   const { control, setValue, getValues } = useForm({
     defaultValues: {
       fileName: "",
@@ -76,12 +76,7 @@ const BackupWallet = ({ navigation, route }) => {
       resetValue("password");
       return "Password does not match";
     }
-
-    if (!password.match(Regex.password)) {
-      resetValue("password");
-      return "Password must be at least 8 characters long, contain at least one lowercase letter, one uppercase letter, one number and one special character(@$!%*#?&$)";
-    }
-    return "";
+    return validatePassword(password);
   };
 
   const getData = async (password: string) => {

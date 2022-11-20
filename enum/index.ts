@@ -1,3 +1,5 @@
+import { NETWORKS } from "./bcEnum";
+
 export enum PlatFormEnum {
   ANDROID = "android",
   IOS = "ios",
@@ -28,10 +30,13 @@ export enum GoogleClientIdEnum {
 }
 
 export enum SupportedSwapChainsEnum {
-  ETHEREUM = "ETHEREUM",
-  POLYGON = "POLYGON",
-  BINANCE_SMART_CHAIN = "BINANCE_SMART_CHAIN",
-  AVALANCHE = "AVALANCHE",
+  OPTIMISM = NETWORKS.ETHEREUM,
+  POLYGON = NETWORKS.POLYGON,
+  BINANCE_SMART_CHAIN = NETWORKS.BINANCE_SMART_CHAIN,
+  AVALANCHE = NETWORKS.AVALANCHE,
+  FANTOM = NETWORKS.FANTOM,
+  // HARMONY = NETWORKS.HARMONY,
+  ArBITRUM = NETWORKS.ARBITRUM,
 }
 
 export enum ParaswapEnum {

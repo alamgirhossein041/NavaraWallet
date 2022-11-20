@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
+import WalletController from "../data/database/controllers/wallet.controller";
 import { Wallet } from "../data/database/entities/wallet";
-import useDatabase from "../data/database/useDatabase";
 import {
   idWalletSelected,
   listWalletsState,
@@ -23,7 +23,7 @@ export interface IUseWalletSelected {
 const useWalletSelected = (): IUseWalletSelected => {
   const index = useRecoilValue(idWalletSelected);
   const [listWallets, setListWallets] = useRecoilState(listWalletsState);
-  const { walletController } = useDatabase();
+  const walletController = new WalletController();
   const selectedWalletInstance =
     listWallets[index === listWallets.length ? 0 : index];
   const walletEnvironment = useRecoilValue(walletEnvironmentState);

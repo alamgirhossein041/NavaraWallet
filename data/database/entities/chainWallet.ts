@@ -1,16 +1,16 @@
 import {
-  Entity,
   Column,
-  PrimaryGeneratedColumn,
+  Entity,
   ManyToOne,
-} from 'typeorm/browser';
-import {Wallet} from './wallet';
-@Entity('ChainWallet')
+  PrimaryGeneratedColumn,
+} from "typeorm/browser";
+import { Wallet } from "./wallet";
+@Entity("ChainWallet")
 export class ChainWallet {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @ManyToOne(type => Wallet, wallet => wallet.id)
+  @ManyToOne((type) => Wallet, (wallet) => wallet.id)
   walletId: string;
 
   @Column()
@@ -31,6 +31,9 @@ export class ChainWallet {
   @Column()
   symbol: string;
 
-  @Column({nullable: true, default: 0})
+  @Column({ nullable: true, default: 0 })
   balance?: number;
+
+  @Column({ nullable: true })
+  currentAddress?: string;
 }

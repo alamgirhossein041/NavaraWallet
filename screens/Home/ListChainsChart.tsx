@@ -3,9 +3,8 @@ import React, { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Text, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { CogIcon } from "react-native-heroicons/solid";
+import { Cog8ToothIcon } from "react-native-heroicons/solid";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import Loading, { SkeletonFlatList } from "../../components/Skeleton/Loading";
 import { primaryColor } from "../../configs/theme";
 import updateBalanceForWallet from "../../core/updateBalanceForWallet";
 import { ChainWallet } from "../../data/database/entities/chainWallet";
@@ -14,6 +13,7 @@ import {
   listWalletsState,
   reloadingWallets,
 } from "../../data/globalState/listWallets";
+import useWalletsActions from "../../data/globalState/listWallets/listWallets.actions";
 import { walletEnvironmentState } from "../../data/globalState/userData";
 import { getNetworkEnvironment } from "../../hooks/useBcNetworks";
 import { useWalletSelected } from "../../hooks/useWalletSelected";
@@ -26,83 +26,85 @@ interface IListChains {
   hideSettings?: boolean;
 }
 
-const ListChainsChart = ({
-  next,
-  filter,
-  caching = false,
-  hideSettings = false,
-}: IListChains) => {
-  const [reloading, setReloading] = useRecoilState(reloadingWallets);
-  const walletSelected = useWalletSelected();
-  const navigation = useNavigation();
-  const isFocused = useIsFocused();
-  const setListWallets = useSetRecoilState(listWalletsState);
-  const walletEnvironment = useRecoilValue(walletEnvironmentState);
-  const { t } = useTranslation();
-  const getBalance = async () => {
-    const { data: selectedWallets } = walletSelected;
-    try {
-      const walletsUpdatedBalance = await updateBalanceForWallet(
-        selectedWallets,
-        selectedWallets.chains,
-        walletSelected.enabledNetworks,
-        getNetworkEnvironment(walletEnvironment)
-      );
+const ListChainsChart = React.memo(
+  ({ next, filter, caching = false, hideSettings = false }: IListChains) => {
+    const [reloading, setReloading] = useRecoilState(reloadingWallets);
+    const walletSelected = useWalletSelected();
+    const navigation = useNavigation();
+    const isFocused = useIsFocused();
+    const setListWallets = useSetRecoilState(listWalletsState);
+    const walletEnvironment = useRecoilValue(walletEnvironmentState);
+    const { getListChain } = useWalletsActions();
 
-      if (walletsUpdatedBalance) {
-        setListWallets((prev) => {
-          return prev.map((wallet: Wallet) => {
-            if (wallet.id === walletsUpdatedBalance.id) {
-              return walletsUpdatedBalance;
-            }
-            return wallet;
+    const { t } = useTranslation();
+    const getBalance = async () => {
+      const { data: selectedWallets } = walletSelected;
+      try {
+        const environment = getNetworkEnvironment(walletEnvironment);
+        const currentListChain = await getListChain(selectedWallets.id);
+
+        const listChainsUpdatedBalance = await updateBalanceForWallet(
+          currentListChain,
+          walletSelected.enabledNetworks,
+          environment
+        );
+
+        if (listChainsUpdatedBalance) {
+          setListWallets((prev) => {
+            return prev.map((wallet: Wallet) => {
+              if (wallet.id === selectedWallets.id) {
+                return {
+                  ...wallet,
+                  chains: listChainsUpdatedBalance,
+                };
+              }
+              return wallet;
+            });
           });
+        }
+      } catch (error) {
+        console.warn(error);
+      }
+      setReloading(false);
+    };
+
+    const filteredListNetworks = useMemo((): ChainWallet[] => {
+      const oldListNetworks = walletSelected?.data?.chains || [];
+      if (filter?.length > 0 && oldListNetworks?.length > 0) {
+        const newListChains = oldListNetworks.filter((chain) =>
+          filter.includes(chain.network.toUpperCase())
+        );
+        return newListChains;
+      }
+
+      return oldListNetworks || [];
+    }, [filter, walletSelected]);
+
+    useEffect(() => {
+      if (!hideSettings) {
+        navigation.setOptions({
+          headerRight: () => {
+            return (
+              <TouchableOpacity
+                style={tw``}
+                onPress={() => navigation.navigate("ManageChains" as never)}
+              >
+                <Cog8ToothIcon color={primaryColor} />
+              </TouchableOpacity>
+            );
+          },
         });
       }
-    } catch (error) {
-      console.warn(error);
-    }
-    setReloading(false);
-  };
+    }, [navigation, hideSettings]);
 
-  const filteredListNetworks = useMemo((): ChainWallet[] => {
-    const oldListNetworks = walletSelected?.data?.chains || [];
-    if (filter?.length > 0 && oldListNetworks?.length > 0) {
-      const newListChains = oldListNetworks.filter((chain) =>
-        filter.includes(chain.network.toUpperCase())
-      );
-      return newListChains;
-    }
+    useEffect(() => {
+      if (reloading && isFocused) {
+        getBalance();
+      }
+    }, [isFocused, reloading]);
 
-    return oldListNetworks || [];
-  }, [filter, walletSelected]);
-
-  useEffect(() => {
-    if (!hideSettings) {
-      navigation.setOptions({
-        headerRight: () => {
-          return (
-            <TouchableOpacity
-              style={tw``}
-              onPress={() => navigation.navigate("ManageChains" as never)}
-            >
-              <CogIcon color={primaryColor} />
-            </TouchableOpacity>
-          );
-        },
-      });
-    }
-  }, [navigation, hideSettings]);
-
-  useEffect(() => {
-    if (reloading && isFocused) {
-      getBalance();
-    }
-  }, [isFocused, reloading]);
-
-  return (
-    <Loading type="skeleton">
-      <View style={tw`px-4`}>
+    return (
+      <View style={tw`w-full px-4`}>
         {!caching && (
           <View style={tw`flex-row items-center justify-between w-full`}>
             <Text
@@ -114,29 +116,25 @@ const ListChainsChart = ({
               style={tw`flex-row items-center justify-center`}
               onPress={() => navigation.navigate("ManageChains" as never)}
             >
-              <CogIcon color={primaryColor} height={30} width={30} />
+              <Cog8ToothIcon color={primaryColor} height={30} width={30} />
             </TouchableOpacity>
           </View>
         )}
-        {reloading ? (
-          <SkeletonFlatList />
-        ) : (
-          <View>
-            {filteredListNetworks.map((chain: ChainWallet, index) => {
-              return (
-                <PricesChart
-                  key={index}
-                  next={next}
-                  chain={chain}
-                  caching={caching}
-                />
-              );
-            })}
-          </View>
-        )}
+        <View>
+          {filteredListNetworks.map((chain: ChainWallet, index) => {
+            return (
+              <PricesChart
+                key={index}
+                next={next}
+                chain={chain}
+                caching={caching}
+              />
+            );
+          })}
+        </View>
       </View>
-    </Loading>
-  );
-};
+    );
+  }
+);
 
-export default React.memo(ListChainsChart);
+export default ListChainsChart;

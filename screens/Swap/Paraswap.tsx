@@ -68,7 +68,7 @@ const SwapScreen = ({ route, navigation }) => {
     isError,
     refetch,
   } = useQuery(
-    [`tokens`, config?.chainId, searchValue],
+    [`tokens-${config?.chainId}`, config?.chainId, searchValue],
     async (): Promise<IToken[]> => {
       const params =
         searchValue.length > 0

@@ -1,11 +1,12 @@
 import { useLinkTo } from "@react-navigation/native";
-import React, { useEffect } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import {
   Dimensions,
   SafeAreaView,
   Text,
   TouchableOpacity,
+  useColorScheme,
   View,
 } from "react-native";
 import Carousel from "react-native-snap-carousel";
@@ -19,39 +20,36 @@ import {
   idWalletSelected,
   listWalletsState,
 } from "../../data/globalState/listWallets";
-import { localStorage, SELECTED_WALLET } from "../../utils/storage";
+import { ID_WALLET_SELECTED, localStorage } from "../../utils/storage";
 import { tw } from "../../utils/tailwind";
 import CardWallet from "./CardWallet";
 
 const SelectWallets = () => {
   const listWallets = useRecoilValue(listWalletsState);
+  const colorScheme = useColorScheme();
   const [indexWalletSelected, setIndexWalletSelected] =
     useRecoilState(idWalletSelected);
 
   const { width: viewportWidth } = Dimensions.get("window");
 
-  useEffect(() => {
-    (async () => {
-      const wallets: any = (await localStorage.get(SELECTED_WALLET)) || 0;
-      if (wallets !== 0) {
-        setIndexWalletSelected(wallets);
-      }
-    })();
-  }, []);
-
-  const handleSelectWallet = (index: number) => {
+  const handleSelectWallet = async (index: number) => {
     setIndexWalletSelected(index);
-    localStorage.set(SELECTED_WALLET, index);
     triggerHapticFeedback();
+    await localStorage.set(
+      ID_WALLET_SELECTED,
+      listWallets[indexWalletSelected].id
+    );
   };
 
   return (
     <View style={tw`relative mb-5 h-55`}>
       <SafeAreaView style={tw`flex-1 bg-white dark:bg-[#18191A] `}>
-        <View style={tw`flex-row flex-1`}>
+        <View style={tw`flex-row flex-1 bg-white dark:bg-[#18191A]`}>
           <Carousel
             firstItem={indexWalletSelected}
             activeOpacity
+            enableMomentum={true}
+            decelerationRate={0.9}
             layout={"default"}
             data={listWallets}
             sliderWidth={viewportWidth}
@@ -108,7 +106,9 @@ const ButtonActions = () => {
             {/* <View style={tw`relative bg-blue-100 rounded-full w-7 h-7`}>
            
           </View> */}
-            <Text style={tw`font-bold dark:text-white `}>{button.label}</Text>
+            <Text style={tw`font-bold text-black dark:text-white `}>
+              {button.label}
+            </Text>
           </TouchableOpacity>
         ))}
       </View>

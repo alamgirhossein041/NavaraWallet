@@ -1,40 +1,51 @@
-import React, { useMemo, useState } from "react";
+import { Spinner } from "native-base";
+import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { View } from "react-native";
+import { Text, View } from "react-native";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import Button from "../../components/UI/Button";
 import ViewSeedPhrase from "../../components/UI/ViewSeedPhrase";
 import { TOKEN_SYMBOLS } from "../../configs/bcNetworks";
-import createWalletsByNetworks from "../../core/createWalletsByNetworks";
+import { primaryColor } from "../../configs/theme";
+import generateWalletsByNetworks from "../../core/generateWalletsByNetworks";
 import API from "../../data/api";
-import useDatabase from "../../data/database/useDatabase";
+import ChainWalletController from "../../data/database/controllers/chainWallet.controller";
+import WalletController from "../../data/database/controllers/wallet.controller";
 import {
   idWalletSelected,
   listWalletsState,
   reloadingWallets,
 } from "../../data/globalState/listWallets";
-import { generateMnemonics } from "../../utils/mnemonic";
+import { generateMnemonics, mnemonicToSeed } from "../../utils/mnemonic";
+import { ID_WALLET_SELECTED, localStorage } from "../../utils/storage";
 import { tw } from "../../utils/tailwind";
 import toastr from "../../utils/toastr";
-import EnableNotification, {
-  ChainsAddress,
-} from "../Notification/EnableNotification";
+import EnableNotification from "../Notification/EnableNotification";
 
 const CreateWallet = ({ navigation, route }) => {
   const [listWallets, setListWallets] = useRecoilState(listWalletsState);
   const setIndexWalletSelected = useSetRecoilState(idWalletSelected);
   const setReloading = useSetRecoilState(reloadingWallets);
-
-  const { walletController, chainWalletController } = useDatabase();
+  const walletController = new WalletController();
+  const chainWalletController = new ChainWalletController();
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [chainsAddress, setChainsAddress] = useState<ChainsAddress>(null);
-
+  const [walletId, setWalletId] = useState<string>(null);
+  const [seed, setSeed] = useState();
   const routeSeedPhrase = route?.params?.seedPhrase || null;
   const isCreateNewWallet = !routeSeedPhrase;
   const seedPhrase = useMemo(() => {
     return routeSeedPhrase || generateMnemonics();
   }, []);
+
+  useEffect(() => {
+    setTimeout(() => {
+      (async () => {
+        const _seed = await mnemonicToSeed(seedPhrase);
+        setSeed(_seed);
+      })();
+    }, 0);
+  }, [seedPhrase]);
 
   const getExitingDomain = async (
     network: string,
@@ -61,8 +72,12 @@ const CreateWallet = ({ navigation, route }) => {
     setTimeout(async () => {
       // handle generate address wallet very slow -> block thread -> using settimeout 0 to temporary fix
       try {
-        const listWalletNetwork = await createWalletsByNetworks(seedPhrase);
+        const listWalletNetwork = await generateWalletsByNetworks(
+          seed,
+          isCreateNewWallet
+        );
         const newWallet = await walletController.createWallet(seedPhrase);
+        await localStorage.set(ID_WALLET_SELECTED, newWallet.id);
         if (!isCreateNewWallet) {
           const exitingDomain = await getExitingDomain(
             listWalletNetwork[0].network,
@@ -75,6 +90,7 @@ const CreateWallet = ({ navigation, route }) => {
             });
           }
         }
+
         const createAllChainWallet = listWalletNetwork.map(
           (chainWallet: any) => {
             chainWallet.walletId = newWallet.id;
@@ -83,21 +99,16 @@ const CreateWallet = ({ navigation, route }) => {
         );
 
         await Promise.all(createAllChainWallet);
+
         const newListWallet = await walletController.getWallets();
         const newestWallet = newListWallet.slice(-1);
+
         setListWallets([...listWallets, ...newestWallet]);
-
-        const newestAddress = newestWallet[0].chains;
-        let address = {};
-        newestAddress.forEach((item) => {
-          address[item.network.toLowerCase()] = item.address;
-        });
-        setChainsAddress(address as ChainsAddress);
-
+        setWalletId(newWallet.id);
         setIsOpen(true);
+        setLoading(false);
       } catch (error: any) {
         toastr.error("An error occurred.");
-        console.warn(error);
       }
       setLoading(false);
     }, 0);
@@ -108,7 +119,7 @@ const CreateWallet = ({ navigation, route }) => {
     if (listWallets && listWallets.length === 1) {
       navigation.replace("EnableAppLockOnBoard");
     } else {
-      setIndexWalletSelected(listWallets.length);
+      setIndexWalletSelected(listWallets.length - 1);
       if (routeSeedPhrase) {
         setReloading(true);
       }
@@ -117,6 +128,15 @@ const CreateWallet = ({ navigation, route }) => {
   };
 
   const { t } = useTranslation();
+
+  if (!seed) {
+    return (
+      <View style={tw`flex-col items-center justify-center flex-1`}>
+        <Spinner size={60} color={primaryColor} />
+        <Text style={tw`m-3 text-lg font-bold`}>Generating seed phrase</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={tw`relative flex-1 bg-white dark:bg-[#18191A] `}>
@@ -139,7 +159,7 @@ const CreateWallet = ({ navigation, route }) => {
       <EnableNotification
         isOpen={isOpen}
         onClose={onClose}
-        chainsAddress={chainsAddress}
+        walletId={walletId}
       />
     </View>
   );

@@ -1,7 +1,7 @@
 import { Modal } from "native-base";
 import React, { useEffect } from "react";
 import { Text, View } from "react-native";
-import { CheckIcon, XIcon } from "react-native-heroicons/solid";
+import { CheckIcon, XMarkIcon } from "react-native-heroicons/solid";
 import { atom, useRecoilState } from "recoil";
 import { tw } from "../../utils/tailwind";
 
@@ -52,7 +52,7 @@ const PopupResult = () => {
           <View
             style={tw`absolute flex items-center justify-center bg-red-400 border-2 border-white rounded-full w-15 h-15 -top-10`}
           >
-            <XIcon fill="white" height={30} width={30} />
+            <XMarkIcon fill="white" height={30} width={30} />
           </View>
         )}
         <View

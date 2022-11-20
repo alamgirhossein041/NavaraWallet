@@ -2,13 +2,13 @@ import { clusterApiUrl, Connection, Keypair } from "@solana/web3.js";
 import bs58 from "bs58";
 import { useCallback, useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
-import { JS_EMIT_EVENT_TO_WEBVIEW } from "../../../core/browserScripts";
-import { browserApprovedHost } from "../../../data/globalState/browser";
-import { listWalletsState } from "../../../data/globalState/listWallets";
-import { NETWORKS } from "../../../enum/bcEnum";
-import { ENVIRONMENT } from "../../../global.config";
-import { useWalletSelected } from "../../../hooks/useWalletSelected";
-import { isSameNetwork } from "../../../utils/network";
+import { browserApprovedHost } from "../data/globalState/browser";
+import { listWalletsState } from "../data/globalState/listWallets";
+import { NETWORKS } from "../enum/bcEnum";
+import { ENVIRONMENT } from "../global.config";
+import { useWalletSelected } from "../hooks/useWalletSelected";
+import { isSameNetwork } from "../utils/network";
+import { JS_EMIT_EVENT_TO_WEBVIEW } from "./browserScripts";
 
 export const useSolanaBackgroundBridge = (props) => {
   const [approvedHosts] = useRecoilState(browserApprovedHost);
@@ -63,7 +63,8 @@ export const useSolanaBackgroundBridge = (props) => {
     setAccounts(accountsList);
   }, [listWallets, network, selectedWallet]);
 
-  const onMessage = async (data, origin: string) => {
+  const onMessage = async (data, information: any) => {
+    const { host, favicon } = information;
     const { payload, channel } = data;
     const { params, method: rpcMethod } = payload;
     let message = {

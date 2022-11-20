@@ -12,15 +12,15 @@ import { TrashIcon } from "react-native-heroicons/solid";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import ActionSheetItem from "../../components/UI/ActionSheetItem";
 import { primaryColor } from "../../configs/theme";
+import HistoryBrowserController from "../../data/database/controllers/historyBrowser.controller";
 import { BrowserHistory as BrowserHistoryEntity } from "../../data/database/entities/historyBrowser";
-import useDatabase from "../../data/database/useDatabase";
 import { browserState, currentTabState } from "../../data/globalState/browser";
 import { tw } from "../../utils/tailwind";
 import toastr from "../../utils/toastr";
 import Favicon from "./Favicon";
 
 export default function BrowserHistory({ navigation }) {
-  const { historyBrowserController } = useDatabase();
+  const historyBrowserController = new HistoryBrowserController();
   const setCurrentTab = useSetRecoilState(currentTabState);
   const [histories, setHistories] = React.useState([]);
   const [browser, setBrowser] = useRecoilState(browserState);

@@ -14,7 +14,8 @@ import { primaryColor } from "../../configs/theme";
 import { CURRENCIES } from "../../constants/currencies";
 import { parseTransactionsToSign } from "../../core/nearTransaction";
 import API, { URL_GET_PRICE } from "../../data/api";
-import { listWalletsState } from "../../data/globalState/listWallets";
+import WalletController from "../../data/database/controllers/wallet.controller";
+import { idWalletSelected } from "../../data/globalState/listWallets";
 import { NETWORKS } from "../../enum/bcEnum";
 import { createNearInstance } from "../../hooks/useNEAR";
 import usePopupResult from "../../hooks/usePopupResult";
@@ -138,13 +139,9 @@ export default function useNearApproveAccessModal(
   const [account, setAccount] = useState<nearAPI.Account>();
   const [accountId, setAccountId] = useState<string>();
   const [networkId, setNetworkId] = useState<string>();
-  const listWallets = useRecoilValue(listWalletsState);
+  const walletController = new WalletController();
 
-  const nearWallets = listWallets.map((wallet) => {
-    const { chains } = wallet;
-    const nearWallet = chains.find((chain) => chain.network === NETWORKS.NEAR);
-    return nearWallet;
-  });
+  const indexWalletSelected = useRecoilValue(idWalletSelected);
 
   const openModal = async (url: URL, network: string) => {
     const { callbackUrl, transactions } = queryString.parse(url.search);
@@ -156,6 +153,14 @@ export default function useNearApproveAccessModal(
   };
 
   const initState = async (signerId, network) => {
+    const listWallets = await walletController.getWallets();
+    const nearWallets = listWallets.map((wallet) => {
+      const { chains } = wallet;
+      const nearWallet = chains.find(
+        (chain) => chain.network === NETWORKS.NEAR
+      );
+      return nearWallet;
+    });
     const config =
       network === NEAR_MAINNET_CONFIG.networkId
         ? NEAR_MAINNET_CONFIG
@@ -169,10 +174,12 @@ export default function useNearApproveAccessModal(
     });
     if (nearWallet) {
       try {
+        // eslint-disable-next-line @typescript-eslint/no-shadow
         const { near, accountId } = await createNearInstance(
           nearWallet.privateKey,
           config
         );
+        // eslint-disable-next-line @typescript-eslint/no-shadow
         const account = await near.account(accountId);
 
         const state = await account.state();
@@ -194,6 +201,7 @@ export default function useNearApproveAccessModal(
             vs_currencies: CURRENCIES.USD,
           },
         });
+        // eslint-disable-next-line @typescript-eslint/no-shadow
         const nearPrice =
           prices[NETWORK_COINGEKO_IDS[NETWORKS.NEAR]][CURRENCIES.USD];
         setNearPrice(nearPrice);

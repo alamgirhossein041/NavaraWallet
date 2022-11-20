@@ -1,6 +1,5 @@
 {
   "editor.formatOnSave": true,
-  "editor.formatOnSaveMode": "modifications",
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "xmlTools.xmlFormatterImplementation": "classic",
   "tailwindCSS.classAttributes": [
@@ -9,5 +8,14 @@
     "ngClass",
     ".*Styles",
     "style"
+  ],
+  "java.configuration.updateBuildConfiguration": "disabled",
+  "cSpell.words": [
+    "Actionsheet",
+    "Domainprops",
+    "keychain",
+    "Pressable",
+    "toastr",
+    "typeorm"
   ]
 }

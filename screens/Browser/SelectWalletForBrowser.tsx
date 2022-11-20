@@ -1,11 +1,12 @@
 import { Actionsheet, useDisclose } from "native-base";
-import React, { memo } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { Image, Text, View } from "react-native";
 import { CheckCircleIcon } from "react-native-heroicons/solid";
 import { useRecoilState, useRecoilValue } from "recoil";
 import ActionSheetItem from "../../components/UI/ActionSheetItem";
 import PressableAnimated from "../../components/UI/PressableAnimated";
 import { primaryColor } from "../../configs/theme";
+import WalletController from "../../data/database/controllers/wallet.controller";
 import { ChainWallet } from "../../data/database/entities/chainWallet";
 import { Wallet } from "../../data/database/entities/wallet";
 import {
@@ -19,7 +20,10 @@ import { tw } from "../../utils/tailwind";
 const SelectWalletForBrowser = memo((props: any) => {
   const { isOpen, onOpen, onClose } = useDisclose();
   const listWallets = useRecoilValue(listWalletsState);
-  const [indexWalletSelected, setIndexWalletSeleted] =
+  const [listWalletDatabase, setListWalletDatabase] = useState([]);
+  const walletController = new WalletController();
+
+  const [indexWalletSelected, setIndexWalletSelected] =
     useRecoilState(idWalletSelected);
   const getEthAddress = (chains: ChainWallet[]): string => {
     return chains.find(
@@ -27,8 +31,15 @@ const SelectWalletForBrowser = memo((props: any) => {
     ).address;
   };
 
+  useEffect(() => {
+    (async () => {
+      const wallets = await walletController.getWallets();
+      setListWalletDatabase(wallets);
+    })();
+  }, [listWallets]);
+
   const handleChangeWalletSelected = (index) => {
-    setIndexWalletSeleted(index);
+    setIndexWalletSelected(index);
     onClose();
   };
   return (
@@ -41,7 +52,7 @@ const SelectWalletForBrowser = memo((props: any) => {
       />
       <Actionsheet isOpen={isOpen} onClose={onClose}>
         <Actionsheet.Content style={tw`bg-white dark:bg-[#18191A]`}>
-          {listWallets.map((wallet: Wallet, index) => (
+          {listWalletDatabase.map((wallet: Wallet, index) => (
             <ActionSheetItem onPress={() => handleChangeWalletSelected(index)}>
               <View style={tw`flex-row items-center justify-between w-full`}>
                 <View style={tw`flex-row items-center flex-1`}>
@@ -60,7 +71,7 @@ const SelectWalletForBrowser = memo((props: any) => {
                   </Text>
                 </View>
                 {indexWalletSelected === index && (
-                  <View style={tw`absolute right-0 bg-white dark:bg-[#18191A]`}>
+                  <View style={tw`absolute right-0 `}>
                     <CheckCircleIcon color={primaryColor} />
                   </View>
                 )}

@@ -82,7 +82,7 @@ const ReceiveSpecificToken = ({ route, navigation }) => {
             <>
               <TouchableOpacity
                 activeOpacity={0.6}
-                onPress={() => linkTo("/GetYourDomain")}
+                onPress={() => linkTo("/CreateDomain")}
                 style={tw`bg-[${primaryColor}] mx-10 rounded-full my-3 `}
               >
                 <Text

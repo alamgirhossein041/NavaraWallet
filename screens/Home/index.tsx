@@ -8,10 +8,10 @@ import BackButton from "../../components/UI/BackButton";
 import BackupWallet from "../Backup/BackupWallet";
 import RestoreWallet from "../Backup/RestoreWallet";
 import SelectFile from "../Backup/SelectFile";
-import GetYourDomain from "../Domain/CreateDomain";
+import CreateDomain from "../Domain/CreateDomain";
 import { Rewards } from "../Domain/Rewards";
 import DetailWallet from "../ManageWallets/DetailWallet";
-import PrivacySeedPhrase from "../ManageWallets/privacySeedPhrase";
+import PrivacySeedPhrase from "../ManageWallets/PrivacySeedPhrase";
 import Notification from "../Notification";
 import WalletID from "../OnBoard/CreateWallet";
 import ReceiveToken from "../ReceiveToken";
@@ -20,6 +20,7 @@ import ConfirmTransaction from "../SendToken/ConfirmTransaction";
 import ResultTransaction from "../SendToken/ResultTransaction";
 import SendingToken from "../SendToken/SendingToken";
 import ViewListWallet from "../SendToken/ViewListWallet";
+import ManageSessions from "../Settings/ManageSessions";
 import SwapToken from "../Swap";
 import SwapScreen from "../Swap/Paraswap";
 import { default as DetailChain } from "./DetailChains";
@@ -27,7 +28,7 @@ import DetailNews from "./DetailNews";
 import DetailPrice from "./DetailPrice";
 import HistoryWallets from "./HistoryWallets";
 import ManageChains from "./ManageChains";
-import { NewsScreen } from "./News";
+import AddToken from "./ManageChains/AddToken";
 import WalletDashboard from "./WalletDashboard";
 
 const Home = ({ navigation, route }) => {
@@ -122,8 +123,8 @@ const Home = ({ navigation, route }) => {
       />
 
       <Stack.Screen
-        name="GetYourDomain"
-        component={GetYourDomain}
+        name="CreateDomain"
+        component={CreateDomain}
         options={{
           title: `${t("stack_screen.name_service")}`,
         }}
@@ -203,13 +204,6 @@ const Home = ({ navigation, route }) => {
         }}
       />
       <Stack.Screen
-        name="NewsScreen"
-        component={NewsScreen}
-        options={{
-          title: `${t("stack_screen.news")}`,
-        }}
-      />
-      <Stack.Screen
         name="BackupWallet"
         component={BackupWallet}
         options={{
@@ -234,6 +228,22 @@ const Home = ({ navigation, route }) => {
         component={RestoreWallet}
         options={{
           title: `${t("stack_screen.restore_wallet")}`,
+        }}
+      />
+      <Stack.Screen
+        name="ManageSessions"
+        component={ManageSessions}
+        options={{
+          title: `Sessions`,
+          headerShown: true,
+        }}
+      />
+      <Stack.Screen
+        name="AddToken"
+        component={AddToken}
+        options={{
+          title: `Sessions`,
+          headerShown: true,
         }}
       />
     </Stack.Navigator>

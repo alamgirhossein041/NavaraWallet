@@ -1,8 +1,6 @@
-import React from "react";
-import { View } from "react-native";
-import IconSearch from "../../assets/icons/icon-search.svg";
+import debouce from "lodash.debounce";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { secondaryGray } from "../../configs/theme";
-import { tw } from "../../utils/tailwind";
 import TextField, { ITextFieldProps } from "./TextField";
 
 interface ISearchBar extends ITextFieldProps {
@@ -21,6 +19,7 @@ interface ISearchBar extends ITextFieldProps {
    * @example ['name', 'email']
    */
   filterProperty?: string[];
+  debounce?: number;
 }
 /**
  * @author ThaiND
@@ -42,53 +41,60 @@ const SearchBar = (props: ISearchBar) => {
     value,
     onChangeText = () => {},
     onListFiltered = () => {},
-    icon = (
-      <View
-        style={tw`flex items-center justify-center w-6 h-6 p-3 m-2 bg-white rounded-full shadow select-none dark:bg-gray-500`}
-      >
-        <IconSearch />
-      </View>
-    ),
     style,
     placeholder,
     list = [], //searchList must be a string have no setState
     filterProperty,
+    debounce = 0,
   } = props;
   //background Darkmode
+
+  const handleOnChangeText = useCallback(
+    (text: string) => {
+      let filteredList: typeof list;
+      // array of objects must have filterProperty
+      if (filterProperty) {
+        filteredList = list.filter((item) =>
+          filterProperty.reduce((acc, property) => {
+            if (
+              item[property]?.toLowerCase().includes(text.trim().toLowerCase())
+            ) {
+              return true;
+            }
+            return acc;
+          }, false)
+        );
+      } else {
+        //if no search property, just filter by text
+        filteredList = list.filter((item) =>
+          item.toLowerCase().includes(text.trim().toLowerCase())
+        );
+      }
+      onListFiltered(filteredList);
+      onChangeText(text);
+    },
+    [filterProperty, list, onChangeText, onListFiltered]
+  );
+
+  const debouncedResults = useMemo(() => {
+    return debouce(handleOnChangeText, debounce);
+  }, [debounce, handleOnChangeText]);
+
+  useEffect(() => {
+    return () => {
+      debouncedResults.cancel();
+    };
+  });
 
   return (
     <TextField
       {...props}
-      icon={icon}
+      type={"search"}
       style={style}
       placeholder={placeholder}
       placeholderTextColor={secondaryGray}
       value={value}
-      onChangeText={(text) => {
-        let filteredList: typeof list;
-        // array of objects must have filterProperty
-        if (filterProperty) {
-          filteredList = list.filter((item) =>
-            filterProperty.reduce((acc, property) => {
-              if (
-                item[property]
-                  ?.toLowerCase()
-                  .includes(text.trim().toLowerCase())
-              ) {
-                return true;
-              }
-              return acc;
-            }, false)
-          );
-        } else {
-          //if no search property, just filter by text
-          filteredList = list.filter((item) =>
-            item.toLowerCase().includes(text.trim().toLowerCase())
-          );
-        }
-        onListFiltered(filteredList);
-        onChangeText(text);
-      }}
+      onChangeText={debouncedResults}
     />
   );
 };

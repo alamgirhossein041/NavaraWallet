@@ -5,4 +5,9 @@ const walletConnectState = atom({
   default: {} as any,
 });
 
-export { walletConnectState };
+const isConnectedState = atom({
+  default: false,
+  key: "isConnectedState",
+});
+
+export { walletConnectState, isConnectedState };

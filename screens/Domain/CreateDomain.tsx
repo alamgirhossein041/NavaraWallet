@@ -11,16 +11,20 @@ import TextField from "../../components/UI/TextField";
 import { EVM_CHAINS } from "../../configs/bcNetworks";
 import { primaryColor } from "../../configs/theme";
 import API from "../../data/api";
+import WalletController from "../../data/database/controllers/wallet.controller";
 import { Wallet } from "../../data/database/entities/wallet";
-import useDatabase from "../../data/database/useDatabase";
 import { listWalletsState } from "../../data/globalState/listWallets";
 import { NETWORKS } from "../../enum/bcEnum";
 import usePopupResult from "../../hooks/usePopupResult";
 import { useWalletSelected } from "../../hooks/useWalletSelected";
 import { tw } from "../../utils/tailwind";
 import toastr from "../../utils/toastr";
-const CreateDomain = ({ navigation }) => {
-  const { walletController } = useDatabase();
+const CreateDomain = ({ navigation, route }) => {
+  const { params } = route;
+  const isCreateMore = params.createMore;
+  console.log(isCreateMore);
+
+  const walletController = new WalletController();
   const [addreses, setAddreses] = useState({});
   const walletSelected = useWalletSelected();
   const popupResult = usePopupResult();
@@ -65,25 +69,31 @@ const CreateDomain = ({ navigation }) => {
       onSuccess: async (data: any) => {
         const newDomain = data.domain;
         if (!newDomain) return;
-        const wallet = walletSelected.data;
-        wallet.domain = newDomain;
-        await walletController.updateWallet(wallet);
+        if (!isCreateMore) {
+          const wallet = walletSelected.data;
+          wallet.domain = newDomain;
+          await walletController.updateWallet(wallet);
 
-        // update domain to state
-        setListWallets((listWallets) => {
-          return listWallets.map((_wallet: Wallet, index) => {
-            if (index === walletSelected.index) {
-              return wallet;
-            }
-            return _wallet;
+          // update domain to state
+          setListWallets((listWallets) => {
+            return listWallets.map((_wallet: Wallet, index) => {
+              if (index === walletSelected.index) {
+                return wallet;
+              }
+              return _wallet;
+            });
           });
-        });
+        }
         popupResult({
           title: `${t("domain.successful")}`,
           isOpen: true,
           type: "success",
         });
-        navigation.replace("TabsNavigation");
+        if (!isCreateMore) {
+          navigation.replace("TabsNavigation");
+          return;
+        }
+        navigation.goBack();
       },
       onError: (e: AxiosError) => {
         const status = e.response.status;
@@ -111,18 +121,27 @@ const CreateDomain = ({ navigation }) => {
     if (inputDomain.value.length < 5 || inputDomain.value.length > 60) {
       setInputDomain({
         ...inputDomain,
+
         error: `${t("domain.domain_name_must_be_between_5_and_60_characters")}`,
       });
       return;
     }
-    const result = await walletController.updateWallet({
-      ...walletSelected.data,
-      domain: inputDomain.value,
-    });
-    registerDomainRequest.mutate({
+
+    let dataNewDomain = {
       domain: inputDomain.value.toLocaleLowerCase() + ".nns.one",
-      ...addreses,
-    } as any);
+      owner: addreses[NETWORKS.ETHEREUM.toLocaleLowerCase()],
+    };
+
+    if (!isCreateMore) {
+      dataNewDomain = { ...dataNewDomain, ...addreses };
+      await walletController.updateWallet({
+        ...walletSelected.data,
+
+        domain: inputDomain.value,
+      });
+    }
+
+    registerDomainRequest.mutate(dataNewDomain as any);
   };
 
   return (
@@ -131,16 +150,18 @@ const CreateDomain = ({ navigation }) => {
         <BgNameService height="250" width="100%" />
       </View> */}
       <ScrollView style={tw`px-4`}>
-        <TextField
-          autoCapitalize="none"
-          autoFocus
-          type="text"
-          value={inputDomain.value}
-          onChangeText={onChangeText}
-          label={`${t("domain.enter_your_name_service")}`}
-          placeholderTextColor={"red"}
-          err={inputDomain.error}
-        />
+        <View style={tw`mt-10`}>
+          <TextField
+            autoCapitalize="none"
+            autoFocus
+            type="text"
+            value={inputDomain.value}
+            onChangeText={onChangeText}
+            label={`${t("domain.enter_your_name_service")}`}
+            placeholderTextColor={"red"}
+            err={inputDomain.error}
+          />
+        </View>
         <View
           style={tw`items-center p-3 mx-auto my-10 bg-gray-100 rounded-lg dark:bg-stone-700`}
         >

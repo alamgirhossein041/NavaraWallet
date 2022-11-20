@@ -1,18 +1,18 @@
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import {
   CardStyleInterpolators,
   createStackNavigator,
-} from '@react-navigation/stack';
-import React from 'react';
-import {StatusBar, useColorScheme, View} from 'react-native';
-import {primaryColor, secondaryGray} from '../configs/theme';
-import Browser from '../screens/Browser';
-import Home from '../screens/Home';
-import {default as NotUse, default as OnBoard} from '../screens/OnBoard';
-import Settings from '../screens/Settings';
-import Splash from '../screens/Splash';
-import {tw} from '../utils/tailwind';
-import CustomTabBar from './CustomTabBar';
+} from "@react-navigation/stack";
+import React from "react";
+import { StatusBar, useColorScheme, View } from "react-native";
+import { primaryColor, secondaryGray } from "../configs/theme";
+import Browser from "../screens/Browser";
+import Home from "../screens/Home";
+import { default as NotUse, default as OnBoard } from "../screens/OnBoard";
+import Settings from "../screens/Settings";
+import Splash from "../screens/Splash";
+import { tw } from "../utils/tailwind";
+import CustomTabBar from "./CustomTabBar";
 
 const RootStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -25,8 +25,8 @@ interface ITab {
 
 const tabs: ITab[] = [
   {
-    name: 'Home',
-    label: 'Home',
+    name: "Home",
+    label: "Home",
     component: Home,
   },
   // {
@@ -35,8 +35,8 @@ const tabs: ITab[] = [
   //   component: () => <View />,
   // },
   {
-    name: 'Test',
-    label: 'Test',
+    name: "Test",
+    label: "Test",
     component: Home, //Market fake UI to Home
   },
   // {
@@ -50,8 +50,8 @@ const tabs: ITab[] = [
   //   component: More, //Market fake UI to Home
   // },
   {
-    name: 'Profile',
-    label: 'Profile',
+    name: "Profile",
+    label: "Profile",
     component: Settings,
   },
 ];
@@ -59,7 +59,7 @@ const tabs: ITab[] = [
 const TabsNavigation = () => {
   return (
     <Tab.Navigator
-      tabBar={props => <CustomTabBar {...props} />}
+      tabBar={(props) => <CustomTabBar {...props} />}
       initialRouteName="Wallet"
       screenOptions={{
         tabBarHideOnKeyboard: true,
@@ -67,7 +67,8 @@ const TabsNavigation = () => {
         tabBarInactiveTintColor: secondaryGray,
         headerShown: false,
         tabBarShowLabel: false,
-      }}>
+      }}
+    >
       {tabs.map((tab: ITab) => (
         <Tab.Screen key={tab.name} name={tab.name} component={tab.component} />
       ))}
@@ -81,17 +82,21 @@ const AppRoutes = () => {
     <View style={tw`flex-1`}>
       <StatusBar
         barStyle="dark-content"
-        backgroundColor={scheme === 'light' ? 'white' : '#18191A'}
+        backgroundColor={scheme === "light" ? "white" : "#18191A"}
       />
-      <RootStack.Navigator>
+      <RootStack.Navigator
+        screenOptions={{
+          animationEnabled: false,
+        }}
+      >
         <RootStack.Screen
           name="Splash"
-          options={{headerShown: false}}
+          options={{ headerShown: false }}
           component={Splash}
         />
         <RootStack.Screen
           name="OnBoard"
-          options={{headerShown: false}}
+          options={{ headerShown: false }}
           component={OnBoard}
         />
         <RootStack.Screen
@@ -106,12 +111,12 @@ const AppRoutes = () => {
         />
         <RootStack.Screen
           name="NotUse"
-          options={{headerShown: false}}
+          options={{ headerShown: false }}
           component={NotUse}
         />
         <RootStack.Screen
           name="TabsNavigation"
-          options={{headerShown: false}}
+          options={{ headerShown: false }}
           component={TabsNavigation}
         />
       </RootStack.Navigator>

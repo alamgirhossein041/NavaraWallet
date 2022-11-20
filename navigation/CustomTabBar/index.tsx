@@ -137,7 +137,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
                       // onPress={}
                       style={tw`items-center justify-center flex-1`}
                     >
-                      {getIcon("Browser", 46, "white")}
+                      {getIcon("Browser", 40, "white")}
                     </PressableAnimatedSpin>
                   </View>
                 ) : (

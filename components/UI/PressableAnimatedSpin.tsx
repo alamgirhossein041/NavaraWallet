@@ -53,7 +53,7 @@ const PressableAnimatedSpin = ({
 
   const spin = spinValue.interpolate({
     inputRange: [0, 1],
-    outputRange: ["360deg", "0deg"],
+    outputRange: ["0deg", "360deg"],
   });
 
   const onPressInHandler = () => {

@@ -3,7 +3,7 @@ import { ScrollView } from "native-base";
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, Text, TouchableOpacity, View } from "react-native";
-import { EyeIcon, EyeOffIcon } from "react-native-heroicons/outline";
+import { EyeIcon, EyeSlashIcon } from "react-native-heroicons/solid";
 import Blur from "../../assets/blur.png";
 import IconMessenge from "../../assets/icons/icon-message-question.svg";
 import { primaryColor } from "../../configs/theme";
@@ -40,7 +40,7 @@ export default function ViewSeedPhrase(props) {
         {isShowSeed ? (
           <EyeIcon width={35} height={35} color="gray" />
         ) : (
-          <EyeOffIcon width={35} height={35} color="gray" />
+          <EyeSlashIcon width={35} height={35} color="gray" />
         )}
       </TouchableOpacity>
       <View styles={tw`relative`}>

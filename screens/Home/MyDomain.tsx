@@ -53,7 +53,7 @@ const RenderDomain = ({ data, index }: any) => {
 
   const handleGetNameService = () => {
     onClose();
-    linkTo("/GetYourDomain");
+    linkTo("/CreateDomain");
   };
   const { t } = useTranslation();
 

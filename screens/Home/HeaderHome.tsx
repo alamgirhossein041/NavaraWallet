@@ -3,6 +3,7 @@ import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { useRecoilState } from "recoil";
 import Logo from "../../assets/logo/logo.svg";
+import IconSessions from "../../components/UI/IconSessions";
 import walletConnect from "../../core/WalletConnect";
 import { walletEnvironmentState } from "../../data/globalState/userData";
 import { ENVIRONMENT } from "../../global.config";
@@ -32,11 +33,11 @@ export default function HeaderHome() {
   };
 
   return (
-    <View style={tw`flex-row items-center px-3 pr-6 mb-3`}>
+    <View style={tw`flex-row items-center px-3 pr-6 mb-3 `}>
       <View style={tw`flex-row items-center justify-between w-full mt-0`}>
         <View style={tw`flex flex-row items-center`}>
           <View style={tw`flex-row items-center`}>
-            <Logo width={45} height={45} />
+            <Logo width={40} height={40} />
             <Text style={tw`text-3xl font-bold text-black dark:text-white `}>
               Navara
             </Text>
@@ -53,8 +54,9 @@ export default function HeaderHome() {
           </TouchableOpacity>
         </View>
         <View style={tw`flex-row`}>
-          <View style={tw`bg-blue-100 rounded-lg`}>
-            <ScanQR onValueScaned={handleQRCodeResult} />
+          <IconSessions />
+          <View style={tw`bg-blue-100 rounded-lg dark:bg-slate-900`}>
+            <ScanQR onValueScanned={handleQRCodeResult} />
           </View>
         </View>
       </View>
